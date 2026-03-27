@@ -1,7 +1,9 @@
+using Photon.Pun;
 using UnityEngine;
 
 public class WeaponSwitcher : MonoBehaviour
 {
+    public PhotonView playerSetupView;
     public Animation _animation;
     public AnimationClip draw;
 
@@ -39,6 +41,7 @@ public class WeaponSwitcher : MonoBehaviour
 
     void SelectWeapon()
     {
+        playerSetupView.RPC("SetTPWeapon", RpcTarget.All, selectedWeapon);
         _animation.Stop();
         _animation.Play(draw.name);
 

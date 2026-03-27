@@ -717,11 +717,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1879900250216117662, guid: 8129100b3299c104f829c9cd25a82413, type: 3}
---- !u!1 &162535882 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 352915704992195996, guid: 0a68be1bd13d8694e8d8fe85574ac075, type: 3}
-  m_PrefabInstance: {fileID: 1654976153}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &162535883 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 355529388823523236, guid: 0a68be1bd13d8694e8d8fe85574ac075, type: 3}
@@ -5289,6 +5284,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: map
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 8129100b3299c104f829c9cd25a82413, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -7810,7 +7809,7 @@ MonoBehaviour:
   - {fileID: 508838262}
   - {fileID: 1939489707}
   roomCam: {fileID: 1361589425}
-  nameUI: {fileID: 162535882}
+  nameUI: {fileID: 1966071902}
   connectingUI: {fileID: 1076860620}
   Kills: 0
   Deaths: 0

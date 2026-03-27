@@ -1,3 +1,4 @@
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.InputSystem;
 public class Movement : MonoBehaviour
@@ -19,10 +20,12 @@ public class Movement : MonoBehaviour
 
     private bool grounded = false;
 
+    private PhotonView pv;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        pv = GetComponent<PhotonView>();
     }
 
     // Update is called once per frame
@@ -42,6 +45,7 @@ public class Movement : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (!pv.IsMine) return;
         if (grounded)
         {
             if (jumping)
