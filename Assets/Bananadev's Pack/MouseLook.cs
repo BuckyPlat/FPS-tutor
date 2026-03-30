@@ -7,10 +7,19 @@ public class MouseLook : MonoBehaviour
     [Header("Settings")]
     public Vector2 clampInDegrees = new Vector2(360, 180);
     public bool lockCursor = true;
+
     [Space]
-    private Vector2 sensitivity = new Vector2(2, 2);
+    public Vector2 sensitivity = new Vector2(2, 2);
+    public bool invertMouse = false;
+
     [Space]
     public Vector2 smoothing = new Vector2(3, 3);
+
+    [Header("Save Keys")]
+    private const string SENS_X_KEY = "MouseSensX";
+    private const string SENS_Y_KEY = "MouseSensY";
+    private const string SMOOTH_KEY = "MouseSmooth";
+    private const string INVERT_KEY = "MouseInvert";
 
     [Header("First Person")]
     public GameObject characterBody;
@@ -29,6 +38,13 @@ public class MouseLook : MonoBehaviour
     void Start()
     {
         instance = this;
+
+        // === LOAD SETTINGS TỪ MENU ===
+        sensitivity.x = PlayerPrefs.GetFloat(SENS_X_KEY, 2f);
+        sensitivity.y = PlayerPrefs.GetFloat(SENS_Y_KEY, 2f);
+        smoothing.x = PlayerPrefs.GetFloat(SMOOTH_KEY, 3f);
+        smoothing.y = smoothing.x;                    // giữ ngang nhau
+        invertMouse = PlayerPrefs.GetInt(INVERT_KEY, 0) == 1;
 
         // Set target direction to the camera's initial orientation.
         targetDirection = transform.localRotation.eulerAngles;

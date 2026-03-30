@@ -26,11 +26,11 @@ public class WeaponSwitcher : MonoBehaviour
         {
             case KeyCode.Alpha1: selectedWeapon = 0; break;
             case KeyCode.Alpha2: selectedWeapon = 1; break;
-            case KeyCode.Alpha3: selectedWeapon = 2; break;
-            case KeyCode.Alpha4: selectedWeapon = 3; break;
-            case KeyCode.Alpha5: selectedWeapon = 4; break;
-            case KeyCode.Alpha6: selectedWeapon = 5; break;
-            case KeyCode.Alpha7: selectedWeapon = 6; break;
+            //case KeyCode.Alpha3: selectedWeapon = 2; break;
+            //case KeyCode.Alpha4: selectedWeapon = 3; break;
+            //case KeyCode.Alpha5: selectedWeapon = 4; break;
+            //case KeyCode.Alpha6: selectedWeapon = 5; break;
+            //case KeyCode.Alpha7: selectedWeapon = 6; break;
         }
 
         if (previousSelectedWeapon != selectedWeapon)

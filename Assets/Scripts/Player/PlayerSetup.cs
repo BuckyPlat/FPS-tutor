@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using Photon.Pun;
 using TMPro;
 using UnityEngine;
@@ -28,6 +28,8 @@ public class PlayerSetup : MonoBehaviour
 
         TPweaponHolder.GetChild(_weaponIndex).gameObject.SetActive(true);
     }
+
+
 
     [PunRPC]
     public void SetNickName(string _name)
