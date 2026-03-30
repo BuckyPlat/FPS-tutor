@@ -1,8 +1,9 @@
-using Photon.Pun;
+﻿using Photon.Pun;
 using UnityEngine;
 using UnityEngine.InputSystem;
 public class Movement : MonoBehaviour
 {
+    public Animator animator;
     public float walkSpeed = 4f;
     public float sprintSpeed = 14f;
     public float MaxVelocityChange = 10f;
@@ -36,6 +37,7 @@ public class Movement : MonoBehaviour
 
         sprinting = Input.GetButton("Sprint");
         jumping = Input.GetButton("Jump");
+
     }
 
     private void OnTriggerStay(Collider other)
