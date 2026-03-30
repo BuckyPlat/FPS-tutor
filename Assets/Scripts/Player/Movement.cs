@@ -3,11 +3,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class Movement : MonoBehaviour
 {
-    public Animator animator;
     public float walkSpeed = 4f;
     public float sprintSpeed = 14f;
     public float MaxVelocityChange = 10f;
-
     [Space]
     public float airControl = 0.5f;
     [Space]
@@ -21,6 +19,10 @@ public class Movement : MonoBehaviour
 
     private bool grounded = false;
 
+    [Header("Animation")] public Animation handAnimation;
+    public AnimationClip handWalkAnimation;
+    public AnimationClip idleAnimation;
+
     private PhotonView pv;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -32,6 +34,7 @@ public class Movement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (GameChat.IsPlayerChatting()) return;
         input = new Vector2(x: Input.GetAxisRaw("Horizontal"), y: Input.GetAxisRaw("Vertical"));
         input.Normalize();
 
@@ -47,6 +50,7 @@ public class Movement : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (!pv.IsMine || GameChat.IsPlayerChatting()) return;
         if (!pv.IsMine) return;
         if (grounded)
         {
@@ -56,10 +60,15 @@ public class Movement : MonoBehaviour
             }
             else if (input.magnitude > 0.5f)
             {
+                handAnimation.clip = handWalkAnimation;
+                handAnimation.Play();
                 rb.AddForce(CalculationMovement(sprinting ? sprintSpeed : walkSpeed), ForceMode.VelocityChange);
             }
             else
             {
+                handAnimation.clip = idleAnimation;
+                handAnimation.Play();
+
                 var velocity1 = rb.linearVelocity;
                 velocity1 = new Vector3(velocity1.x * 0.2f * Time.fixedDeltaTime, velocity1.y, velocity1.z * 0.2f * Time.fixedDeltaTime);
                 rb.linearVelocity = velocity1;

@@ -31,6 +31,10 @@ public class Weapon : MonoBehaviour
     public TextMeshProUGUI magText;
     public TextMeshProUGUI ammoText;
 
+    [Header("SFX")] public int shootSFXindex = 0;
+    public int reloadSFXindex = 0;
+    public PlayerPhotonSoundManager playerPhotonSoundManager;
+
     [Header("Animation")]
     public Animation animation;
     public AnimationClip reload;
@@ -90,7 +94,8 @@ public class Weapon : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(nextFire > 0)
+        if (GameChat.IsPlayerChatting()) return;
+        if (nextFire > 0)
         {
             nextFire -= Time.deltaTime;
         }
@@ -126,6 +131,7 @@ public class Weapon : MonoBehaviour
     void Reload()
     {
         animation.Play(reload.name);
+        playerPhotonSoundManager.PlayReloadSFX(reloadSFXindex);
         if(mag > 0)
         {
             mag--;
@@ -142,6 +148,8 @@ public class Weapon : MonoBehaviour
     {
         recoiling = true;
         recovering = false;
+        playerPhotonSoundManager.PlayShootSFX(shootSFXindex);
+
         Ray ray = new Ray(camera.transform.position, camera.transform.forward);
 
         RaycastHit hit;

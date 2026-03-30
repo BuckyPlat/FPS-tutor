@@ -18,6 +18,7 @@ public class WeaponSwitcher : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (GameChat.IsPlayerChatting()) return;
         int previousSelectedWeapon = selectedWeapon;
 
         KeyCode pressedKey = GetPressedWeaponKey();
