@@ -134,6 +134,7 @@ MonoBehaviour:
   damage: 30
   fireForce: 2000
   explosionVFX: {fileID: 1000013462590818, guid: ecdd96beb7f93494880c052dfccf9dc1, type: 3}
+  vfxLifetime: 3
 --- !u!135 &7787750149356528148
 SphereCollider:
   m_ObjectHideFlags: 0

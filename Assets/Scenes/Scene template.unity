@@ -6870,6 +6870,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   chatText: {fileID: 2076740405}
   inputField: {fileID: 741073119}
+  maxMessages: 15
 --- !u!114 &1007867762
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,7 +1,6 @@
 ﻿using Photon.Pun;
 using Photon.Pun.UtilityScripts;
 using UnityEngine;
-using UnityEngine.Pool;
 
 public class Explosive : MonoBehaviour
 {
@@ -18,103 +17,73 @@ public class Explosive : MonoBehaviour
 
     [Header("VFX")]
     public GameObject explosionVFX;
+    public float vfxLifetime = 1f;
 
-    private static IObjectPool<GameObject> vfxPool;
-    private static GameObject vfxPrefabRef;
+    private PhotonView pv;
 
     private void Awake()
     {
-        if (vfxPool == null)
-        {
-            vfxPrefabRef = explosionVFX;
-            vfxPool = new ObjectPool<GameObject>(
-                createFunc: () => Instantiate(vfxPrefabRef),
-
-                actionOnGet: obj =>
-                {
-                    obj.SetActive(true);
-                    foreach (var light in obj.GetComponentsInChildren<Light>())
-                        light.enabled = true;
-                },
-
-                actionOnRelease: obj =>
-                {
-                    foreach (var light in obj.GetComponentsInChildren<Light>())
-                        light.enabled = false;
-
-                    if (obj.TryGetComponent<ParticleSystem>(out var ps))
-                        ps.Clear(true);
-
-                    obj.SetActive(false);
-                },
-
-                actionOnDestroy: Destroy,
-                defaultCapacity: 4,
-                maxSize: 8
-            );
-        }
+        pv = GetComponent<PhotonView>();
     }
 
     private void Start()
     {
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+
         GetComponent<Rigidbody>().AddForce(transform.forward * fireForce);
     }
 
     private void OnCollisionEnter(Collision other)
     {
-        if (!isLocalExplosive) return;
+        if (!isLocalExplosive || alreadyExplode)
+            return;
 
-        SpawnVFX();
+        alreadyExplode = true;
         Explode();
-    }
 
-    void SpawnVFX()
-    {
-        GameObject vfx = vfxPool.Get();
-        vfx.transform.position = transform.position;
-        vfx.transform.rotation = Quaternion.identity;
+        // Gửi RPC spawn VFX cho tất cả client, VFX là object độc lập
+        pv.RPC("ShowExplosionVFX", RpcTarget.All, transform.position);
 
-        if (vfx.TryGetComponent<ParticleSystem>(out var ps))
-        {
-            // Stop hoàn toàn trước khi set duration
-            ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-
-            var main = ps.main;
-            main.loop = false;
-            main.duration = 4f;
-
-            ps.Play();
-        }
-
-        StartCoroutine(ReturnVFXToPool(vfx, 4f));
+        // Destroy projectile ngay — VFX đã là object riêng, không bị ảnh hưởng
+        PhotonNetwork.Destroy(gameObject);
     }
 
     void Explode()
     {
-        if (alreadyExplode) return;
-        alreadyExplode = true;
-
-        foreach (var collider in Physics.OverlapSphere(transform.position, explosionRadius))
+        foreach (Collider col in Physics.OverlapSphere(transform.position, explosionRadius))
         {
-            if (collider.transform.gameObject.GetComponent<Health>())
-            {
-                PhotonNetwork.LocalPlayer.AddScore(damage);
-                if (damage >= collider.transform.gameObject.GetComponent<Health>().health)
-                {
-                    RoomManager.instance.Kills++;
-                    RoomManager.instance.SetHashes();
-                    PhotonNetwork.LocalPlayer.AddScore(100);
-                }
-                collider.transform.gameObject.GetComponent<PhotonView>().RPC("TakeDamage", RpcTarget.All, damage);
-            }
-        }
+            Health health = col.GetComponent<Health>();
+            if (health == null) continue;
 
-        PhotonNetwork.Destroy(gameObject);
+            PhotonView targetPV = col.GetComponent<PhotonView>();
+            if (targetPV != null && targetPV.IsMine)
+                continue;
+
+            PhotonNetwork.LocalPlayer.AddScore(damage);
+
+            if (damage >= health.health)
+            {
+                RoomManager.instance.Kills++;
+                RoomManager.instance.SetHashes();
+                PhotonNetwork.LocalPlayer.AddScore(100);
+            }
+
+            if (targetPV != null)
+                targetPV.RPC("TakeDamage", RpcTarget.All, damage);
+        }
     }
 
-    private System.Collections.IEnumerator ReturnVFXToPool(GameObject obj, float delay)
+    [PunRPC]
+    public void ShowExplosionVFX(Vector3 position)
     {
-        yield return new WaitForSeconds(delay);
-        vfxPool.Release(obj);
+        if (explosionVFX == null) return;
+
+        // Instantiate VFX là object hoàn toàn độc lập, không gắn vào projectile
+        GameObject vfx = Instantiate(explosionVFX, position, Quaternion.identity);
+
+        // Tự destroy sau khi particle chạy xong
+        Destroy(vfx, vfxLifetime);
     }
 }
