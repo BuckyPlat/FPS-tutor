@@ -135,6 +135,8 @@ MonoBehaviour:
   fireForce: 2000
   explosionVFX: {fileID: 1000013462590818, guid: ecdd96beb7f93494880c052dfccf9dc1, type: 3}
   vfxLifetime: 3
+  explosionSFX: {fileID: 8300000, guid: 3a68d0bdec0783442bf0a2495ac48c6b, type: 3}
+  explosionVolume: 1
 --- !u!135 &7787750149356528148
 SphereCollider:
   m_ObjectHideFlags: 0

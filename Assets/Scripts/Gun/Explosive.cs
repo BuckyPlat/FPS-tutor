@@ -15,9 +15,13 @@ public class Explosive : MonoBehaviour
     [Header("Fire Settings")]
     public float fireForce;
 
-    [Header("VFX")]
+    [Header("VFX & SFX")]
     public GameObject explosionVFX;
-    public float vfxLifetime = 1f;
+    public float vfxLifetime = 2.5f;           // Thời gian destroy VFX
+
+    [Header("Explosion Sound")]
+    public AudioClip explosionSFX;             // Kéo AudioClip âm thanh nổ vào đây
+    public float explosionVolume = 1f;         // Âm lượng (0.0 - 1.0)
 
     private PhotonView pv;
 
@@ -37,16 +41,13 @@ public class Explosive : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
-        if (!isLocalExplosive || alreadyExplode)
-            return;
+        if (!isLocalExplosive || alreadyExplode) return;
 
         alreadyExplode = true;
-        Explode();
 
-        // Gửi RPC spawn VFX cho tất cả client, VFX là object độc lập
-        pv.RPC("ShowExplosionVFX", RpcTarget.All, transform.position);
+        Explode();                                 // Damage + Score
+        pv.RPC("RpcExplosionEffects", RpcTarget.All, transform.position);   // Sync VFX + SFX
 
-        // Destroy projectile ngay — VFX đã là object riêng, không bị ảnh hưởng
         PhotonNetwork.Destroy(gameObject);
     }
 
@@ -57,9 +58,9 @@ public class Explosive : MonoBehaviour
             Health health = col.GetComponent<Health>();
             if (health == null) continue;
 
+            // Không để nổ damage lên chính mình
             PhotonView targetPV = col.GetComponent<PhotonView>();
-            if (targetPV != null && targetPV.IsMine)
-                continue;
+            if (targetPV != null && targetPV.IsMine) continue;
 
             PhotonNetwork.LocalPlayer.AddScore(damage);
 
@@ -76,14 +77,31 @@ public class Explosive : MonoBehaviour
     }
 
     [PunRPC]
-    public void ShowExplosionVFX(Vector3 position)
+    public void RpcExplosionEffects(Vector3 position)
     {
-        if (explosionVFX == null) return;
+        // === VFX ===
+        if (explosionVFX != null)
+        {
+            GameObject vfx = Instantiate(explosionVFX, position, Quaternion.identity);
+            Destroy(vfx, vfxLifetime);
+        }
 
-        // Instantiate VFX là object hoàn toàn độc lập, không gắn vào projectile
-        GameObject vfx = Instantiate(explosionVFX, position, Quaternion.identity);
+        // === SFX - Phát âm thanh nổ cho tất cả người chơi ===
+        if (explosionSFX != null)
+        {
+            // Tạo một AudioSource tạm thời tại vị trí nổ
+            GameObject audioObj = new GameObject("ExplosionSound");
+            audioObj.transform.position = position;
 
-        // Tự destroy sau khi particle chạy xong
-        Destroy(vfx, vfxLifetime);
+            AudioSource audioSource = audioObj.AddComponent<AudioSource>();
+            audioSource.clip = explosionSFX;
+            audioSource.volume = explosionVolume;
+            audioSource.spatialBlend = 2f;        // 3D sound
+            audioSource.maxDistance = 70f;        // Phạm vi nghe
+            audioSource.rolloffMode = AudioRolloffMode.Linear;
+
+            audioSource.Play();
+            Destroy(audioObj, explosionSFX.length + 0.5f);   // Destroy sau khi phát xong
+        }
     }
 }

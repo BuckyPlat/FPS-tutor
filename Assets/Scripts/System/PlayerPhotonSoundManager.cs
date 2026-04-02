@@ -13,6 +13,9 @@ public class PlayerPhotonSoundManager : MonoBehaviour
     public AudioSource reloadSource;
     public AudioClip[] allReloadSFX;
 
+    public AudioSource explosideSource;
+    public AudioClip explosionSFX;
+
     public void PlayFootStepsSFX()
     {
         GetComponent<PhotonView>().RPC("PlayerFootStepsSFX_RPC", RpcTarget.All);
@@ -53,5 +56,17 @@ public class PlayerPhotonSoundManager : MonoBehaviour
         reloadSource.clip = allReloadSFX[index];
 
         reloadSource.Play();
+    }
+
+    public void PlayExplosionSFX(Vector3 position)
+    {
+        GetComponent<PhotonView>().RPC("PlayExplosionSFX_RPC", RpcTarget.All, position);
+    }
+    [PunRPC]
+    public void PlayExplosionSFX_RPC(Vector3 position)
+    {
+        if (explosionSFX == null) return;
+        // Phát đúng tại vị trí vụ nổ (3D spatial sound)
+        AudioSource.PlayClipAtPoint(explosionSFX, position);
     }
 }
