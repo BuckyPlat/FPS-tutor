@@ -11,9 +11,16 @@ public class Weapon : MonoBehaviour
 
     public int damage;
 
+    public int pelletsCount = 1;
+    public float sprayMultiplier = 0f;
+
     public Camera camera;
 
     public float fireRate;
+
+    [Header("Projecttile Weapon Settings")] public bool isProjectileWeapon = false;
+    public GameObject projectile;
+    public Transform projectileExit;
 
     [Header("VFX")]
     public GameObject hitVFX;
@@ -107,7 +114,14 @@ public class Weapon : MonoBehaviour
             magText.text = mag.ToString();
             ammoText.text = ammo + "/" + magAmmo;
             SetAmmo();
-            Fire();
+            if (isProjectileWeapon)
+            {
+                ProjecttileFire();
+            }
+            else
+            {
+                Fire();
+            }
         }
         if (Input.GetKeyDown(KeyCode.R) && mag > 0 && ammo <30)
         {
@@ -121,6 +135,13 @@ public class Weapon : MonoBehaviour
         {
             Recovering();
         }
+    }
+
+    void ProjecttileFire()
+    {
+        playerPhotonSoundManager.PlayShootSFX(shootSFXindex);
+        GameObject myProjectile = PhotonNetwork.Instantiate(projectile.name, projectileExit.position, projectileExit.rotation);
+        myProjectile.GetComponent<Explosive>().isLocalExplosive = true;
     }
 
     void SetAmmo()
@@ -150,29 +171,38 @@ public class Weapon : MonoBehaviour
         recovering = false;
         playerPhotonSoundManager.PlayShootSFX(shootSFXindex);
 
-        Ray ray = new Ray(camera.transform.position, camera.transform.forward);
-
-        RaycastHit hit;
-
-        PhotonNetwork.LocalPlayer.AddScore(1);
-        if(Physics.Raycast(ray.origin, ray.direction,out hit, 100f))
+        for(int i = 0; i < pelletsCount; i++)
         {
-            GameObject vfx = vfxPool.Get();
-            vfx.transform.position = hit.point;
-            vfx.transform.rotation = Quaternion.LookRotation(hit.normal);
-            StartCoroutine(ReturnToPoolAfter(vfx, 2f));
-            if (hit.transform.gameObject.GetComponent<Health>())
-            {
-                PhotonNetwork.LocalPlayer.AddScore(damage);
-                if(damage >= hit.transform.gameObject.GetComponent<Health>().health)
-                {
-                    RoomManager.instance.Kills++;
-                    RoomManager.instance.SetHashes();
+            Vector2 circle = Random.insideUnitCircle * sprayMultiplier;
 
-                    PhotonNetwork.LocalPlayer.AddScore(100);
+            Vector3 spreadDirection = camera.transform.forward
+            +camera.transform.right * circle.x 
+            + camera.transform.up * circle.y;
+
+            Ray ray = new Ray(camera.transform.position, spreadDirection.normalized);
+
+            RaycastHit hit;
+
+            PhotonNetwork.LocalPlayer.AddScore(1);
+            if (Physics.Raycast(ray.origin, ray.direction, out hit, 100f))
+            {
+                GameObject vfx = vfxPool.Get();
+                vfx.transform.position = hit.point;
+                vfx.transform.rotation = Quaternion.LookRotation(hit.normal);
+                StartCoroutine(ReturnToPoolAfter(vfx, 2f));
+                if (hit.transform.gameObject.GetComponent<Health>())
+                {
+                    PhotonNetwork.LocalPlayer.AddScore(damage);
+                    if (damage >= hit.transform.gameObject.GetComponent<Health>().health)
+                    {
+                        RoomManager.instance.Kills++;
+                        RoomManager.instance.SetHashes();
+
+                        PhotonNetwork.LocalPlayer.AddScore(100);
+                    }
+                    hit.transform.gameObject.GetComponent<PhotonView>().RPC("TakeDamage", RpcTarget.All, damage);
+                    Debug.Log("FIRE!!!!!!!");
                 }
-                hit.transform.gameObject.GetComponent<PhotonView>().RPC("TakeDamage", RpcTarget.All, damage);
-                Debug.Log("FIRE!!!!!!!");
             }
         }
     }

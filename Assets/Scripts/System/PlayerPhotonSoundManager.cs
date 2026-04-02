@@ -39,9 +39,6 @@ public class PlayerPhotonSoundManager : MonoBehaviour
     {
         gunshootSource.clip = allGunShootSFX[index];
 
-        gunshootSource.pitch = UnityEngine.Random.Range(0.7f, 1.2f);
-        gunshootSource.volume = UnityEngine.Random.Range(0.2f, 0.35f);
-
         gunshootSource.Play();
     }
 
@@ -54,9 +51,6 @@ public class PlayerPhotonSoundManager : MonoBehaviour
     public void PlayReloadSFX_RPC(int index)
     {
         reloadSource.clip = allReloadSFX[index];
-
-        reloadSource.pitch = UnityEngine.Random.Range(0.7f, 1.2f);
-        reloadSource.volume = UnityEngine.Random.Range(0.2f, 0.35f);
 
         reloadSource.Play();
     }

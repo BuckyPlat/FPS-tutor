@@ -1,4 +1,4 @@
-using Photon.Pun;
+﻿using Photon.Pun;
 using UnityEngine;
 
 public class WeaponSwitcher : MonoBehaviour
@@ -6,33 +6,44 @@ public class WeaponSwitcher : MonoBehaviour
     public PhotonView playerSetupView;
     public Animation _animation;
     public AnimationClip draw;
-
     private int selectedWeapon = 0;
+    private int weaponCount = 0;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        weaponCount = transform.childCount;
         SelectWeapon();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (GameChat.IsPlayerChatting()) return;
+
         int previousSelectedWeapon = selectedWeapon;
 
-        KeyCode pressedKey = GetPressedWeaponKey();
+        // Cuộn chuột
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (scroll > 0f)
+        {
+            selectedWeapon = (selectedWeapon - 1 + weaponCount) % weaponCount;
+        }
+        else if (scroll < 0f)
+        {
+            selectedWeapon = (selectedWeapon + 1) % weaponCount;
+        }
 
+        // Phím số
+        KeyCode pressedKey = GetPressedWeaponKey();
         switch (pressedKey)
         {
             case KeyCode.Alpha1: selectedWeapon = 0; break;
             case KeyCode.Alpha2: selectedWeapon = 1; break;
-            //case KeyCode.Alpha3: selectedWeapon = 2; break;
-            //case KeyCode.Alpha4: selectedWeapon = 3; break;
-            //case KeyCode.Alpha5: selectedWeapon = 4; break;
-            //case KeyCode.Alpha6: selectedWeapon = 5; break;
-            //case KeyCode.Alpha7: selectedWeapon = 6; break;
+            case KeyCode.Alpha3: selectedWeapon = 2; break;
+            case KeyCode.Alpha4: selectedWeapon = 3; break;
         }
+
+        // Clamp phòng trường hợp weaponCount thay đổi
+        selectedWeapon = Mathf.Clamp(selectedWeapon, 0, weaponCount - 1);
 
         if (previousSelectedWeapon != selectedWeapon)
         {
@@ -47,16 +58,9 @@ public class WeaponSwitcher : MonoBehaviour
         _animation.Play(draw.name);
 
         int i = 0;
-        foreach(Transform _weapon in transform)
+        foreach (Transform _weapon in transform)
         {
-            if(i== selectedWeapon)
-            {
-                _weapon.gameObject.SetActive(true);
-            }
-            else
-            {
-                _weapon.gameObject.SetActive(false);
-            }
+            _weapon.gameObject.SetActive(i == selectedWeapon);
             i++;
         }
     }
