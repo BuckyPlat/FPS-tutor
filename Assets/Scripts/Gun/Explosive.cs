@@ -2,7 +2,7 @@
 using Photon.Pun.UtilityScripts;
 using UnityEngine;
 
-public class Explosive : MonoBehaviour
+public class Explosive : MonoBehaviourPun
 {
     [HideInInspector]
     public bool isLocalExplosive = false;
@@ -62,17 +62,17 @@ public class Explosive : MonoBehaviour
             PhotonView targetPV = col.GetComponent<PhotonView>();
             if (targetPV != null && targetPV.IsMine) continue;
 
-            PhotonNetwork.LocalPlayer.AddScore(damage);
+            //PhotonNetwork.LocalPlayer.AddScore(damage);
 
-            if (damage >= health.health)
-            {
-                RoomManager.instance.Kills++;
-                RoomManager.instance.SetHashes();
-                PhotonNetwork.LocalPlayer.AddScore(100);
-            }
+            //if (damage >= health.health)
+            //{
+            //    RoomManager.instance.Kills++;
+            //    RoomManager.instance.SetHashes();
+            //    PhotonNetwork.LocalPlayer.AddScore(100);
+            //}
 
             if (targetPV != null)
-                targetPV.RPC("TakeDamage", RpcTarget.All, damage);
+                targetPV.RPC("TakeDamage", RpcTarget.All, damage, photonView.ViewID);
         }
     }
 

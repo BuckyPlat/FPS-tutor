@@ -52,6 +52,8 @@ MonoBehaviour:
   - RPC_Explode
   - PlayExplosionSFX_RPC
   - RpcExplosionEffects
+  - RPC_ShowKill
+  - SendSystemMessage
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

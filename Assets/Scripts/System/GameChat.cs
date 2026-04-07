@@ -16,6 +16,13 @@ public class GameChat : MonoBehaviourPunCallbacks
     // Biến quan trọng: Trạng thái đang chat hay không
     public static bool IsChatting { get; private set; } = false;
 
+    public static GameChat Instance;
+
+    void Awake()
+    {
+        Instance = this;
+    }
+
     private void Start()
     {
         if (chatText != null)
@@ -82,6 +89,12 @@ public class GameChat : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         AddToChat("<color=yellow>✓ Bạn đã tham gia phòng thành công!</color>");
+    }
+
+    [PunRPC]
+    public void SendSystemMessage(string _message)
+    {
+        AddToChat(_message);
     }
 
     [PunRPC]
