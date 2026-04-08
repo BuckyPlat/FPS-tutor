@@ -104,4 +104,23 @@ public class RoomManager : MonoBehaviourPunCallbacks
             //Do nothing
         }
     }
+    public void StartRespawn(float delay)
+    {
+        StartCoroutine(RespawnDelay(delay));
+    }
+
+    IEnumerator RespawnDelay(float delay)
+    {
+        if (RespawnUI.Instance != null)
+            RespawnUI.Instance.Show(delay);
+
+        yield return new WaitForSeconds(delay);
+
+        if (Spectator.Instance != null)
+            Spectator.Instance.gameObject.SetActive(false);
+
+        SpawnPlayer();
+        Deaths++;
+        SetHashes();
+    }
 }

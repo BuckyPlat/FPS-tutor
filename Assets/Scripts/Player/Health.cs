@@ -41,8 +41,6 @@ public class Health : MonoBehaviourPun
         {
             hasDied = true;
 
-            DisablePlayer();
-
             if (!photonView.IsMine) return;
 
             PhotonView killerPV = PhotonView.Find(killerViewID);
@@ -70,46 +68,13 @@ public class Health : MonoBehaviourPun
                 RoomManager.instance.SetHashes(); 
             }
 
-            StartCoroutine(RespawnAndDestroy());
-        }
-    }
+            Debug.Log(Spectator.Instance);
+            if (Spectator.Instance != null)
+                Spectator.Instance.Activate();
 
-    IEnumerator RespawnAndDestroy()
-    {
-        RespawnUI.Instance.Show(3f);
+            PhotonNetwork.Destroy(gameObject);
 
-        yield return new WaitForSeconds(3f);
-
-        RoomManager.instance.SpawnPlayer();
-        RoomManager.instance.Deaths++;
-        RoomManager.instance.SetHashes();
-
-        PhotonNetwork.Destroy(gameObject);
-    }
-    void DisablePlayer()
-    {
-        // tắt movement
-        Movement movement = GetComponent<Movement>();
-        if (movement != null)
-            movement.enabled = false;
-        Weapon weapon = GetComponentInChildren<Weapon>();
-        if (weapon != null)
-            weapon.enabled = false;
-
-        // tắt collider (không bị bắn tiếp)
-        Collider col = GetComponent<Collider>();
-        if (col != null)
-            col.enabled = false;
-
-        // tắt rigidbody (ngừng di chuyển)
-        Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb != null)
-            rb.linearVelocity = Vector3.zero;
-
-        // (optional) ẩn model
-        foreach (Renderer r in GetComponentsInChildren<Renderer>())
-        {
-            r.enabled = false;
+            RoomManager.instance.StartRespawn(3f);
         }
     }
 
