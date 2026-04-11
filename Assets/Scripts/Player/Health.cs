@@ -2,6 +2,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.UI;
 
 public class Health : MonoBehaviourPun
@@ -18,13 +19,43 @@ public class Health : MonoBehaviourPun
     [Header("UI")]
     public TextMeshProUGUI healthText;
 
+    [Header("Vignette Effect")]
+    public PostProcessVolume volume;
+    private Vignette vignette;
+
+    public float maxVignette = 1f;
+    public float vignetteSmooth = 5f;
+    private float targetVignette = 0f;
+
     private bool hasDied;
 
     private void Start()
     {
+        if (!photonView.IsMine && volume != null)
+        {
+            volume.gameObject.SetActive(false);
+        }
         // Khởi tạo ban đầu
         health = maxHealth;
         UpdateUI();
+        if (volume != null && volume.profile.TryGetSettings(out vignette))
+        {
+            vignette.intensity.value = 0f;
+        }
+    }
+    private void Update()
+    {
+        if (!photonView.IsMine) return;
+        if (vignette == null) return;
+
+        vignette.intensity.value = Mathf.Lerp(
+            vignette.intensity.value,
+            targetVignette,
+            Time.deltaTime * vignetteSmooth
+        );
+
+        // tự fade về 0
+        targetVignette = Mathf.Lerp(targetVignette, 0f, Time.deltaTime);
     }
 
     [PunRPC]
@@ -36,6 +67,11 @@ public class Health : MonoBehaviourPun
         if (health < 0) health = 0;
 
         UpdateUI();
+
+        if (photonView.IsMine && vignette != null)
+        {
+            targetVignette = maxVignette;
+        }
 
         if (health <= 0)
         {
