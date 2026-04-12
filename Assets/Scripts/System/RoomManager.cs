@@ -21,6 +21,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     private string nickname = "unnamed";
 
+    public string roomNametoJoin = "test";
+
     [HideInInspector]
     public int Kills = 0;
     [HideInInspector]
@@ -39,33 +41,10 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public void JoinRoomButtonPressed()
     {
         Debug.Log(message: "Connecting....");
-        PhotonNetwork.ConnectUsingSettings();
+        PhotonNetwork.JoinOrCreateRoom(roomNametoJoin, null, null);
 
         nameUI.SetActive(false);
         connectingUI.SetActive(true);
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    public override void OnConnectedToMaster()
-    {
-        base.OnConnectedToMaster();
-        Debug.Log(message: "Connected to Server");
-        PhotonNetwork.JoinLobby();
-    }
-
-    public override void OnJoinedLobby()
-    {
-        base.OnJoinedLobby();
-
-        Debug.Log(message: "We're in the lobby");
-
-        PhotonNetwork.JoinOrCreateRoom(roomName: "Test", roomOptions: null, typedLobby: null);
-
     }
 
     public override void OnJoinedRoom()
