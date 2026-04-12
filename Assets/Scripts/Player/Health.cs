@@ -98,12 +98,6 @@ public class Health : MonoBehaviourPun
             GameChat.Instance.photonView
                 .RPC("SendSystemMessage", RpcTarget.All, msg);
 
-            if (killerPV != null && killerPV.IsMine)
-            {
-                RoomManager.instance.Kills++;
-                RoomManager.instance.SetHashes(); 
-            }
-
             Debug.Log(Spectator.Instance);
             if (Spectator.Instance != null)
                 Spectator.Instance.Activate();
