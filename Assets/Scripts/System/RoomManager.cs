@@ -2,6 +2,8 @@ using UnityEngine;
 using Photon.Pun;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using System.Collections;
+using Photon.Realtime;
+using UnityEngine.SceneManagement;
 
 public class RoomManager : MonoBehaviourPunCallbacks
 {
@@ -21,7 +23,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     private string nickname = "unnamed";
 
-    public string roomNametoJoin = "test";
+    public string mapName = "Nothing";
 
     [HideInInspector]
     public int Kills = 0;
@@ -41,7 +43,22 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public void JoinRoomButtonPressed()
     {
         Debug.Log(message: "Connecting....");
-        PhotonNetwork.JoinOrCreateRoom(roomNametoJoin, null, null);
+
+        RoomOptions ro = new RoomOptions();
+
+        ro.CustomRoomProperties = new Hashtable()
+        {
+            { "mapSceneIndex", SceneManager.GetActiveScene().buildIndex },
+            { "mapName", mapName }
+        };
+
+        ro.CustomRoomPropertiesForLobby = new[]
+        {
+            "mapSceneIndex",
+            "mapName"
+        };
+
+        PhotonNetwork.JoinOrCreateRoom(PlayerPrefs.GetString("RoomNameToJoin"), ro,null);
 
         nameUI.SetActive(false);
         connectingUI.SetActive(true);
