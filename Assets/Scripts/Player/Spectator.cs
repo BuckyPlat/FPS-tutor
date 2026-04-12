@@ -25,6 +25,8 @@ public class Spectator : MonoBehaviour
             if (c != cam)
                 c.gameObject.SetActive(false);
         }
+        cam.tag = "MainCamera";                    
+        Camera.main.transform.position = cam.transform.position; 
 
         cam.gameObject.SetActive(true);
 
