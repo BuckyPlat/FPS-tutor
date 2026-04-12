@@ -131,8 +131,11 @@ public class Health : MonoBehaviourPun
         if (transform.position.y < -5)
         {
             if (isLocalPlayer)
+            {
                 RoomManager.instance.SpawnPlayer();
-
+                RoomManager.instance.Deaths++;
+            }
+                
             Destroy(gameObject);
         }
     }

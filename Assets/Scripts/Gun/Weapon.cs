@@ -192,14 +192,14 @@ public class Weapon : MonoBehaviourPun
                 StartCoroutine(ReturnToPoolAfter(vfx, 2f));
                 if (hit.transform.gameObject.GetComponent<Health>())
                 {
-                    //PhotonNetwork.LocalPlayer.AddScore(damage);
-                    //if (damage >= hit.transform.gameObject.GetComponent<Health>().health)
-                    //{
-                    //    RoomManager.instance.Kills++;
-                    //    RoomManager.instance.SetHashes();
+                    PhotonNetwork.LocalPlayer.AddScore(damage);
+                    if (damage >= hit.transform.gameObject.GetComponent<Health>().health)
+                    {
+                        RoomManager.instance.Kills++;
+                        RoomManager.instance.SetHashes();
 
-                    //    PhotonNetwork.LocalPlayer.AddScore(100);
-                    //}
+                        PhotonNetwork.LocalPlayer.AddScore(100);
+                    }
                     hit.transform.gameObject.GetComponent<PhotonView>().RPC("TakeDamage", RpcTarget.All, damage, photonView.ViewID);
                     Debug.Log("FIRE!!!!!!!");
                 }
