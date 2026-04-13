@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
@@ -13,7 +13,7 @@ public class MouseSettings : MonoBehaviour
     public TextMeshPro invertButtonText;
 
     [Header("Save Button (tùy chọn)")]
-    public Button saveButton;        // Kéo nút "Save & Apply" hoặc "Apply" vào đây
+    public Button saveButton;        // Drag "Save & Apply" or "Apply" button here
 
     private const string SENS_X_KEY = "MouseSensX";
     private const string SENS_Y_KEY = "MouseSensY";
@@ -22,7 +22,7 @@ public class MouseSettings : MonoBehaviour
 
     private void Start()
     {
-        // Load giá trị đã lưu (nếu có) vào slider
+        // Load saved values (if any) into sliders
         horizontalLookSlider.value = PlayerPrefs.GetFloat(SENS_X_KEY, 2f);
         verticalLookSlider.value = PlayerPrefs.GetFloat(SENS_Y_KEY, 2f);
         smoothingSlider.value = PlayerPrefs.GetFloat(SMOOTH_KEY, 3f);
@@ -30,7 +30,7 @@ public class MouseSettings : MonoBehaviour
         bool savedInvert = PlayerPrefs.GetInt(INVERT_KEY, 0) == 1;
         UpdateInvertButtonUI(savedInvert);
 
-        // Đăng ký slider
+        // Register sliders
         horizontalLookSlider.onValueChanged.AddListener(OnHorizontalChanged);
         verticalLookSlider.onValueChanged.AddListener(OnVerticalChanged);
         smoothingSlider.onValueChanged.AddListener(OnSmoothingChanged);
@@ -41,7 +41,7 @@ public class MouseSettings : MonoBehaviour
         if (saveButton != null)
             saveButton.onClick.AddListener(SaveSettings);
         else
-            SaveSettings(); // Tự động lưu mỗi khi kéo slider (dễ dùng hơn)
+            SaveSettings(); // Auto-save on slider drag (more user friendly)
     }
 
     private void OnHorizontalChanged(float value) => SaveSettings();
@@ -68,7 +68,7 @@ public class MouseSettings : MonoBehaviour
         PlayerPrefs.SetFloat(SENS_X_KEY, horizontalLookSlider.value);
         PlayerPrefs.SetFloat(SENS_Y_KEY, verticalLookSlider.value);
         PlayerPrefs.SetFloat(SMOOTH_KEY, smoothingSlider.value);
-        // Invert đã được lưu trong OnInvertButtonClicked
+        // Invert is already saved in OnInvertButtonClicked
         PlayerPrefs.Save();
     }
 }

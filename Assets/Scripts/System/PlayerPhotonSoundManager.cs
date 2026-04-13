@@ -1,4 +1,4 @@
-﻿using JetBrains.Annotations;
+using JetBrains.Annotations;
 using Photon.Pun;
 using UnityEngine;
 
@@ -66,7 +66,7 @@ public class PlayerPhotonSoundManager : MonoBehaviour
     public void PlayExplosionSFX_RPC(Vector3 position)
     {
         if (explosionSFX == null) return;
-        // Phát đúng tại vị trí vụ nổ (3D spatial sound)
+        // Play exactly at explosion position (3D spatial sound)
         AudioSource.PlayClipAtPoint(explosionSFX, position);
     }
 }

@@ -17,9 +17,9 @@ public class PlayFabLogin : MonoBehaviour
     private Coroutine coroutine_Login;
     private bool isProcessing = false;
 
-    // ==================== THÊM MỚI ====================
+    // ==================== NEWLY ADDED ====================
     [Header("After Login")]
-    public GameObject mainMenuPanel;     // Kéo Panel Main Menu vào đây
+    public GameObject mainMenuPanel;     // Drag Main Menu Panel here
 
     private void Start()
     {
@@ -76,25 +76,25 @@ public class PlayFabLogin : MonoBehaviour
 
         ShowMessage("Login Successful!");
 
-        // Sau 3 giây tự động đóng Login Panel và mở Main Menu Panel
+        // Automatically close Login Panel and open Main Menu Panel after 3 seconds
         Invoke(nameof(AutoSwitchToMainMenu), 3f);
     }
 
-    // Hàm mới: Tự động đóng Login và mở Main Menu sau 3 giây
+    // New method: Auto close Login and open Main Menu after 3 seconds
     private void AutoSwitchToMainMenu()
     {
-        // Đóng panel Login hiện tại
+        // Close current Login panel
         gameObject.SetActive(false);
 
-        // Mở panel Main Menu
+        // Open Main Menu panel
         if (mainMenuPanel != null)
         {
             mainMenuPanel.SetActive(true);
-            Debug.Log("Đã tự động chuyển từ Login sang Main Menu Panel");
+            Debug.Log("Automatically switched from Login to Main Menu Panel");
         }
         else
         {
-            Debug.LogWarning("Main Menu Panel chưa được gán trong PlayFabLogin!");
+            Debug.LogWarning("Main Menu Panel is not assigned in PlayFabLogin!");
         }
     }
 

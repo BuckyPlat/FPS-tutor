@@ -1,4 +1,4 @@
-﻿using Photon.Pun;
+using Photon.Pun;
 using UnityEngine;
 
 public class WeaponSwitcher : MonoBehaviour
@@ -21,7 +21,7 @@ public class WeaponSwitcher : MonoBehaviour
 
         int previousSelectedWeapon = selectedWeapon;
 
-        // Cuộn chuột
+        // Mouse scroll
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (scroll > 0f)
         {
@@ -32,7 +32,7 @@ public class WeaponSwitcher : MonoBehaviour
             selectedWeapon = (selectedWeapon + 1) % weaponCount;
         }
 
-        // Phím số
+        // Number keys
         KeyCode pressedKey = GetPressedWeaponKey();
         switch (pressedKey)
         {
@@ -42,7 +42,7 @@ public class WeaponSwitcher : MonoBehaviour
             case KeyCode.Alpha4: selectedWeapon = 3; break;
         }
 
-        // Clamp phòng trường hợp weaponCount thay đổi
+        // Clamp in case weaponCount changes
         selectedWeapon = Mathf.Clamp(selectedWeapon, 0, weaponCount - 1);
 
         if (previousSelectedWeapon != selectedWeapon)

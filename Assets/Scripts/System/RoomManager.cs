@@ -21,7 +21,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public GameObject roomCam;
 
     [Space]
-    public GameObject nameUI;           // GIỮ LẠI FIELD ĐỂ GIỮ CẤU TRÚC (DÙ PANEL ĐÃ BÃI BỎ)
+    public GameObject nameUI;           // KEEP FIELD TO MAINTAIN STRUCTURE (EVEN THOUGH PANEL WAS REMOVED)
     public GameObject connectingUI;
 
     private string nickname = "unnamed";
@@ -37,7 +37,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         instance = this;
 
-        // TRUY CẬP TÊN NGƯỜI DÙNG TỪ PLAYFAB (DISPLAY NAME) - BÃI BỎ PANEL ĐẶT TÊN NHÂN VẬT
+        // ACCESS USERNAME FROM PLAYFAB (DISPLAY NAME) - REMOVED CHARACTER NAMING PANEL
         nickname = string.IsNullOrEmpty(PlayFabLogin.DisplayNameFromPlayFab)
             ? "unnamed"
             : PlayFabLogin.DisplayNameFromPlayFab;
@@ -48,7 +48,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         JoinRoomButtonPressed();
     }
 
-    // GIỮ LẠI METHOD ĐỂ GIỮ CẤU TRÚC DEBUG (KHÔNG CÒN SỬ DỤNG VÌ BÃI BỎ PANEL)
+    // KEEP METHOD TO MAINTAIN DEBUG STRUCTURE (NO LONGER USED BECAUSE PANEL WAS REMOVED)
     public void ChangeNickName(string _name)
     {
         nickname = _name;
@@ -74,8 +74,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
         PhotonNetwork.JoinOrCreateRoom(PlayerPrefs.GetString("RoomNameToJoin"), ro, null);
 
-        // BÃI BỎ PANEL ĐẶT TÊN → KHÔNG CÒN ẨN nameUI
-        // nameUI.SetActive(false);   // ĐÃ BỎ
+        // REMOVED NAMING PANEL → NO LONGER HIDING nameUI
+        // nameUI.SetActive(false);   // REMOVED
         connectingUI.SetActive(true);
     }
 
@@ -99,7 +99,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         _player.GetComponent<PlayerSetup>().IsLocalPlayer();
         _player.GetComponent<Health>().isLocalPlayer = true;
 
-        // SỬ DỤNG NICKNAME TỪ PLAYFAB (ĐÃ SET Ở AWAKE)
+        // USE NICKNAME FROM PLAYFAB (SET IN AWAKE)
         _player.GetComponent<PhotonView>().RPC("SetNickName", RpcTarget.AllBuffered, nickname);
         PhotonNetwork.LocalPlayer.NickName = nickname;
     }
@@ -113,7 +113,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
             hash["Deaths"] = Deaths;
             PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
 
-            // LƯU ĐIỂM VÀO PLAYFAB LEADERBOARD (KILLS / DEATHS)
+            // SAVE SCORE TO PLAYFAB LEADERBOARD (KILLS / DEATHS)
             UpdatePlayFabStats();
         }
         catch
@@ -122,7 +122,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         }
     }
 
-    // MỚI THÊM: LƯU THỐNG KÊ VÀO PLAYFAB (GIỮ CẤU TRÚC CŨ CHO PHOTON UI)
+    // NEWLY ADDED: SAVE STATISTICS TO PLAYFAB (KEEP OLD STRUCTURE FOR PHOTON UI)
     private void UpdatePlayFabStats()
     {
         var request = new UpdatePlayerStatisticsRequest

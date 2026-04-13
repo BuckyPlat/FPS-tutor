@@ -1,4 +1,4 @@
-﻿using Photon.Pun;
+using Photon.Pun;
 using Photon.Pun.UtilityScripts;
 using UnityEngine;
 
@@ -17,11 +17,11 @@ public class Explosive : MonoBehaviourPun
 
     [Header("VFX & SFX")]
     public GameObject explosionVFX;
-    public float vfxLifetime = 2.5f;           // Thời gian destroy VFX
+    public float vfxLifetime = 2.5f;           // Time to destroy VFX
 
     [Header("Explosion Sound")]
-    public AudioClip explosionSFX;             // Kéo AudioClip âm thanh nổ vào đây
-    public float explosionVolume = 1f;         // Âm lượng (0.0 - 1.0)
+    public AudioClip explosionSFX;             // Drag explosion AudioClip here
+    public float explosionVolume = 1f;         // Volume (0.0 - 1.0)
 
     private PhotonView pv;
 
@@ -58,7 +58,7 @@ public class Explosive : MonoBehaviourPun
             Health health = col.GetComponent<Health>();
             if (health == null) continue;
 
-            // Không để nổ damage lên chính mình
+            // Prevent explosion damage to self
             PhotonView targetPV = col.GetComponent<PhotonView>();
             if (targetPV != null && targetPV.IsMine) continue;
 
@@ -86,10 +86,10 @@ public class Explosive : MonoBehaviourPun
             Destroy(vfx, vfxLifetime);
         }
 
-        // === SFX - Phát âm thanh nổ cho tất cả người chơi ===
+        // === SFX - Play explosion sound for all players ===
         if (explosionSFX != null)
         {
-            // Tạo một AudioSource tạm thời tại vị trí nổ
+            // Create a temporary AudioSource at explosion position
             GameObject audioObj = new GameObject("ExplosionSound");
             audioObj.transform.position = position;
 
@@ -97,11 +97,11 @@ public class Explosive : MonoBehaviourPun
             audioSource.clip = explosionSFX;
             audioSource.volume = explosionVolume;
             audioSource.spatialBlend = 2f;        // 3D sound
-            audioSource.maxDistance = 70f;        // Phạm vi nghe
+            audioSource.maxDistance = 70f;        // Hearing range
             audioSource.rolloffMode = AudioRolloffMode.Linear;
 
             audioSource.Play();
-            Destroy(audioObj, explosionSFX.length + 0.5f);   // Destroy sau khi phát xong
+            Destroy(audioObj, explosionSFX.length + 0.5f);   // Destroy after playing completes
         }
     }
 }

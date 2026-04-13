@@ -1,4 +1,4 @@
-﻿using Photon.Pun;
+using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
 using UnityEngine;
@@ -13,7 +13,7 @@ public class GameChat : MonoBehaviourPunCallbacks
     [Header("Settings")]
     public int maxMessages = 15;
 
-    // Biến quan trọng: Trạng thái đang chat hay không
+    // Important variable: Chatting state
     public static bool IsChatting { get; private set; } = false;
 
     public static GameChat Instance;
@@ -26,12 +26,12 @@ public class GameChat : MonoBehaviourPunCallbacks
     private void Start()
     {
         if (chatText != null)
-            chatText.text = "<color=yellow>Chào mừng đến với phòng!</color>\n";
+            chatText.text = "<color=yellow>Welcome to the room!</color>\n";
     }
 
     void Update()
     {
-        // ===== XỬ LÝ MỞ / ĐÓNG CHAT =====
+        // ===== HANDLE OPEN / CLOSE CHAT =====
         if (Input.GetKeyDown(KeyCode.Y) && !IsChatting)
         {
             OpenChat();
@@ -42,7 +42,7 @@ public class GameChat : MonoBehaviourPunCallbacks
             CloseChat();
         }
 
-        // ===== GỬI TIN NHẮN =====
+        // ===== SEND MESSAGE =====
         if ((Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             && IsChatting && !string.IsNullOrEmpty(inputField.text))
         {
@@ -51,7 +51,7 @@ public class GameChat : MonoBehaviourPunCallbacks
             GetComponent<PhotonView>().RPC("SendChatMessage", RpcTarget.All, messageToSend);
 
             inputField.text = "";
-            CloseChat();        // Tự động đóng sau khi gửi
+            CloseChat();        // Auto-close after sending
         }
     }
 
@@ -61,34 +61,34 @@ public class GameChat : MonoBehaviourPunCallbacks
         IsChatting = true;
         inputField.Select();
         inputField.ActivateInputField();
-        inputField.text = "";                    // Xóa nội dung cũ
+        inputField.text = "";                    // Clear old content
     }
 
     private void CloseChat()
     {
         IsChatting = false;
         EventSystem.current.SetSelectedGameObject(null);
-        inputField.DeactivateInputField();       // Quan trọng
+        inputField.DeactivateInputField();       // Important
     }
 
     // ====================== JOIN / LEAVE NOTIFICATION ======================
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         if (newPlayer == null) return;
-        string msg = $"<color=#00FF00>→ {newPlayer.NickName} vừa tham gia phòng</color>";
+        string msg = $"<color=#00FF00>→ {newPlayer.NickName} has joined the room</color>";
         AddToChat(msg);
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         if (otherPlayer == null) return;
-        string msg = $"<color=#FF4444>← {otherPlayer.NickName} đã rời phòng</color>";
+        string msg = $"<color=#FF4444>← {otherPlayer.NickName} has left the room</color>";
         AddToChat(msg);
     }
 
     public override void OnJoinedRoom()
     {
-        AddToChat("<color=yellow>✓ Bạn đã tham gia phòng thành công!</color>");
+        AddToChat("<color=yellow>✓ You have successfully joined the room!</color>");
     }
 
     [PunRPC]
@@ -109,7 +109,7 @@ public class GameChat : MonoBehaviourPunCallbacks
 
         chatText.text += "\n" + message;
 
-        // Giới hạn số dòng
+        // Limit number of lines
         string[] lines = chatText.text.Split('\n');
         if (lines.Length > maxMessages)
         {
@@ -117,8 +117,8 @@ public class GameChat : MonoBehaviourPunCallbacks
         }
     }
 
-    // ====================== PUBLIC METHOD ĐỂ KIỂM TRA ======================
-    // Các script khác (Movement, Weapon, WeaponSwitcher...) sẽ dùng cái này
+    // ====================== PUBLIC METHOD FOR CHECKING ======================
+    // Other scripts (Movement, Weapon, WeaponSwitcher...) will use this
     public static bool IsPlayerChatting()
     {
         return IsChatting;

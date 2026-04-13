@@ -18,7 +18,7 @@ public class Spectator : MonoBehaviour
     {
         gameObject.SetActive(true);
 
-        // tắt camera khác
+        // disable other cameras
         Camera[] cams = FindObjectsByType<Camera>(FindObjectsSortMode.None);
         foreach (Camera c in cams)
         {

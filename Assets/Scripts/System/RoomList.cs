@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using NUnit.Framework;
@@ -24,10 +24,10 @@ public class RoomList : MonoBehaviourPunCallbacks
 
     public void CreateRoomByIndex(int sceneIndex)
     {
-        // YÊU CẦU MỚI: BẮT BUỘC PHẢI ĐẶT TÊN PHÒNG KHI TẠO (KHÔNG CHO TẠO NẾU TRỐNG)
+        // NEW REQUIREMENT: MUST SET ROOM NAME WHEN CREATING (DO NOT ALLOW EMPTY)
         if (string.IsNullOrEmpty(cachedRoomNameToCreate))
         {
-            Debug.LogWarning("Room name is required to create a room! (Vui lòng nhập tên phòng trước khi tạo)");
+            Debug.LogWarning("Room name is required to create a room!");
             return;
         }
 

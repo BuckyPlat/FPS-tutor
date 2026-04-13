@@ -1,4 +1,4 @@
-﻿using Photon.Pun;
+using Photon.Pun;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,38 +6,38 @@ using UnityEngine.UI;
 public class OverheadHealth : MonoBehaviour
 {
     [Header("References")]
-    public Image healthFillImage;        // Image fill của thanh máu (đỏ)
-    public TextMeshProUGUI healthText;   // (Tùy chọn) text hiển thị số máu
+    public Image healthFillImage;        // Image fill of health bar (red)
+    public TextMeshProUGUI healthText;   // (Optional) text showing health value
 
     private PhotonView photonView;
-    private Health playerHealth;         // Reference đến script Health của bạn
+    private Health playerHealth;         // Reference to your Health script
 
     private void Awake()
     {
-        photonView = GetComponentInParent<PhotonView>(); // Vì Canvas là child của Player
+        photonView = GetComponentInParent<PhotonView>(); // Because Canvas is a child of Player
     }
 
     private void Start()
     {
-        // Tìm script Health trên player cha
+        // Find Health script on parent player
         playerHealth = GetComponentInParent<Health>();
 
         if (playerHealth != null)
         {
-            // Đăng ký sự kiện cập nhật (nếu bạn muốn tối ưu)
+            // Register update event (if you want to optimize)
             UpdateHealthBar();
 
-            // Hoặc bạn có thể gọi từ script Health mỗi khi máu thay đổi
+            // Or you can call from Health script whenever health changes
         }
 
-        // Ẩn thanh máu của chính mình (tùy chọn - nhiều game chỉ hiện thanh của người khác)
+        // Hide own health bar (optional - many games only show others' bars)
         if (photonView != null && photonView.IsMine)
         {
-            gameObject.SetActive(false);   // Hoặc set alpha = 0
+            gameObject.SetActive(false);   // Or set alpha = 0
         }
     }
 
-    // Hàm này sẽ được gọi từ script Health mỗi khi máu thay đổi
+    // This function will be called from Health script whenever health changes
     public void UpdateHealthBar()
     {
         if (playerHealth == null) return;

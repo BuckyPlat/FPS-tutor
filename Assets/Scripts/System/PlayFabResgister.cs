@@ -67,7 +67,7 @@ public class PlayFabRegister : MonoBehaviour
     {
         isProcessing = false;
         ShowMessage("Account created successfully!");
-        // BỎ VIỆC BACK TO LOGIN (NGƯỜI DÙNG SẼ ON/OFF PANEL THỦ CÔNG BẰNG BUTTON)
+        // REMOVED AUTO BACK TO LOGIN (USER WILL TOGGLE PANEL MANUALLY VIA BUTTON)
     }
 
     private void OnRegisterError(PlayFabError error)

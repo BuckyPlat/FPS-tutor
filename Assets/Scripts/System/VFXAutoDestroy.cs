@@ -1,4 +1,4 @@
-﻿// File riêng: VFXAutoDestroy.cs
+// Separate file: VFXAutoDestroy.cs
 using UnityEngine;
 
 public class VFXAutoDestroy : MonoBehaviour
@@ -12,7 +12,7 @@ public class VFXAutoDestroy : MonoBehaviour
 
     private void Update()
     {
-        // Khi particle đã dừng phát và không còn particle nào sống
+        // When the particle has stopped playing and is no longer alive
         if (_ps != null && !_ps.IsAlive())
         {
             Destroy(gameObject);

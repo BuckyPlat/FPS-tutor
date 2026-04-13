@@ -1,4 +1,4 @@
-﻿using Photon.Pun;
+using Photon.Pun;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -35,7 +35,7 @@ public class Health : MonoBehaviourPun
         {
             volume.gameObject.SetActive(false);
         }
-        // Khởi tạo ban đầu
+        // Initial setup
         health = maxHealth;
         UpdateUI();
         if (volume != null && volume.profile.TryGetSettings(out vignette))
@@ -54,7 +54,7 @@ public class Health : MonoBehaviourPun
             Time.deltaTime * vignetteSmooth
         );
 
-        // tự fade về 0
+        // auto fade to 0
         targetVignette = Mathf.Lerp(targetVignette, 0f, Time.deltaTime);
     }
 
@@ -93,7 +93,7 @@ public class Health : MonoBehaviourPun
             string victimName = victimPS != null ? victimPS.nickname : "Unknown";
 
             string msg = $"<color=yellow>[KILL]</color> " +
-                         $"<color=red>{killerName}</color> đã hạ <color=blue>{victimName}</color>";
+                         $"<color=red>{killerName}</color> killed <color=blue>{victimName}</color>";
 
             GameChat.Instance.photonView
                 .RPC("SendSystemMessage", RpcTarget.All, msg);
@@ -110,12 +110,12 @@ public class Health : MonoBehaviourPun
 
     private void UpdateUI()
     {
-        healthText.text = health.ToString();           // Thanh máu HUD của local player
+        healthText.text = health.ToString();           // Local player HUD health bar
 
         if (HealthImage != null)
             HealthImage.fillAmount = (float)health / maxHealth;
 
-        // Cập nhật thanh máu trên đầu (nếu có)
+        // Update overhead health bar (if any)
         if (overheadHealthBar != null)
             overheadHealthBar.UpdateHealthBar();
     }

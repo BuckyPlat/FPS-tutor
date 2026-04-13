@@ -26,7 +26,7 @@ public class RespawnUI : MonoBehaviour
 
         while (t > 0)
         {
-            countdownText.text = "Respawn sau: " + Mathf.Ceil(t);
+            countdownText.text = "Respawn in: " + Mathf.Ceil(t);
             yield return new WaitForSeconds(1f);
             t--;
         }
