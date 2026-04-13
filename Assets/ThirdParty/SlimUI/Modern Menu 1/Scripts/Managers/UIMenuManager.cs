@@ -20,6 +20,7 @@ namespace SlimUI.ModernMenu{
         public GameObject exitMenu;
         [Tooltip("Optional 4th Menu")]
         public GameObject extrasMenu;
+		public GameObject inventoryMenu;
 		public GameObject accountMenu;
 		public GameObject registerMenu;
 		public GameObject loginMenu;
@@ -90,6 +91,7 @@ namespace SlimUI.ModernMenu{
 			exitMenu.SetActive(false);
 			if(extrasMenu) extrasMenu.SetActive(false);
 			if(accountMenu) accountMenu.SetActive(false);
+			if(inventoryMenu) inventoryMenu.SetActive(false);
             firstMenu.SetActive(false);
 			registerMenu.SetActive(false);
 			loginMenu.SetActive(true);
@@ -127,6 +129,7 @@ namespace SlimUI.ModernMenu{
             exitMenu.SetActive(false);
             if (extrasMenu) extrasMenu.SetActive(false);
             if (accountMenu) accountMenu.SetActive(false);
+            if (inventoryMenu) inventoryMenu.SetActive(false);
             firstMenu.SetActive(true);
             registerMenu.SetActive(false);
             loginMenu.SetActive(false);
@@ -137,7 +140,8 @@ namespace SlimUI.ModernMenu{
 			exitMenu.SetActive(false);
 			if (extrasMenu) extrasMenu.SetActive(false);
 			if (accountMenu) accountMenu.SetActive(false);
-			firstMenu.SetActive(false);
+            if (inventoryMenu) inventoryMenu.SetActive(false);
+            firstMenu.SetActive(false);
 			registerMenu.SetActive(false);
 			loginMenu.SetActive(true);
 			mainMenu.SetActive(true);
@@ -148,7 +152,8 @@ namespace SlimUI.ModernMenu{
 			exitMenu.SetActive(false);
 			if (extrasMenu) extrasMenu.SetActive(false);
 			if (accountMenu) accountMenu.SetActive(false);
-			firstMenu.SetActive(false);
+            if (inventoryMenu) inventoryMenu.SetActive(false);
+            firstMenu.SetActive(false);
 			registerMenu.SetActive(true);
 			loginMenu.SetActive(false);
 			mainMenu.SetActive(true);
@@ -158,7 +163,8 @@ namespace SlimUI.ModernMenu{
 			exitMenu.SetActive(false);
 			if(extrasMenu) extrasMenu.SetActive(false);
 			if(accountMenu) accountMenu.SetActive(false);
-			registerMenu.SetActive(false);
+            if (inventoryMenu) inventoryMenu.SetActive(false);
+            registerMenu.SetActive(false);
 			loginMenu.SetActive(false);
             playMenu.SetActive(true);
 		}
@@ -167,6 +173,7 @@ namespace SlimUI.ModernMenu{
 			exitMenu.SetActive(false);
 			if(extrasMenu) extrasMenu.SetActive(false);
 			if(accountMenu) accountMenu.SetActive(false);
+            if (inventoryMenu) inventoryMenu.SetActive(false);
             registerMenu.SetActive(false);
             loginMenu.SetActive(false);
             playMenu.SetActive(true);
@@ -177,6 +184,7 @@ namespace SlimUI.ModernMenu{
 			playMenu.SetActive(false);
 			if(extrasMenu) extrasMenu.SetActive(false);
 			if(accountMenu) accountMenu.SetActive(false);
+            if (inventoryMenu) inventoryMenu.SetActive(false);
             registerMenu.SetActive(false);
             loginMenu.SetActive(false);
             exitMenu.SetActive(false);
@@ -284,6 +292,7 @@ namespace SlimUI.ModernMenu{
 			exitMenu.SetActive(true);
 			if(extrasMenu) extrasMenu.SetActive(false);
 			if(accountMenu) accountMenu.SetActive(false);
+            if (inventoryMenu) inventoryMenu.SetActive(false);
             registerMenu.SetActive(false);
             loginMenu.SetActive(false);
             DisablePlayCampaign();
@@ -293,6 +302,7 @@ namespace SlimUI.ModernMenu{
 			exitMenu.SetActive(true);
 			if(extrasMenu) extrasMenu.SetActive(false);
 			if(accountMenu) accountMenu.SetActive(false);
+            if (inventoryMenu) inventoryMenu.SetActive(false);
             registerMenu.SetActive(false);
             loginMenu.SetActive(false);
             mainMenu.SetActive(false);
@@ -303,6 +313,7 @@ namespace SlimUI.ModernMenu{
 			playMenu.SetActive(false);
 			if(extrasMenu) extrasMenu.SetActive(true);
 			if(accountMenu) accountMenu.SetActive(false);
+            if (inventoryMenu) inventoryMenu.SetActive(false);
             registerMenu.SetActive(false);
             loginMenu.SetActive(false);
             exitMenu.SetActive(false);
@@ -312,12 +323,22 @@ namespace SlimUI.ModernMenu{
 			playMenu.SetActive(false);
 			if(extrasMenu) extrasMenu.SetActive(false);
             if (accountMenu) accountMenu.SetActive(true);
+            if (inventoryMenu) inventoryMenu.SetActive(false);
             registerMenu.SetActive(false);
             loginMenu.SetActive(false);
             exitMenu.SetActive(false);
 		}
+		public void InventoryMenu(){
+			playMenu.SetActive(false);
+			if(extrasMenu) extrasMenu.SetActive(false);
+			if (accountMenu) accountMenu.SetActive(false);
+			if (inventoryMenu) inventoryMenu.SetActive(true);
+			registerMenu.SetActive(false);
+			loginMenu.SetActive(false);
+			exitMenu.SetActive(false);
+        }
 
-		public void QuitGame(){
+        public void QuitGame(){
 			#if UNITY_EDITOR
 				UnityEditor.EditorApplication.isPlaying = false;
 			#else

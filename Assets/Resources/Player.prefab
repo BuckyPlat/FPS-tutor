@@ -322,6 +322,7 @@ MonoBehaviour:
   volume: {fileID: 5984128420421103071}
   maxVignette: 0.5
   vignetteSmooth: 5
+  hasDied: 0
 --- !u!114 &5036693326501063854
 MonoBehaviour:
   m_ObjectHideFlags: 0
