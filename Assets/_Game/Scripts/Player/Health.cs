@@ -1,4 +1,4 @@
-using Photon.Pun;
+﻿using Photon.Pun;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -27,7 +27,8 @@ public class Health : MonoBehaviourPun
     public float vignetteSmooth = 5f;
     private float targetVignette = 0f;
 
-    private bool hasDied;
+    [HideInInspector]
+    public bool hasDied;
 
     private void Start()
     {
@@ -73,39 +74,70 @@ public class Health : MonoBehaviourPun
             targetVignette = maxVignette;
         }
 
-        if (health <= 0)
+        if (health <= 0 && !hasDied)
         {
             hasDied = true;
 
+            // === NGĂN KNOCKBACK KHI CHẾT ===
+            DisableMovementAndPhysics();
+
             if (!photonView.IsMine) return;
 
+            // Lấy thông tin killer
             PhotonView killerPV = PhotonView.Find(killerViewID);
+            Transform killerTransform = killerPV != null ? killerPV.transform : null;
 
+            // Hiển thị thông báo kill
             string killerName = "Unknown";
             if (killerPV != null)
             {
                 PlayerSetup ps = killerPV.GetComponent<PlayerSetup>();
-                if (ps != null)
+                if (ps != null && !string.IsNullOrEmpty(ps.nickname))
                     killerName = ps.nickname;
+                else if (killerPV.Owner != null)
+                    killerName = killerPV.Owner.NickName;
             }
 
             PlayerSetup victimPS = GetComponent<PlayerSetup>();
-            string victimName = victimPS != null ? victimPS.nickname : "Unknown";
+            string victimName = victimPS != null && !string.IsNullOrEmpty(victimPS.nickname)
+                                ? victimPS.nickname : "Unknown";
 
             string msg = $"<color=yellow>[KILL]</color> " +
                          $"<color=red>{killerName}</color> killed <color=blue>{victimName}</color>";
 
-            GameChat.Instance.photonView
-                .RPC("SendSystemMessage", RpcTarget.All, msg);
+            if (GameChat.Instance != null)
+                GameChat.Instance.photonView.RPC("SendSystemMessage", RpcTarget.All, msg);
 
-            Debug.Log(Spectator.Instance);
+            // === GỌI SPECTATOR VỚI KILLER ===
             if (Spectator.Instance != null)
-                Spectator.Instance.Activate();
+                Spectator.Instance.Activate(killerTransform);
 
             PhotonNetwork.Destroy(gameObject);
-
             RoomManager.instance.StartRespawn(3f);
         }
+    }
+
+    // Hàm mới: Tắt movement và physics để không bị knockback khi chết
+    private void DisableMovementAndPhysics()
+    {
+        // Tắt script di chuyển
+        Movement movement = GetComponent<Movement>();
+        if (movement != null)
+            movement.enabled = false;
+
+        // Tắt Rigidbody để không nhận lực nữa (knockback từ đạn/explosion)
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.isKinematic = true;        // Quan trọng: Không bị physics đẩy
+        }
+
+        // Tắt collider nếu cần (tùy game của bạn)
+        Collider col = GetComponent<Collider>();
+        if (col != null)
+            col.enabled = false;
     }
 
     private void UpdateUI()

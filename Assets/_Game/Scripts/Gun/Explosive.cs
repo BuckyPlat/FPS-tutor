@@ -1,4 +1,4 @@
-using Photon.Pun;
+﻿using Photon.Pun;
 using Photon.Pun.UtilityScripts;
 using UnityEngine;
 
@@ -17,11 +17,11 @@ public class Explosive : MonoBehaviourPun
 
     [Header("VFX & SFX")]
     public GameObject explosionVFX;
-    public float vfxLifetime = 2.5f;           // Time to destroy VFX
+    public float vfxLifetime = 2.5f;
 
     [Header("Explosion Sound")]
-    public AudioClip explosionSFX;             // Drag explosion AudioClip here
-    public float explosionVolume = 1f;         // Volume (0.0 - 1.0)
+    public AudioClip explosionSFX;
+    public float explosionVolume = 1f;
 
     private PhotonView pv;
 
@@ -45,63 +45,53 @@ public class Explosive : MonoBehaviourPun
 
         alreadyExplode = true;
 
-        Explode();                                 // Damage + Score
-        pv.RPC("RpcExplosionEffects", RpcTarget.All, transform.position);   // Sync VFX + SFX
+        Explode();                                 // Xử lý damage + kill
+        pv.RPC("RpcExplosionEffects", RpcTarget.All, transform.position);
 
         PhotonNetwork.Destroy(gameObject);
     }
 
     void Explode()
     {
-        foreach (Collider col in Physics.OverlapSphere(transform.position, explosionRadius))
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, explosionRadius);
+
+        foreach (Collider col in hitColliders)
         {
             Health health = col.GetComponent<Health>();
-            if (health == null) continue;
+            if (!(health != null && !health.hasDied)) continue;   // ← Thêm điều kiện này
 
-            // Prevent explosion damage to self
             PhotonView targetPV = col.GetComponent<PhotonView>();
-            if (targetPV != null && targetPV.IsMine) continue;
+            if (targetPV == null || targetPV.IsMine) continue;
 
-            //PhotonNetwork.LocalPlayer.AddScore(damage);
-
-            //if (damage >= health.health)
-            //{
-            //    RoomManager.instance.Kills++;
-            //    RoomManager.instance.SetHashes();
-            //    PhotonNetwork.LocalPlayer.AddScore(100);
-            //}
-
-            if (targetPV != null)
-                targetPV.RPC("TakeDamage", RpcTarget.All, damage, photonView.ViewID);
+            targetPV.RPC("TakeDamage", RpcTarget.All, damage, pv.ViewID);
         }
     }
 
     [PunRPC]
     public void RpcExplosionEffects(Vector3 position)
     {
-        // === VFX ===
+        // VFX
         if (explosionVFX != null)
         {
             GameObject vfx = Instantiate(explosionVFX, position, Quaternion.identity);
             Destroy(vfx, vfxLifetime);
         }
 
-        // === SFX - Play explosion sound for all players ===
+        // SFX
         if (explosionSFX != null)
         {
-            // Create a temporary AudioSource at explosion position
             GameObject audioObj = new GameObject("ExplosionSound");
             audioObj.transform.position = position;
 
             AudioSource audioSource = audioObj.AddComponent<AudioSource>();
             audioSource.clip = explosionSFX;
             audioSource.volume = explosionVolume;
-            audioSource.spatialBlend = 2f;        // 3D sound
-            audioSource.maxDistance = 70f;        // Hearing range
+            audioSource.spatialBlend = 2f;
+            audioSource.maxDistance = 70f;
             audioSource.rolloffMode = AudioRolloffMode.Linear;
 
             audioSource.Play();
-            Destroy(audioObj, explosionSFX.length + 0.5f);   // Destroy after playing completes
+            Destroy(audioObj, explosionSFX.length + 0.5f);
         }
     }
 }
