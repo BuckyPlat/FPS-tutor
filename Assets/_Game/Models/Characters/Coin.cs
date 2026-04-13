@@ -25,15 +25,43 @@ public class Coin : MonoBehaviour
     }
     public void Buychest()
     {
-        coinCount -= 50;
+
+        if(coinCount < 50)
+        {
+
+            Debug.Log("Not enough coins to buy chest! Coin count reset to 0.");
+        }
+        else         
+        {
+            luckychest();
+            coinCount -= 50;
+        }
     }
     public void Buychest1()
     {
-        coinCount -= 100;
+        if (coinCount < 100)
+        {
+            
+            Debug.Log("Not enough coins to buy chest! Coin count reset to 0.");
+        }
+        else
+        {
+            coinCount -= 100;
+            luckychest();
+        }
     }
     public void Buychest2()
     {
-        coinCount -= 200;
+        if (coinCount < 200)
+        {
+
+            Debug.Log("Not enough coins to buy chest! Coin count reset to 0.");
+        }
+        else
+        {
+            luckychest();
+            coinCount -= 200;
+        }
     }
 
 
