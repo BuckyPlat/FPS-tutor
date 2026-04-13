@@ -1,4 +1,4 @@
-﻿using PlayFab;
+using PlayFab;
 using PlayFab.ClientModels;
 using TMPro;
 using UnityEngine;
@@ -13,6 +13,7 @@ public class PlayFabRegister : MonoBehaviour
     public TMP_InputField display_Reg;
 
     private Coroutine coroutine_Reg;
+    private bool isProcessing = false;
 
     private void Start()
     {
@@ -22,11 +23,22 @@ public class PlayFabRegister : MonoBehaviour
 
     public void RegisterAccount()
     {
-        if (string.IsNullOrEmpty(user_Reg.text) || string.IsNullOrEmpty(pass_Reg.text))
+        if (isProcessing) return;
+
+        if (string.IsNullOrEmpty(user_Reg.text) || string.IsNullOrEmpty(pass_Reg.text) || string.IsNullOrEmpty(display_Reg.text))
         {
-            ShowMessage("Please fill in Username and Password!");
+            ShowMessage("Please fill in all fields (Username, Password, Display Name)!");
             return;
         }
+
+        if (pass_Reg.text.Length < 6)
+        {
+            ShowMessage("Password must be at least 6 characters!");
+            return;
+        }
+
+        isProcessing = true;
+        ShowMessage("Registering...");
 
         var request = new RegisterPlayFabUserRequest
         {
@@ -34,7 +46,7 @@ public class PlayFabRegister : MonoBehaviour
             Password = pass_Reg.text,
             RequireBothUsernameAndEmail = false
         };
-        PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnError);
+        PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnRegisterError);
     }
 
     private void OnRegisterSuccess(RegisterPlayFabUserResult result)
@@ -53,12 +65,21 @@ public class PlayFabRegister : MonoBehaviour
 
     private void OnDisplayNameUpdate(UpdateUserTitleDisplayNameResult result)
     {
+        isProcessing = false;
         ShowMessage("Account created successfully!");
         // BỎ VIỆC BACK TO LOGIN (NGƯỜI DÙNG SẼ ON/OFF PANEL THỦ CÔNG BẰNG BUTTON)
     }
 
+    private void OnRegisterError(PlayFabError error)
+    {
+        isProcessing = false;
+        ShowMessage(error.ErrorMessage);
+        Debug.LogError(error.GenerateErrorReport());
+    }
+
     private void OnError(PlayFabError error)
     {
+        isProcessing = false;
         ShowMessage(error.ErrorMessage);
         Debug.LogError(error.GenerateErrorReport());
     }

@@ -1,4 +1,4 @@
-﻿using PlayFab;
+using PlayFab;
 using PlayFab.ClientModels;
 using TMPro;
 using UnityEngine;
@@ -15,6 +15,7 @@ public class PlayFabLogin : MonoBehaviour
     public static string DisplayNameFromPlayFab;
 
     private Coroutine coroutine_Login;
+    private bool isProcessing = false;
 
     // ==================== THÊM MỚI ====================
     [Header("After Login")]
@@ -28,11 +29,22 @@ public class PlayFabLogin : MonoBehaviour
 
     public void Login()
     {
+        if (isProcessing) return;
+
         if (string.IsNullOrEmpty(user_Login.text) || string.IsNullOrEmpty(pass_Login.text))
         {
             ShowMessage("Please enter username and password!");
             return;
         }
+
+        if (pass_Login.text.Length < 6)
+        {
+            ShowMessage("Password must be at least 6 characters!");
+            return;
+        }
+
+        isProcessing = true;
+        ShowMessage("Logging in...");
 
         var request = new LoginWithPlayFabRequest
         {
@@ -88,6 +100,7 @@ public class PlayFabLogin : MonoBehaviour
 
     private void OnError(PlayFabError error)
     {
+        isProcessing = false;
         ShowMessage(error.ErrorMessage);
         Debug.LogError(error.GenerateErrorReport());
     }
