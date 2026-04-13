@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Photon.Pun;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using System.Collections;
@@ -43,6 +43,11 @@ public class RoomManager : MonoBehaviourPunCallbacks
             : PlayFabLogin.DisplayNameFromPlayFab;
     }
 
+    void Start()
+    {
+        JoinRoomButtonPressed();
+    }
+
     // GIỮ LẠI METHOD ĐỂ GIỮ CẤU TRÚC DEBUG (KHÔNG CÒN SỬ DỤNG VÌ BÃI BỎ PANEL)
     public void ChangeNickName(string _name)
     {
@@ -79,6 +84,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         base.OnJoinedRoom();
 
         roomCam.SetActive(false);
+        if (connectingUI != null) connectingUI.SetActive(false);
 
         Debug.Log("We'er connected and in a room!!!");
 
