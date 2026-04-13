@@ -19,9 +19,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     [Space]
     public GameObject roomCam;
-
-    [Space]
-    public GameObject nameUI;           // KEEP FIELD TO MAINTAIN STRUCTURE (EVEN THOUGH PANEL WAS REMOVED)
     public GameObject connectingUI;
 
     private string nickname = "unnamed";
@@ -33,11 +30,17 @@ public class RoomManager : MonoBehaviourPunCallbacks
     [HideInInspector]
     public int Deaths = 0;
 
+    // === HỆ THỐNG CHỐNG 409 CONFLICT ===
+    private int pendingKills = 0;
+    private int pendingDeaths = 0;
+    private float nextPlayFabUpdateTime = 0f;
+    private const float MIN_UPDATE_INTERVAL = 1.2f;     // Chỉ update PlayFab tối đa 1 lần mỗi 1.2 giây
+    private bool isUpdatingStats = false;
+
     void Awake()
     {
         instance = this;
 
-        // ACCESS USERNAME FROM PLAYFAB (DISPLAY NAME) - REMOVED CHARACTER NAMING PANEL
         nickname = string.IsNullOrEmpty(PlayFabLogin.DisplayNameFromPlayFab)
             ? "unnamed"
             : PlayFabLogin.DisplayNameFromPlayFab;
@@ -48,34 +51,21 @@ public class RoomManager : MonoBehaviourPunCallbacks
         JoinRoomButtonPressed();
     }
 
-    // KEEP METHOD TO MAINTAIN DEBUG STRUCTURE (NO LONGER USED BECAUSE PANEL WAS REMOVED)
-    public void ChangeNickName(string _name)
-    {
-        nickname = _name;
-    }
-
     public void JoinRoomButtonPressed()
     {
-        Debug.Log(message: "Connecting....");
+        Debug.Log("Connecting....");
 
-        RoomOptions ro = new RoomOptions();
-
-        ro.CustomRoomProperties = new Hashtable()
+        RoomOptions ro = new RoomOptions
         {
-            { "mapSceneIndex", SceneManager.GetActiveScene().buildIndex },
-            { "mapName", mapName }
-        };
-
-        ro.CustomRoomPropertiesForLobby = new[]
-        {
-            "mapSceneIndex",
-            "mapName"
+            CustomRoomProperties = new Hashtable()
+            {
+                { "mapSceneIndex", SceneManager.GetActiveScene().buildIndex },
+                { "mapName", mapName }
+            },
+            CustomRoomPropertiesForLobby = new[] { "mapSceneIndex", "mapName" }
         };
 
         PhotonNetwork.JoinOrCreateRoom(PlayerPrefs.GetString("RoomNameToJoin"), ro, null);
-
-        // REMOVED NAMING PANEL → NO LONGER HIDING nameUI
-        // nameUI.SetActive(false);   // REMOVED
         connectingUI.SetActive(true);
     }
 
@@ -86,25 +76,40 @@ public class RoomManager : MonoBehaviourPunCallbacks
         roomCam.SetActive(false);
         if (connectingUI != null) connectingUI.SetActive(false);
 
-        Debug.Log("We'er connected and in a room!!!");
-
+        Debug.Log("We're connected and in a room!!!");
         SpawnPlayer();
     }
 
     public void SpawnPlayer()
     {
-        Transform spawnPoint = spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Length)];
+        Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
 
         GameObject _player = PhotonNetwork.Instantiate(player.name, spawnPoint.position, Quaternion.identity);
         _player.GetComponent<PlayerSetup>().IsLocalPlayer();
         _player.GetComponent<Health>().isLocalPlayer = true;
 
-        // USE NICKNAME FROM PLAYFAB (SET IN AWAKE)
         _player.GetComponent<PhotonView>().RPC("SetNickName", RpcTarget.AllBuffered, nickname);
         PhotonNetwork.LocalPlayer.NickName = nickname;
     }
 
-    public void SetHashes()
+    // Hàm mới - Nên gọi từ Weapon hoặc nơi khác
+    public void AddKill(int amount = 1)
+    {
+        Kills += amount;
+        pendingKills += amount;
+        UpdatePhotonHashes();
+        TryUpdatePlayFab();
+    }
+
+    public void AddDeath(int amount = 1)
+    {
+        Deaths += amount;
+        pendingDeaths += amount;
+        UpdatePhotonHashes();
+        TryUpdatePlayFab();
+    }
+
+    private void UpdatePhotonHashes()
     {
         try
         {
@@ -112,19 +117,24 @@ public class RoomManager : MonoBehaviourPunCallbacks
             hash["Kills"] = Kills;
             hash["Deaths"] = Deaths;
             PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
-
-            // SAVE SCORE TO PLAYFAB LEADERBOARD (KILLS / DEATHS)
-            UpdatePlayFabStats();
         }
-        catch
+        catch { }
+    }
+
+    private void TryUpdatePlayFab()
+    {
+        if (Time.time >= nextPlayFabUpdateTime && !isUpdatingStats)
         {
-            //Do nothing
+            UpdatePlayFabStats();
         }
     }
 
-    // NEWLY ADDED: SAVE STATISTICS TO PLAYFAB (KEEP OLD STRUCTURE FOR PHOTON UI)
     private void UpdatePlayFabStats()
     {
+        if (pendingKills == 0 && pendingDeaths == 0) return;
+
+        isUpdatingStats = true;
+
         var request = new UpdatePlayerStatisticsRequest
         {
             Statistics = new List<StatisticUpdate>
@@ -140,11 +150,37 @@ public class RoomManager : MonoBehaviourPunCallbacks
     private void OnPlayFabStatsUpdateSuccess(UpdatePlayerStatisticsResult result)
     {
         Debug.Log("PlayFab leaderboard updated successfully!");
+        pendingKills = 0;
+        pendingDeaths = 0;
+        isUpdatingStats = false;
+        nextPlayFabUpdateTime = Time.time + MIN_UPDATE_INTERVAL;
     }
 
     private void OnPlayFabStatsUpdateError(PlayFabError error)
     {
+        isUpdatingStats = false;
         Debug.LogError("PlayFab stats update error: " + error.GenerateErrorReport());
+
+        // Xử lý lỗi 409 Conflict
+        bool isConflict = (error.Error == PlayFabErrorCode.StatisticUpdateInProgress) ||
+                          (error.HttpStatus == "409") ||
+                          (error.ErrorMessage != null && error.ErrorMessage.ToLower().Contains("conflict"));
+
+        if (isConflict)
+        {
+            Debug.LogWarning("PlayFab 409 Conflict - Retry sau 0.8 giây...");
+            Invoke(nameof(RetryPlayFabUpdate), 0.8f);
+        }
+        else
+        {
+            nextPlayFabUpdateTime = Time.time + MIN_UPDATE_INTERVAL;
+        }
+    }
+
+    private void RetryPlayFabUpdate()
+    {
+        if (pendingKills > 0 || pendingDeaths > 0)
+            UpdatePlayFabStats();
     }
 
     public void StartRespawn(float delay)
@@ -163,7 +199,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
             Spectator.Instance.gameObject.SetActive(false);
 
         SpawnPlayer();
-        Deaths++;
-        SetHashes();
+        AddDeath(1);                    // Dùng hàm mới
     }
 }
