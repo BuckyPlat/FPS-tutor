@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using NUnit.Framework;
@@ -13,7 +13,7 @@ public class RoomList : MonoBehaviourPunCallbacks
 
     [Header("UI")] public Transform roomListItemParent;
     public GameObject roomListPrefab;
-    private List<RoomInfo> cachedRoomList = new List<RoomInfo> ();
+    private List<RoomInfo> cachedRoomList = new List<RoomInfo>();
 
     private string cachedRoomNameToCreate;
 
@@ -24,6 +24,13 @@ public class RoomList : MonoBehaviourPunCallbacks
 
     public void CreateRoomByIndex(int sceneIndex)
     {
+        // YÊU CẦU MỚI: BẮT BUỘC PHẢI ĐẶT TÊN PHÒNG KHI TẠO (KHÔNG CHO TẠO NẾU TRỐNG)
+        if (string.IsNullOrEmpty(cachedRoomNameToCreate))
+        {
+            Debug.LogWarning("Room name is required to create a room! (Vui lòng nhập tên phòng trước khi tạo)");
+            return;
+        }
+
         JoinRoomByName(cachedRoomNameToCreate, sceneIndex);
     }
 
@@ -53,15 +60,15 @@ public class RoomList : MonoBehaviourPunCallbacks
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        if(cachedRoomList.Count <= 0)
+        if (cachedRoomList.Count <= 0)
         {
             cachedRoomList = roomList;
         }
         else
         {
-            foreach(var room in roomList)
+            foreach (var room in roomList)
             {
-                for(int i = 0; i < cachedRoomList.Count; i++)
+                for (int i = 0; i < cachedRoomList.Count; i++)
                 {
                     if (cachedRoomList[i].Name == room.Name)
                     {
@@ -91,27 +98,27 @@ public class RoomList : MonoBehaviourPunCallbacks
             Destroy(roomItem.gameObject);
         }
 
-        foreach(var room in cachedRoomList)
+        foreach (var room in cachedRoomList)
         {
             GameObject roomItem = Instantiate(roomListPrefab, roomListItemParent);
 
             string roomMapName = "";
 
             object mapNameObject;
-            if(room.CustomProperties.TryGetValue("mapName", out mapNameObject))
+            if (room.CustomProperties.TryGetValue("mapName", out mapNameObject))
             {
                 roomMapName = (string)mapNameObject;
             }
 
-            roomItem.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = room.Name + "("+roomMapName+")";
-            roomItem.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text=room.PlayerCount + "/10";
+            roomItem.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = room.Name + "(" + roomMapName + ")";
+            roomItem.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = room.PlayerCount + "/10";
 
             roomItem.GetComponent<RoomItemButton>().RoomName = room.Name;
 
             int roomSceneIndex = 1;
 
             object sceneIndexObject;
-            if(room.CustomProperties.TryGetValue("mapSceneIndex", out sceneIndexObject))
+            if (room.CustomProperties.TryGetValue("mapSceneIndex", out sceneIndexObject))
             {
                 roomSceneIndex = (int)sceneIndexObject;
             }
