@@ -91,8 +91,8 @@ namespace SlimUI.ModernMenu{
 			if(extrasMenu) extrasMenu.SetActive(false);
 			if(accountMenu) accountMenu.SetActive(false);
             firstMenu.SetActive(false);
-			registerMenu.SetActive(true);
-			loginMenu.SetActive(false);
+			registerMenu.SetActive(false);
+			loginMenu.SetActive(true);
 			mainMenu.SetActive(true);
 
 			SetThemeColors();
