@@ -21,6 +21,8 @@ namespace SlimUI.ModernMenu{
         [Tooltip("Optional 4th Menu")]
         public GameObject extrasMenu;
 		public GameObject accountMenu;
+		public GameObject registerMenu;
+		public GameObject loginMenu;
 
         public enum Theme {custom1, custom2, custom3};
         [Header("THEME SETTINGS")]
@@ -88,7 +90,9 @@ namespace SlimUI.ModernMenu{
 			exitMenu.SetActive(false);
 			if(extrasMenu) extrasMenu.SetActive(false);
 			if(accountMenu) accountMenu.SetActive(false);
-            firstMenu.SetActive(true);
+            firstMenu.SetActive(false);
+			registerMenu.SetActive(true);
+			loginMenu.SetActive(false);
 			mainMenu.SetActive(true);
 
 			SetThemeColors();
@@ -118,11 +122,44 @@ namespace SlimUI.ModernMenu{
 					break;
 			}
 		}
+		public void FirstMenu(){
+            playMenu.SetActive(false);
+            exitMenu.SetActive(false);
+            if (extrasMenu) extrasMenu.SetActive(false);
+            if (accountMenu) accountMenu.SetActive(false);
+            firstMenu.SetActive(true);
+            registerMenu.SetActive(false);
+            loginMenu.SetActive(false);
+            mainMenu.SetActive(true);
+        }
+		public void LoginMenu(){
+			playMenu.SetActive(false);
+			exitMenu.SetActive(false);
+			if (extrasMenu) extrasMenu.SetActive(false);
+			if (accountMenu) accountMenu.SetActive(false);
+			firstMenu.SetActive(false);
+			registerMenu.SetActive(false);
+			loginMenu.SetActive(true);
+			mainMenu.SetActive(true);
+        }
+		public void RegisterMenu()
+		{
+			playMenu.SetActive(false);
+			exitMenu.SetActive(false);
+			if (extrasMenu) extrasMenu.SetActive(false);
+			if (accountMenu) accountMenu.SetActive(false);
+			firstMenu.SetActive(false);
+			registerMenu.SetActive(true);
+			loginMenu.SetActive(false);
+			mainMenu.SetActive(true);
+        }
 
-		public void PlayCampaign(){
+        public void PlayCampaign(){
 			exitMenu.SetActive(false);
 			if(extrasMenu) extrasMenu.SetActive(false);
 			if(accountMenu) accountMenu.SetActive(false);
+			registerMenu.SetActive(false);
+			loginMenu.SetActive(false);
             playMenu.SetActive(true);
 		}
 		
@@ -130,6 +167,8 @@ namespace SlimUI.ModernMenu{
 			exitMenu.SetActive(false);
 			if(extrasMenu) extrasMenu.SetActive(false);
 			if(accountMenu) accountMenu.SetActive(false);
+            registerMenu.SetActive(false);
+            loginMenu.SetActive(false);
             playMenu.SetActive(true);
 			mainMenu.SetActive(false);
 		}
@@ -138,6 +177,8 @@ namespace SlimUI.ModernMenu{
 			playMenu.SetActive(false);
 			if(extrasMenu) extrasMenu.SetActive(false);
 			if(accountMenu) accountMenu.SetActive(false);
+            registerMenu.SetActive(false);
+            loginMenu.SetActive(false);
             exitMenu.SetActive(false);
 			mainMenu.SetActive(true);
 		}
@@ -243,6 +284,8 @@ namespace SlimUI.ModernMenu{
 			exitMenu.SetActive(true);
 			if(extrasMenu) extrasMenu.SetActive(false);
 			if(accountMenu) accountMenu.SetActive(false);
+            registerMenu.SetActive(false);
+            loginMenu.SetActive(false);
             DisablePlayCampaign();
 		}
 
@@ -250,6 +293,8 @@ namespace SlimUI.ModernMenu{
 			exitMenu.SetActive(true);
 			if(extrasMenu) extrasMenu.SetActive(false);
 			if(accountMenu) accountMenu.SetActive(false);
+            registerMenu.SetActive(false);
+            loginMenu.SetActive(false);
             mainMenu.SetActive(false);
 			DisablePlayCampaign();
 		}
@@ -258,6 +303,8 @@ namespace SlimUI.ModernMenu{
 			playMenu.SetActive(false);
 			if(extrasMenu) extrasMenu.SetActive(true);
 			if(accountMenu) accountMenu.SetActive(false);
+            registerMenu.SetActive(false);
+            loginMenu.SetActive(false);
             exitMenu.SetActive(false);
 		}
 		
@@ -265,6 +312,8 @@ namespace SlimUI.ModernMenu{
 			playMenu.SetActive(false);
 			if(extrasMenu) extrasMenu.SetActive(false);
             if (accountMenu) accountMenu.SetActive(true);
+            registerMenu.SetActive(false);
+            loginMenu.SetActive(false);
             exitMenu.SetActive(false);
 		}
 
