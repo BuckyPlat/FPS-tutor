@@ -23,12 +23,25 @@
             <ui:Label name="reg-message" text="Message goes here" class="hidden" style="color: red; -unity-text-align: middle-center;" />
         </ui:VisualElement>
 
+        <!-- TOP OVERLAY -->
+        <ui:VisualElement name="top-overlay" class="overlay">
+            <ui:Label name="lbl-version" text="v1.0.0" class="overlay-text" style="position: absolute; left: 10px; top: 10px;" />
+            <ui:Label name="lbl-currency" text="Coins: 100" class="overlay-text" style="position: absolute; right: 10px; top: 10px;" />
+            <ui:VisualElement style="position: absolute; bottom: 10px; right: 10px; flex-direction: row;">
+                <ui:Button name="btn-social-discord" text="Discord" class="menu-button" />
+                <ui:Button name="btn-social-twitter" text="X" class="menu-button" />
+                <ui:Button name="btn-social-web" text="Web" class="menu-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
         <!-- MAIN MENU -->
         <ui:VisualElement name="main-menu-screen" class="panel hidden">
             <ui:Label text="FPS MULTIPLAYER" class="title" />
             <ui:Button name="btn-play" text="PLAY" class="menu-button" />
+            <ui:Button name="btn-shop" text="SHOP" class="menu-button" />
+            <ui:Button name="btn-inventory" text="INVENTORY" class="menu-button" />
+            <ui:Button name="btn-account" text="ACCOUNT" class="menu-button" />
             <ui:Button name="btn-options" text="OPTIONS" class="menu-button" />
-            <ui:Button name="btn-extras" text="EXTRAS" class="menu-button" />
             <ui:Button name="btn-exit" text="EXIT" class="menu-button" />
         </ui:VisualElement>
 
@@ -93,6 +106,38 @@
                 <ui:Button name="btn-exit-yes" text="YES" class="menu-button" />
                 <ui:Button name="btn-exit-no" text="NO" class="menu-button" />
             </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- SHOP SCREEN -->
+        <ui:VisualElement name="shop-screen" class="panel hidden">
+            <ui:Label text="SHOP" class="title" />
+            <ui:ScrollView class="scroll-view">
+                <ui:Button name="btn-buy-ccp" text="Buy Cartoon Pack" class="menu-button" />
+                <ui:Button name="btn-buy-scifi" text="Buy Sci-Fi Pack" class="menu-button" />
+            </ui:ScrollView>
+            <ui:Button name="btn-shop-back" text="BACK" class="menu-button" style="margin-top:20px;" />
+        </ui:VisualElement>
+
+        <!-- INVENTORY SCREEN -->
+        <ui:VisualElement name="inventory-screen" class="panel hidden">
+            <ui:Label text="INVENTORY" class="title" />
+            <ui:Label text="No items owned yet." class="settings-label" style="-unity-text-align: middle-center; margin: 20px;" />
+            <ui:Button name="btn-inventory-back" text="BACK" class="menu-button" style="margin-top:20px;" />
+        </ui:VisualElement>
+
+        <!-- ACCOUNT SCREEN -->
+        <ui:VisualElement name="account-screen" class="panel hidden">
+            <ui:Label text="ACCOUNT DETAILS" class="title" />
+            <ui:Label name="lbl-account-name" text="Username: " class="settings-label" />
+            <ui:Label name="lbl-account-id" text="PlayFab ID: " class="settings-label" />
+            <ui:Button name="btn-account-back" text="BACK" class="menu-button" style="margin-top:20px;" />
+        </ui:VisualElement>
+
+        <!-- LOADING SCREEN -->
+        <ui:VisualElement name="loading-screen" class="panel hidden">
+            <ui:Label text="LOADING" class="title" />
+            <ui:ProgressBar name="loading-progress" title="Loading..." low-value="0" high-value="1" />
+            <ui:Label name="loading-prompt" text="Tip: Aim for the head!" class="settings-label" style="-unity-text-align: middle-center;" />
         </ui:VisualElement>
 
     </ui:VisualElement>
