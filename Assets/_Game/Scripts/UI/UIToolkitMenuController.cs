@@ -68,8 +68,51 @@ public class UIToolkitMenuController : MonoBehaviour
         coinCount = PlayerPrefs.GetInt("CoinCount", 1000);
         RefreshCoinDisplays();
 
+        MigratePlayerPrefs();  // silently upgrade legacy UISettingsManager keys
         ShowScreen("login-screen");
         LoadSettingsIntoUI();
+    }
+
+    /// <summary>
+    /// One-time migration: converts legacy UISettingsManager PlayerPrefs keys
+    /// to the keys used by MouseSettings.cs (and this controller).
+    /// Legacy keys: XSensitivity, YSensitivity, MouseSmoothing, Inverted
+    /// New keys:    MouseSensX,   MouseSensY,   MouseSmooth,    MouseInvert
+    /// </summary>
+    void MigratePlayerPrefs()
+    {
+        bool dirty = false;
+
+        if (PlayerPrefs.HasKey("XSensitivity") && !PlayerPrefs.HasKey("MouseSensX"))
+        {
+            PlayerPrefs.SetFloat("MouseSensX", PlayerPrefs.GetFloat("XSensitivity"));
+            PlayerPrefs.DeleteKey("XSensitivity");
+            dirty = true;
+        }
+        if (PlayerPrefs.HasKey("YSensitivity") && !PlayerPrefs.HasKey("MouseSensY"))
+        {
+            PlayerPrefs.SetFloat("MouseSensY", PlayerPrefs.GetFloat("YSensitivity"));
+            PlayerPrefs.DeleteKey("YSensitivity");
+            dirty = true;
+        }
+        if (PlayerPrefs.HasKey("MouseSmoothing") && !PlayerPrefs.HasKey("MouseSmooth"))
+        {
+            PlayerPrefs.SetFloat("MouseSmooth", PlayerPrefs.GetFloat("MouseSmoothing"));
+            PlayerPrefs.DeleteKey("MouseSmoothing");
+            dirty = true;
+        }
+        if (PlayerPrefs.HasKey("Inverted") && !PlayerPrefs.HasKey("MouseInvert"))
+        {
+            PlayerPrefs.SetInt("MouseInvert", PlayerPrefs.GetInt("Inverted"));
+            PlayerPrefs.DeleteKey("Inverted");
+            dirty = true;
+        }
+
+        if (dirty)
+        {
+            PlayerPrefs.Save();
+            Debug.Log("[UIToolkitMenuController] Legacy PlayerPrefs keys migrated.");
+        }
     }
 
     void QueryElements()
