@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 7d59cd0439dca1f46aa9cbc8031bc4cc
+guid: d469dcfe757842f4282c7360dd2afe34
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -31,11 +31,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Left Strafe Walking
+      name: Run Backwards
       takeName: mixamo.com
       internalID: -203655887218126122
       firstFrame: 0
-      lastFrame: 31
+      lastFrame: 16
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
