@@ -61,6 +61,7 @@
                 <ui:Button name="tab-game" text="GAME" class="tab-button active" />
                 <ui:Button name="tab-video" text="VIDEO" class="tab-button" />
                 <ui:Button name="tab-controls" text="CONTROLS" class="tab-button" />
+                <ui:Button name="tab-keybindings" text="KEY BINDINGS" class="tab-button" />
             </ui:VisualElement>
 
             <!-- GAME PANEL -->
@@ -73,12 +74,19 @@
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:Toggle name="toggle-hud" label="Show HUD" class="settings-label" />
+                <ui:Toggle name="toggle-tooltips" label="Tooltips" class="settings-label" />
+                <ui:Slider name="slider-music" label="Music Volume" low-value="0" high-value="1" />
             </ui:VisualElement>
 
             <!-- VIDEO PANEL -->
             <ui:VisualElement name="panel-video" class="hidden">
-                 <ui:Toggle name="toggle-fullscreen" label="Full Screen" class="settings-label" />
-                 <ui:VisualElement class="settings-row">
+                <ui:Toggle name="toggle-fullscreen" label="Full Screen" class="settings-label" />
+                <ui:Toggle name="toggle-vsync" label="VSync" class="settings-label" />
+                <ui:Toggle name="toggle-motionblur" label="Motion Blur" class="settings-label" />
+                <ui:Toggle name="toggle-ao" label="Ambient Occlusion" class="settings-label" />
+                <ui:Toggle name="toggle-cameraeffects" label="Camera Effects" class="settings-label" />
+
+                <ui:VisualElement class="settings-row">
                     <ui:Label text="Texture Quality" class="settings-label" />
                     <ui:VisualElement style="flex-direction: row;">
                         <ui:Button name="btn-tex-low" text="LOW" class="menu-button" />
@@ -86,14 +94,64 @@
                         <ui:Button name="btn-tex-high" text="HIGH" class="menu-button" />
                     </ui:VisualElement>
                 </ui:VisualElement>
+
+                <ui:VisualElement class="settings-row">
+                    <ui:Label text="Shadow Quality" class="settings-label" />
+                    <ui:VisualElement style="flex-direction: row;">
+                        <ui:Button name="btn-shadow-off" text="OFF" class="menu-button" />
+                        <ui:Button name="btn-shadow-low" text="LOW" class="menu-button" />
+                        <ui:Button name="btn-shadow-high" text="HIGH" class="menu-button" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="settings-row">
+                    <ui:Label text="Anti-Aliasing" class="settings-label" />
+                    <ui:VisualElement style="flex-direction: row;">
+                        <ui:Button name="btn-aa-off" text="OFF" class="menu-button" />
+                        <ui:Button name="btn-aa-2x" text="2x" class="menu-button" />
+                        <ui:Button name="btn-aa-4x" text="4x" class="menu-button" />
+                        <ui:Button name="btn-aa-8x" text="8x" class="menu-button" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
             </ui:VisualElement>
 
             <!-- CONTROLS PANEL -->
             <ui:VisualElement name="panel-controls" class="hidden">
+                <ui:VisualElement class="settings-row">
+                    <ui:Label text="Control Scheme" class="settings-label" />
+                    <ui:DropdownField name="dropdown-control-scheme" choices="Keyboard &amp; Mouse,Controller" index="0" style="min-width:200px;" />
+                </ui:VisualElement>
                 <ui:Slider name="slider-sens-x" label="Sensitivity X" low-value="0.1" high-value="10" />
                 <ui:Slider name="slider-sens-y" label="Sensitivity Y" low-value="0.1" high-value="10" />
                 <ui:Slider name="slider-smooth" label="Mouse Smoothing" low-value="0" high-value="1" />
                 <ui:Toggle name="toggle-invert" label="Invert Mouse" />
+            </ui:VisualElement>
+
+            <!-- KEY BINDINGS PANEL -->
+            <ui:VisualElement name="panel-keybindings" class="hidden">
+                <ui:VisualElement class="tab-container">
+                    <ui:Button name="tab-kb-movement" text="MOVEMENT" class="tab-button active" />
+                    <ui:Button name="tab-kb-combat" text="COMBAT" class="tab-button" />
+                    <ui:Button name="tab-kb-general" text="GENERAL" class="tab-button" />
+                </ui:VisualElement>
+                <ui:VisualElement name="panel-kb-movement">
+                    <ui:Label text="W / A / S / D — Move" class="settings-label" />
+                    <ui:Label text="SHIFT — Sprint" class="settings-label" />
+                    <ui:Label text="SPACE — Jump" class="settings-label" />
+                    <ui:Label text="CTRL — Crouch" class="settings-label" />
+                </ui:VisualElement>
+                <ui:VisualElement name="panel-kb-combat" class="hidden">
+                    <ui:Label text="LMB — Fire" class="settings-label" />
+                    <ui:Label text="RMB — Aim" class="settings-label" />
+                    <ui:Label text="R — Reload" class="settings-label" />
+                    <ui:Label text="G — Grenade" class="settings-label" />
+                </ui:VisualElement>
+                <ui:VisualElement name="panel-kb-general" class="hidden">
+                    <ui:Label text="TAB — Scoreboard" class="settings-label" />
+                    <ui:Label text="ESC — Pause" class="settings-label" />
+                    <ui:Label text="M — Map" class="settings-label" />
+                    <ui:Label text="T — Chat" class="settings-label" />
+                </ui:VisualElement>
             </ui:VisualElement>
 
             <ui:Button name="btn-settings-back" text="BACK" class="menu-button" style="margin-top: 20px;" />
@@ -109,19 +167,49 @@
         </ui:VisualElement>
 
         <!-- SHOP SCREEN -->
-        <ui:VisualElement name="shop-screen" class="panel hidden">
-            <ui:Label text="SHOP" class="title" />
-            <ui:ScrollView class="scroll-view">
-                <ui:Button name="btn-buy-ccp" text="Buy Cartoon Pack" class="menu-button" />
-                <ui:Button name="btn-buy-scifi" text="Buy Sci-Fi Pack" class="menu-button" />
+        <ui:VisualElement name="shop-screen" class="panel hidden" style="width: 900px;">
+            <ui:VisualElement style="flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <ui:Label text="SHOP" class="title" style="margin-bottom: 0;" />
+                <ui:Label name="lbl-shop-coins" text="Coins: 0" class="overlay-text" style="font-size: 20px;" />
+            </ui:VisualElement>
+            <ui:Label name="lbl-shop-tooltip" text=" " class="tooltip-text" />
+            <ui:ScrollView class="scroll-view" style="max-height: 400px;">
+                <ui:VisualElement class="shop-grid">
+                    <!-- GUN 1 -->
+                    <ui:VisualElement name="shop-item-0" class="shop-item">
+                        <ui:VisualElement class="shop-item-icon" />
+                        <ui:Label name="shop-item-0-name" text="Cartoon Pack" class="shop-item-name" />
+                        <ui:Label name="shop-item-0-price" text="50 Coins" class="shop-item-price" />
+                        <ui:Button name="btn-buy-item-0" text="BUY" class="shop-buy-btn" />
+                    </ui:VisualElement>
+                    <!-- GUN 2 -->
+                    <ui:VisualElement name="shop-item-1" class="shop-item">
+                        <ui:VisualElement class="shop-item-icon" />
+                        <ui:Label name="shop-item-1-name" text="Sci-Fi Pack" class="shop-item-name" />
+                        <ui:Label name="shop-item-1-price" text="100 Coins" class="shop-item-price" />
+                        <ui:Button name="btn-buy-item-1" text="BUY" class="shop-buy-btn" />
+                    </ui:VisualElement>
+                    <!-- GUN 3 -->
+                    <ui:VisualElement name="shop-item-2" class="shop-item">
+                        <ui:VisualElement class="shop-item-icon" />
+                        <ui:Label name="shop-item-2-name" text="Epic Bundle" class="shop-item-name" />
+                        <ui:Label name="shop-item-2-price" text="200 Coins" class="shop-item-price" />
+                        <ui:Button name="btn-buy-item-2" text="BUY" class="shop-buy-btn" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
             </ui:ScrollView>
             <ui:Button name="btn-shop-back" text="BACK" class="menu-button" style="margin-top:20px;" />
         </ui:VisualElement>
 
         <!-- INVENTORY SCREEN -->
-        <ui:VisualElement name="inventory-screen" class="panel hidden">
+        <ui:VisualElement name="inventory-screen" class="panel hidden" style="width: 900px;">
             <ui:Label text="INVENTORY" class="title" />
-            <ui:Label text="No items owned yet." class="settings-label" style="-unity-text-align: middle-center; margin: 20px;" />
+            <ui:Label name="lbl-inventory-tooltip" text=" " class="tooltip-text" />
+            <ui:ScrollView class="scroll-view" style="max-height: 400px;">
+                <ui:VisualElement name="inventory-grid" class="shop-grid">
+                    <ui:Label name="lbl-inventory-empty" text="No items owned yet." class="settings-label" style="-unity-text-align: middle-center; margin: 40px; flex-grow:1;" />
+                </ui:VisualElement>
+            </ui:ScrollView>
             <ui:Button name="btn-inventory-back" text="BACK" class="menu-button" style="margin-top:20px;" />
         </ui:VisualElement>
 
@@ -129,8 +217,11 @@
         <ui:VisualElement name="account-screen" class="panel hidden">
             <ui:Label text="ACCOUNT DETAILS" class="title" />
             <ui:Label name="lbl-account-name" text="Username: " class="settings-label" />
-            <ui:Label name="lbl-account-id" text="PlayFab ID: " class="settings-label" />
-            <ui:Button name="btn-account-back" text="BACK" class="menu-button" style="margin-top:20px;" />
+            <ui:Label name="lbl-account-id" text="Status: " class="settings-label" />
+            <ui:VisualElement style="flex-direction: row; margin-top: 20px; justify-content: center;">
+                <ui:Button name="btn-logout" text="LOG OUT" class="menu-button logout-button" />
+                <ui:Button name="btn-account-back" text="BACK" class="menu-button" />
+            </ui:VisualElement>
         </ui:VisualElement>
 
         <!-- LOADING SCREEN -->

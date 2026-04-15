@@ -99,3 +99,146 @@
 .unity-text-field {
     margin-bottom: 10px;
 }
+
+/* OVERLAY */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.overlay .menu-button {
+    font-size: 14px;
+    padding: 8px 16px;
+    margin-left: 5px;
+}
+
+.overlay-text {
+    font-size: 16px;
+    color: #ffffff;
+    -unity-font-style: bold;
+}
+
+/* SCROLL VIEW */
+.scroll-view {
+    max-height: 300px;
+    margin-bottom: 20px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+/* PROGRESS BAR */
+.unity-progress-bar__container {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.unity-progress-bar__progress {
+    background-color: var(--primary-color);
+    border-radius: 4px;
+}
+
+/* ─── SHOP GRID ─── */
+.shop-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    padding: 10px;
+}
+
+.shop-item {
+    width: 240px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 8px;
+    align-items: center;
+    transition-duration: 0.2s;
+}
+
+.shop-item:hover {
+    background-color: rgba(0, 188, 212, 0.1);
+    border-color: var(--primary-color);
+}
+
+.shop-item-icon {
+    width: 100px;
+    height: 100px;
+    background-color: rgba(0, 188, 212, 0.2);
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.shop-item-name {
+    font-size: 16px;
+    color: var(--text-color);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-bottom: 4px;
+}
+
+.shop-item-price {
+    font-size: 14px;
+    color: var(--primary-color);
+    -unity-text-align: middle-center;
+    margin-bottom: 8px;
+}
+
+.shop-buy-btn {
+    background-color: var(--primary-color);
+    color: #000000;
+    font-size: 14px;
+    -unity-font-style: bold;
+    padding: 6px 20px;
+    border-radius: 4px;
+    border-width: 0;
+    -unity-text-align: middle-center;
+    transition-duration: 0.15s;
+}
+
+.shop-buy-btn:hover {
+    background-color: #ffffff;
+}
+
+/* ─── TOOLTIP ─── */
+.tooltip-text {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    -unity-text-align: middle-center;
+    margin-bottom: 8px;
+    min-height: 20px;
+}
+
+/* ─── LOGOUT BUTTON ─── */
+.logout-button {
+    color: #ff5252;
+    border-width: 1px;
+    border-color: #ff5252;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.logout-button:hover {
+    background-color: rgba(255, 82, 82, 0.15);
+    padding-left: 30px;
+}
+
+/* ─── DROPDOWN ─── */
+.unity-dropdown-field {
+    color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: var(--border-color);
+}
+
+.unity-dropdown-field__input {
+    color: var(--text-color);
+}

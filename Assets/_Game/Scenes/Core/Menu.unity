@@ -1375,6 +1375,11 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 576385201803430700, guid: 0a68be1bd13d8694e8d8fe85574ac075, type: 3}
   m_PrefabInstance: {fileID: 351642386607453115}
   m_PrefabAsset: {fileID: 0}
+--- !u!82 &204708749 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 415722292874688692, guid: 0a68be1bd13d8694e8d8fe85574ac075, type: 3}
+  m_PrefabInstance: {fileID: 351642386607453115}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &292185260
 GameObject:
   m_ObjectHideFlags: 0
@@ -2648,6 +2653,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 647407423}
   m_CullTransparentMesh: 0
+--- !u!82 &654237786 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 416334276975340224, guid: 0a68be1bd13d8694e8d8fe85574ac075, type: 3}
+  m_PrefabInstance: {fileID: 351642386607453115}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &671917805
 GameObject:
   m_ObjectHideFlags: 0
@@ -3874,6 +3884,11 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!82 &802459843 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 415493337217123926, guid: 0a68be1bd13d8694e8d8fe85574ac075, type: 3}
+  m_PrefabInstance: {fileID: 351642386607453115}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &910618283
 GameObject:
   m_ObjectHideFlags: 0
@@ -6077,6 +6092,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RectMask2D
   m_Padding: {x: -8, y: -5, z: -8, w: -5}
   m_Softness: {x: 0, y: 0}
+--- !u!82 &1326598057 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 415849237809912358, guid: 0a68be1bd13d8694e8d8fe85574ac075, type: 3}
+  m_PrefabInstance: {fileID: 351642386607453115}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1328364626
 GameObject:
   m_ObjectHideFlags: 0
@@ -7356,7 +7376,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1695487546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7461,9 +7481,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIToolkitMenuController
   uiDocument: {fileID: 1720895899}
-  hoverSound: {fileID: 0}
-  clickSound: {fileID: 0}
-  swooshSound: {fileID: 0}
+  hoverSound: {fileID: 654237786}
+  clickSound: {fileID: 204708749}
+  sliderSound: {fileID: 802459843}
+  swooshSound: {fileID: 1326598057}
   playFabLogin: {fileID: 1720895902}
   playFabRegister: {fileID: 1720895901}
 --- !u!114 &1720895901
@@ -9924,6 +9945,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1328364626}
     - target: {fileID: 393194567867878790, guid: 0a68be1bd13d8694e8d8fe85574ac075, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 393194567867878790, guid: 0a68be1bd13d8694e8d8fe85574ac075, type: 3}
       propertyPath: accountMenu
       value: 
       objectReference: {fileID: 1761595643}
@@ -10322,6 +10347,10 @@ PrefabInstance:
     - target: {fileID: 393894333680531994, guid: 0a68be1bd13d8694e8d8fe85574ac075, type: 3}
       propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
       value: 1801810542
+      objectReference: {fileID: 0}
+    - target: {fileID: 393905815672338038, guid: 0a68be1bd13d8694e8d8fe85574ac075, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 393923847841867220, guid: 0a68be1bd13d8694e8d8fe85574ac075, type: 3}
       propertyPath: m_textAlignment
@@ -10829,7 +10858,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 351642386607453115}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 81bc16ca95894c34b836ea33671ae46d, type: 3}
   m_Name: 
