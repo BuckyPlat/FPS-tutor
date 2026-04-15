@@ -1,37 +1,40 @@
 using PlayFab;
 using PlayFab.ClientModels;
-using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 using System.Collections;
 
 public class PlayFabRegister : MonoBehaviour
 {
-    [Header("Register UI")]
-    public TextMeshPro message_Reg;
-    public TMP_InputField user_Reg;
-    public TMP_InputField pass_Reg;
-    public TMP_InputField display_Reg;
+    private TextField user_Reg;
+    private TextField pass_Reg;
+    private TextField display_Reg;
+    private Label message_Reg;
 
     private Coroutine coroutine_Reg;
     private bool isProcessing = false;
 
-    private void Start()
+    public void Initialize(VisualElement root)
     {
-        if (message_Reg != null)
-            message_Reg.gameObject.SetActive(false);
+        user_Reg = root.Q<TextField>("reg-username");
+        pass_Reg = root.Q<TextField>("reg-password");
+        display_Reg = root.Q<TextField>("reg-displayname");
+        message_Reg = root.Q<Label>("reg-message");
+
+        root.Q<Button>("btn-register").clicked += RegisterAccount;
     }
 
     public void RegisterAccount()
     {
         if (isProcessing) return;
 
-        if (string.IsNullOrEmpty(user_Reg.text) || string.IsNullOrEmpty(pass_Reg.text) || string.IsNullOrEmpty(display_Reg.text))
+        if (string.IsNullOrEmpty(user_Reg.value) || string.IsNullOrEmpty(pass_Reg.value) || string.IsNullOrEmpty(display_Reg.value))
         {
-            ShowMessage("Please fill in all fields (Username, Password, Display Name)!");
+            ShowMessage("Please fill in all fields!");
             return;
         }
 
-        if (pass_Reg.text.Length < 6)
+        if (pass_Reg.value.Length < 6)
         {
             ShowMessage("Password must be at least 6 characters!");
             return;
@@ -42,8 +45,8 @@ public class PlayFabRegister : MonoBehaviour
 
         var request = new RegisterPlayFabUserRequest
         {
-            Username = user_Reg.text,
-            Password = pass_Reg.text,
+            Username = user_Reg.value,
+            Password = pass_Reg.value,
             RequireBothUsernameAndEmail = false
         };
         PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnRegisterError);
@@ -58,7 +61,7 @@ public class PlayFabRegister : MonoBehaviour
     {
         var request = new UpdateUserTitleDisplayNameRequest
         {
-            DisplayName = display_Reg.text
+            DisplayName = display_Reg.value
         };
         PlayFabClientAPI.UpdateUserTitleDisplayName(request, OnDisplayNameUpdate, OnError);
     }
@@ -67,7 +70,6 @@ public class PlayFabRegister : MonoBehaviour
     {
         isProcessing = false;
         ShowMessage("Account created successfully!");
-        // REMOVED AUTO BACK TO LOGIN (USER WILL TOGGLE PANEL MANUALLY VIA BUTTON)
     }
 
     private void OnRegisterError(PlayFabError error)
@@ -88,7 +90,7 @@ public class PlayFabRegister : MonoBehaviour
     {
         if (message_Reg == null) return;
         message_Reg.text = text;
-        message_Reg.gameObject.SetActive(true);
+        message_Reg.RemoveFromClassList("hidden");
 
         if (coroutine_Reg != null) StopCoroutine(coroutine_Reg);
         coroutine_Reg = StartCoroutine(HideMessageRoutine());
@@ -97,7 +99,7 @@ public class PlayFabRegister : MonoBehaviour
     private IEnumerator HideMessageRoutine()
     {
         yield return new WaitForSeconds(3f);
-        message_Reg.gameObject.SetActive(false);
+        message_Reg.AddToClassList("hidden");
         coroutine_Reg = null;
     }
 }

@@ -1,43 +1,43 @@
 using PlayFab;
 using PlayFab.ClientModels;
-using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 using System.Collections;
 
 public class PlayFabLogin : MonoBehaviour
 {
-    [Header("Login UI")]
-    public TextMeshPro message_Login;
-    public TMP_InputField user_Login;
-    public TMP_InputField pass_Login;
+    private TextField user_Login;
+    private TextField pass_Login;
+    private Label message_Login;
 
     public static string DisplayNameFromPlayFab;
 
     private Coroutine coroutine_Login;
     private bool isProcessing = false;
 
-    // ==================== NEWLY ADDED ====================
-    [Header("After Login")]
-    public GameObject mainMenuPanel;     // Drag Main Menu Panel here
+    private UIToolkitMenuController menuController;
 
-    private void Start()
+    public void Initialize(VisualElement root, UIToolkitMenuController controller)
     {
-        if (message_Login != null)
-            message_Login.gameObject.SetActive(false);
+        menuController = controller;
+        user_Login = root.Q<TextField>("login-username");
+        pass_Login = root.Q<TextField>("login-password");
+        message_Login = root.Q<Label>("login-message");
+
+        root.Q<Button>("btn-login").clicked += Login;
     }
 
     public void Login()
     {
         if (isProcessing) return;
 
-        if (string.IsNullOrEmpty(user_Login.text) || string.IsNullOrEmpty(pass_Login.text))
+        if (string.IsNullOrEmpty(user_Login.value) || string.IsNullOrEmpty(pass_Login.value))
         {
             ShowMessage("Please enter username and password!");
             return;
         }
 
-        if (pass_Login.text.Length < 6)
+        if (pass_Login.value.Length < 6)
         {
             ShowMessage("Password must be at least 6 characters!");
             return;
@@ -48,8 +48,8 @@ public class PlayFabLogin : MonoBehaviour
 
         var request = new LoginWithPlayFabRequest
         {
-            Username = user_Login.text,
-            Password = pass_Login.text,
+            Username = user_Login.value,
+            Password = pass_Login.value,
 
             InfoRequestParameters = new GetPlayerCombinedInfoRequestParams
             {
@@ -69,32 +69,20 @@ public class PlayFabLogin : MonoBehaviour
         }
         else
         {
-            DisplayNameFromPlayFab = user_Login.text;
+            DisplayNameFromPlayFab = user_Login.value;
         }
 
         Debug.Log("Login Successful! Player Name: " + DisplayNameFromPlayFab);
-
         ShowMessage("Login Successful!");
 
-        // Automatically close Login Panel and open Main Menu Panel after 3 seconds
-        Invoke(nameof(AutoSwitchToMainMenu), 3f);
+        Invoke(nameof(AutoSwitchToMainMenu), 2f);
     }
 
-    // New method: Auto close Login and open Main Menu after 3 seconds
     private void AutoSwitchToMainMenu()
     {
-        // Close current Login panel
-        gameObject.SetActive(false);
-
-        // Open Main Menu panel
-        if (mainMenuPanel != null)
+        if (menuController != null)
         {
-            mainMenuPanel.SetActive(true);
-            Debug.Log("Automatically switched from Login to Main Menu Panel");
-        }
-        else
-        {
-            Debug.LogWarning("Main Menu Panel is not assigned in PlayFabLogin!");
+            menuController.ShowScreen("main-menu-screen");
         }
     }
 
@@ -110,7 +98,7 @@ public class PlayFabLogin : MonoBehaviour
         if (message_Login == null) return;
 
         message_Login.text = text;
-        message_Login.gameObject.SetActive(true);
+        message_Login.RemoveFromClassList("hidden");
 
         if (coroutine_Login != null) StopCoroutine(coroutine_Login);
         coroutine_Login = StartCoroutine(HideMessageRoutine());
@@ -119,7 +107,7 @@ public class PlayFabLogin : MonoBehaviour
     private IEnumerator HideMessageRoutine()
     {
         yield return new WaitForSeconds(3f);
-        message_Login.gameObject.SetActive(false);
+        message_Login.AddToClassList("hidden");
         coroutine_Login = null;
     }
 }

@@ -1,0 +1,99 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Style src="MenuStyles.uss" />
+    <ui:VisualElement name="root-container" class="screen">
+        
+        <!-- LOGIN SCREEN -->
+        <ui:VisualElement name="login-screen" class="panel">
+            <ui:Label text="LOGIN" class="title" />
+            <ui:TextField name="login-username" label="Username" class="unity-text-field" />
+            <ui:TextField name="login-password" label="Password" password="true" class="unity-text-field" />
+            <ui:Button name="btn-login" text="LOGIN" class="menu-button" />
+            <ui:Button name="btn-goto-register" text="CREATE ACCOUNT" class="menu-button" />
+            <ui:Label name="login-message" text="Message goes here" class="hidden" style="color: red; -unity-text-align: middle-center;" />
+        </ui:VisualElement>
+
+        <!-- REGISTER SCREEN -->
+        <ui:VisualElement name="register-screen" class="panel hidden">
+            <ui:Label text="REGISTER" class="title" />
+            <ui:TextField name="reg-displayname" label="Display Name" />
+            <ui:TextField name="reg-username" label="Username" />
+            <ui:TextField name="reg-password" label="Password" password="true" />
+            <ui:Button name="btn-register" text="REGISTER" class="menu-button" />
+            <ui:Button name="btn-back-to-login" text="BACK TO LOGIN" class="menu-button" />
+            <ui:Label name="reg-message" text="Message goes here" class="hidden" style="color: red; -unity-text-align: middle-center;" />
+        </ui:VisualElement>
+
+        <!-- MAIN MENU -->
+        <ui:VisualElement name="main-menu-screen" class="panel hidden">
+            <ui:Label text="FPS MULTIPLAYER" class="title" />
+            <ui:Button name="btn-play" text="PLAY" class="menu-button" />
+            <ui:Button name="btn-options" text="OPTIONS" class="menu-button" />
+            <ui:Button name="btn-extras" text="EXTRAS" class="menu-button" />
+            <ui:Button name="btn-exit" text="EXIT" class="menu-button" />
+        </ui:VisualElement>
+
+        <!-- PLAY MENU -->
+        <ui:VisualElement name="play-menu-screen" class="panel hidden">
+            <ui:Label text="SELECT MODE" class="title" />
+            <ui:Button name="btn-mode-campaign" text="CAMPAIGN" class="menu-button" />
+            <ui:Button name="btn-mode-survival" text="SURVIVAL" class="menu-button" />
+            <ui:Button name="btn-play-back" text="BACK" class="menu-button" />
+        </ui:VisualElement>
+
+        <!-- SETTINGS MENU -->
+        <ui:VisualElement name="settings-screen" class="panel hidden" style="width: 800px;">
+            <ui:Label text="SETTINGS" class="title" />
+            
+            <ui:VisualElement class="tab-container">
+                <ui:Button name="tab-game" text="GAME" class="tab-button active" />
+                <ui:Button name="tab-video" text="VIDEO" class="tab-button" />
+                <ui:Button name="tab-controls" text="CONTROLS" class="tab-button" />
+            </ui:VisualElement>
+
+            <!-- GAME PANEL -->
+            <ui:VisualElement name="panel-game">
+                <ui:VisualElement class="settings-row">
+                    <ui:Label text="Difficulty" class="settings-label" />
+                    <ui:VisualElement style="flex-direction: row;">
+                        <ui:Button name="btn-diff-normal" text="NORMAL" class="menu-button" />
+                        <ui:Button name="btn-diff-hard" text="HARDCORE" class="menu-button" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:Toggle name="toggle-hud" label="Show HUD" class="settings-label" />
+            </ui:VisualElement>
+
+            <!-- VIDEO PANEL -->
+            <ui:VisualElement name="panel-video" class="hidden">
+                 <ui:Toggle name="toggle-fullscreen" label="Full Screen" class="settings-label" />
+                 <ui:VisualElement class="settings-row">
+                    <ui:Label text="Texture Quality" class="settings-label" />
+                    <ui:VisualElement style="flex-direction: row;">
+                        <ui:Button name="btn-tex-low" text="LOW" class="menu-button" />
+                        <ui:Button name="btn-tex-med" text="MED" class="menu-button" />
+                        <ui:Button name="btn-tex-high" text="HIGH" class="menu-button" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- CONTROLS PANEL -->
+            <ui:VisualElement name="panel-controls" class="hidden">
+                <ui:Slider name="slider-sens-x" label="Sensitivity X" low-value="0.1" high-value="10" />
+                <ui:Slider name="slider-sens-y" label="Sensitivity Y" low-value="0.1" high-value="10" />
+                <ui:Slider name="slider-smooth" label="Mouse Smoothing" low-value="0" high-value="1" />
+                <ui:Toggle name="toggle-invert" label="Invert Mouse" />
+            </ui:VisualElement>
+
+            <ui:Button name="btn-settings-back" text="BACK" class="menu-button" style="margin-top: 20px;" />
+        </ui:VisualElement>
+
+        <!-- EXIT CONFIRMATION -->
+        <ui:VisualElement name="exit-screen" class="panel hidden">
+            <ui:Label text="ARE YOU SURE?" class="title" />
+            <ui:VisualElement style="flex-direction: row; justify-content: center;">
+                <ui:Button name="btn-exit-yes" text="YES" class="menu-button" />
+                <ui:Button name="btn-exit-no" text="NO" class="menu-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,97 @@
+/* MenuStyles.uss */
+:root {
+    --bg-color: rgba(30, 30, 30, 0.7);
+    --primary-color: #00bcd4;
+    --text-color: #ffffff;
+    --border-color: rgba(255, 255, 255, 0.2);
+    --hover-color: rgba(255, 255, 255, 0.1);
+}
+
+.screen {
+    flex-grow: 1;
+    background-color: transparent;
+    padding: 40px;
+    align-items: center;
+    justify-content: center;
+}
+
+.panel {
+    background-color: var(--bg-color);
+    border-color: var(--border-color);
+    border-width: 1px;
+    border-radius: 8px;
+    padding: 20px;
+    min-width: 400px;
+}
+
+.title {
+    font-size: 48px;
+    color: var(--text-color);
+    -unity-font-style: bold;
+    margin-bottom: 30px;
+    -unity-text-align: middle-center;
+}
+
+.menu-button {
+    background-color: transparent;
+    border-width: 0;
+    color: var(--text-color);
+    font-size: 24px;
+    padding: 10px 20px;
+    margin: 5px;
+    transition-duration: 0.2s;
+    -unity-text-align: middle-left;
+}
+
+.menu-button:hover {
+    background-color: var(--hover-color);
+    padding-left: 30px;
+    color: var(--primary-color);
+}
+
+.tab-container {
+    flex-direction: row;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--border-color);
+    margin-bottom: 10px;
+}
+
+.tab-button {
+    background-color: transparent;
+    border-width: 0;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 10px 20px;
+    font-size: 18px;
+}
+
+.tab-button.active {
+    color: var(--primary-color);
+    border-bottom-width: 2px;
+    border-bottom-color: var(--primary-color);
+}
+
+.hidden {
+    display: none;
+}
+
+.settings-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.settings-label {
+    font-size: 18px;
+    color: var(--text-color);
+}
+
+.unity-slider {
+    flex-grow: 1;
+    margin-left: 20px;
+}
+
+.unity-text-field {
+    margin-bottom: 10px;
+}
