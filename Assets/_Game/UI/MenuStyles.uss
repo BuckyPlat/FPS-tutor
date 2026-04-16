@@ -570,45 +570,100 @@
     color: #FFFFFF;
 }
 
-/* Sliders */
+/* ── SLIDERS ───────────────────────────────────────────────────── */
+/*
+ * BaseSlider USS hierarchy:
+ *   .unity-slider / .unity-base-slider (root = the full field row)
+ *     ├── .unity-base-slider__label   ← auto-generated from label=""
+ *     └── .unity-base-slider__input  / .unity-base-field__input
+ *          └── .unity-base-slider__drag-container
+ *               ├── .unity-base-slider__tracker     (the rail)
+ *               ├── .unity-base-slider__fill        (filled portion)
+ *               └── .unity-base-slider__dragger     (the thumb)
+ *                    └── .unity-base-slider__dragger-border
+ *
+ * BEST PRACTICE (from Unity docs & search):
+ *   1. Do NOT set position/top/left on dragger or fill in custom USS.
+ *      Unity's C# already does this internally (dragger moves via style.left).
+ *      Overriding position can break the built-in slider logic.
+ *   2. Only set VISUAL properties: width, height, background-color, border, etc.
+ *   3. Use align-items: center on drag-container — this centers ALL flex
+ *      children AND absolutely-positioned children in the cross-axis (Yoga rule).
+ *   4. overflow: visible lets a tall dragger (16px) overflow a short rail (4px).
+ */
 .unity-slider {
-    min-width: 200px;
+    flex-grow: 1;
+    min-width: 160px;
     margin-left: 20px;
 }
 
-/* Correct selector per BaseSlider USS classes docs */
+/* align-items: center = centers tracker, fill AND dragger vertically.
+   Yoga applies cross-axis alignment to absolute flex-children too.
+   overflow: visible = dragger (16px) can overflow the 4px rail. */
 .unity-base-slider__drag-container {
+    align-items: center;
+    overflow: visible;
+}
+
+/* Rail — visual only, no position override */
+.unity-base-slider__tracker {
+    height: 4px;
+    border-radius: 2px;
+    border-width: 0;
+    background-color: rgba(255, 255, 255, 0.15);
+    transition-property: background-color;
+    transition-duration: 0.2s;
+}
+
+.unity-slider:hover .unity-base-slider__tracker {
+    background-color: rgba(255, 255, 255, 0.30);
+}
+
+/* Fill bar — visual only, no position override (Unity C# handles right/width) */
+.unity-base-slider__fill {
+    height: 4px;
+    border-radius: 2px;
+    border-width: 0;
+    background-color: var(--red);
+}
+
+/* Dragger — visual only (Unity C# handles position, left, top) */
+.unity-base-slider__dragger {
+    width: 16px;
+    height: 16px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    border-width: 2px;
+    border-color: var(--red);
+    transition-property: border-color, background-color;
+    transition-duration: 0.15s;
+}
+
+.unity-slider:hover .unity-base-slider__dragger {
+    border-color: #ff6b7a;
+    background-color: rgba(255, 255, 255, 0.95);
+}
+
+.unity-base-slider__dragger:active {
+    background-color: var(--red);
+    border-color: #ffffff;
+}
+
+/* Suppress inner border ring */
+.unity-base-slider__dragger-border {
+    border-width: 0;
+}
+
+/* ── TOGGLES ───────────────────────────────────────────────────── */
+/* Hierarchy: .unity-toggle > .unity-base-field__label (auto label)
+              .unity-toggle > .unity-toggle__input
+                              > .unity-toggle__checkmark              */
+.unity-toggle {
+    margin-bottom: 0;
     flex-grow: 1;
 }
 
-.unity-base-slider__tracker {
-    background-color: var(--border-mid);
-    height: 3px;
-    border-radius: 2px;
-    border-width: 0;
-}
-
-.unity-base-slider__dragger {
-    background-color: var(--red);
-    border-width: 0;
-    border-radius: 6px;
-    width: 14px;
-    height: 14px;
-    margin-top: -6px;
-}
-
-.unity-base-slider__fill {
-    background-color: var(--red);
-    height: 3px;
-    border-radius: 2px;
-    border-width: 0;
-}
-
-/* Toggles */
-.unity-toggle {
-    margin-bottom: 0;
-}
-
+/* Auto-generated label text (from label="..." attribute) */
 .unity-toggle__label {
     font-size: 13px;
     color: var(--text-secondary);
@@ -618,16 +673,31 @@
     margin-left: 0;
 }
 
-.unity-toggle__checkmark {
-    background-color: var(--bg-input);
-    border-color: var(--border-mid);
-    border-radius: var(--radius-sm);
-    width: 20px;
-    height: 20px;
-    border-width: 1px;
+/* Input wrapper — strip Unity default background/border */
+.unity-toggle__input {
+    background-color: transparent;
+    border-width: 0;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
 }
 
+/* Visual pill track — suppress Unity's default checkmark icon
+   with -unity-background-image-tint-color: rgba(0,0,0,0)      */
+.unity-toggle__checkmark {
+    -unity-background-image-tint-color: rgba(0, 0, 0, 0);
+    background-color: rgba(255, 255, 255, 0.40);
+    border-color: rgba(255, 255, 255, 0.50);
+    border-radius: 11px;
+    width: 44px;
+    height: 22px;
+    border-width: 1px;
+    transition-duration: 0.15s;
+}
+
+/* Checked / ON state */
 .unity-toggle:checked .unity-toggle__checkmark {
+    -unity-background-image-tint-color: rgba(0, 0, 0, 0);
     background-color: var(--red);
     border-color: var(--red);
 }
@@ -1009,7 +1079,7 @@
 .top-overlay {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    pointer-events: none;
+    /* picking-mode: ignore — USS not supported; set via C# pickingMode property */
 }
 
 .overlay-version {
@@ -1027,7 +1097,7 @@
     right: 20px;
     flex-direction: row;
     align-items: center;
-    pointer-events: auto;
+    /* picking-mode: position — USS not supported; set via C# pickingMode property */
 }
 
 .social-btn {

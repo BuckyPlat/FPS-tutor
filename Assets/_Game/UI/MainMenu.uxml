@@ -315,7 +315,7 @@
                             </ui:VisualElement>
                             <ui:VisualElement class="settings-row">
                                 <ui:Label text="Music Volume" class="settings-label" />
-                                <ui:Slider name="slider-music" low-value="0" high-value="1" class="unity-slider" />
+                                <ui:Slider name="slider-music" low-value="0" high-value="1" value="0.7" fill="true" class="unity-slider" />
                             </ui:VisualElement>
                         </ui:VisualElement>
 
@@ -373,15 +373,15 @@
                             </ui:VisualElement>
                             <ui:VisualElement class="settings-row">
                                 <ui:Label text="Sensitivity X" class="settings-label" />
-                                <ui:Slider name="slider-sens-x" low-value="0.1" high-value="10" class="unity-slider" />
+                                <ui:Slider name="slider-sens-x" low-value="0.1" high-value="10" value="3" fill="true" class="unity-slider" />
                             </ui:VisualElement>
                             <ui:VisualElement class="settings-row">
                                 <ui:Label text="Sensitivity Y" class="settings-label" />
-                                <ui:Slider name="slider-sens-y" low-value="0.1" high-value="10" class="unity-slider" />
+                                <ui:Slider name="slider-sens-y" low-value="0.1" high-value="10" value="3" fill="true" class="unity-slider" />
                             </ui:VisualElement>
                             <ui:VisualElement class="settings-row">
                                 <ui:Label text="Mouse Smoothing" class="settings-label" />
-                                <ui:Slider name="slider-smooth" low-value="0" high-value="1" class="unity-slider" />
+                                <ui:Slider name="slider-smooth" low-value="0" high-value="1" value="0.3" fill="true" class="unity-slider" />
                             </ui:VisualElement>
                             <ui:VisualElement class="settings-row">
                                 <ui:Toggle name="toggle-invert" label="Invert Mouse Y" class="unity-toggle" />

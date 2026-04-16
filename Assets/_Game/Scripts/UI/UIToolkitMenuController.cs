@@ -124,6 +124,12 @@ public class UIToolkitMenuController : MonoBehaviour
         sidebarPlayerName = root.Q<Label>("sidebar-player-name");
         loadingProgress  = root.Q<ProgressBar>("loading-progress");
         loadingPrompt    = root.Q<Label>("loading-prompt");
+
+        // top-overlay is absolutely positioned over the full screen.
+        // PickingMode.Ignore lets pointer events pass through its background
+        // to the sidebar / content below; child buttons still receive events.
+        var topOverlay = root.Q("top-overlay");
+        if (topOverlay != null) topOverlay.pickingMode = PickingMode.Ignore;
     }
 
     // ═══════════════════════════════════════════════════════════════
