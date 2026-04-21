@@ -1,7 +1,8 @@
-using UnityEngine;
-using UnityEngine.UIElements;
-using UnityEngine.SceneManagement;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 public class UIToolkitMenuController : MonoBehaviour
 {
@@ -18,13 +19,11 @@ public class UIToolkitMenuController : MonoBehaviour
     public PlayFabLogin playFabLogin;
     public PlayFabRegister playFabRegister;
 
-    // ── Root-level shells ──────────────────────────────────────────
     private VisualElement root;
-    private VisualElement shellLogin;       // login-screen     (root level)
-    private VisualElement shellRegister;    // register-screen  (root level)
-    private VisualElement shellMain;        // main-shell       (root level)
+    private VisualElement shellLogin;
+    private VisualElement shellRegister;
+    private VisualElement shellMain;
 
-    // ── Content screens inside main-shell ─────────────────────────
     private VisualElement screenPlay;
     private VisualElement screenShop;
     private VisualElement screenInventory;
@@ -33,26 +32,69 @@ public class UIToolkitMenuController : MonoBehaviour
     private VisualElement screenExit;
     private VisualElement screenLoading;
 
-    // ── Settings sub-panels ───────────────────────────────────────
-    private VisualElement panelGame, panelVideo, panelControls, panelKeyBindings;
+    private VisualElement panelGame;
+    private VisualElement panelVideo;
+    private VisualElement panelControls;
+    private VisualElement panelKeyBindings;
 
-    // ── Shared labels ─────────────────────────────────────────────
-    private Label loginMessage, regMessage;
-    private Label sidebarCoins, shopCoins;
+    private Label sidebarCoins;
+    private Label shopCoins;
     private Label sidebarPlayerName;
     private ProgressBar loadingProgress;
     private Label loadingPrompt;
+    private VisualElement loadingPanel;
 
-    // ── Nav buttons (for active-class management) ─────────────────
+    private readonly List<VisualElement> shellLayers = new List<VisualElement>();
+    private readonly List<VisualElement> primaryScreens = new List<VisualElement>();
+    private readonly List<VisualElement> overlayScreens = new List<VisualElement>();
+    private readonly List<VisualElement> settingsPanels = new List<VisualElement>();
+    private readonly List<VisualElement> keybindingPanels = new List<VisualElement>();
+    private readonly List<VisualElement> reticleElements = new List<VisualElement>();
+    private readonly Dictionary<VisualElement, int> motionTickets = new Dictionary<VisualElement, int>();
+
     private static readonly string[] NavIds =
-        { "nav-play", "nav-shop", "nav-inventory", "nav-account", "nav-settings" };
+    {
+        "nav-play",
+        "nav-shop",
+        "nav-inventory",
+        "nav-account",
+        "nav-settings"
+    };
+
+    private static readonly string[] SettingsTabIds =
+    {
+        "tab-game",
+        "tab-video",
+        "tab-controls",
+        "tab-keybindings"
+    };
+
+    private static readonly string[] KeybindTabIds =
+    {
+        "tab-kb-movement",
+        "tab-kb-combat",
+        "tab-kb-general"
+    };
+
+    private const int MotionWarmupMs = 18;
+    private const int MotionFadeMs = 260;
+    private const int ReticleMotionIntervalMs = 6800;
+    private const int LoadingPulseIntervalMs = 900;
 
     private Animator cameraAnimator;
     private int coinCount;
+    private bool callbacksRegistered;
+    private bool reticleMotionAlt;
+    private bool loadingReadyState;
+    private VisualElement currentPrimaryScreen;
+    private VisualElement currentOverlayScreen;
+    private VisualElement currentSettingsPanel;
+    private VisualElement currentKeybindingPanel;
+    private IVisualElementScheduledItem reticleMotionItem;
+    private IVisualElementScheduledItem loadingPulseItem;
 
-    // Shop data
-    private static readonly string[] ShopItemNames   = { "Cartoon Pack", "Sci-Fi Pack", "Epic Bundle" };
-    private static readonly int[]    ShopItemPrices  = { 50, 100, 200 };
+    private static readonly string[] ShopItemNames = { "Cartoon Pack", "Sci-Fi Pack", "Epic Bundle" };
+    private static readonly int[] ShopItemPrices = { 50, 100, 200 };
     private static readonly string[] ShopItemTooltips =
     {
         "Colorful cartoon weapon skins. Great for a fun look!",
@@ -60,27 +102,45 @@ public class UIToolkitMenuController : MonoBehaviour
         "Exclusive bundle with all premium skins included!"
     };
 
-    // ═══════════════════════════════════════════════════════════════
-    void OnEnable()
+    private void OnEnable()
     {
-        if (uiDocument == null) uiDocument = GetComponent<UIDocument>();
-        if (uiDocument == null) return;
+        if (uiDocument == null)
+        {
+            uiDocument = GetComponent<UIDocument>();
+        }
+
+        if (uiDocument == null)
+        {
+            return;
+        }
 
         root = uiDocument.rootVisualElement;
 
         var cam = Camera.main;
-        if (cam != null) cameraAnimator = cam.GetComponent<Animator>();
+        if (cam != null)
+        {
+            cameraAnimator = cam.GetComponent<Animator>();
+        }
 
         QueryElements();
+        InitializeMotionState();
         RegisterCallbacks();
 
-        if (playFabLogin    != null) playFabLogin.Initialize(root, this);
-        if (playFabRegister != null) playFabRegister.Initialize(root);
+        if (playFabLogin != null)
+        {
+            playFabLogin.Initialize(root, this);
+        }
 
-        // Music restore
+        if (playFabRegister != null)
+        {
+            playFabRegister.Initialize(root);
+        }
+
         var mainAudio = cam != null ? cam.GetComponent<AudioSource>() : null;
         if (mainAudio != null && PlayerPrefs.HasKey("MusicVolume"))
+        {
             mainAudio.volume = PlayerPrefs.GetFloat("MusicVolume");
+        }
 
         coinCount = PlayerPrefs.GetInt("CoinCount", 1000);
         RefreshCoinDisplays();
@@ -90,267 +150,699 @@ public class UIToolkitMenuController : MonoBehaviour
         LoadSettingsIntoUI();
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // ELEMENT QUERIES
-    // ═══════════════════════════════════════════════════════════════
-
-    void QueryElements()
+    private void OnDisable()
     {
-        // Root-level shells
-        shellLogin    = root.Q("login-screen");
-        shellRegister = root.Q("register-screen");
-        shellMain     = root.Q("main-shell");
+        StopAmbientMotion();
+        StopLoadingPulse();
+        UnregisterCallbacks();
 
-        // Content screens
-        screenPlay      = root.Q("play-screen");
-        screenShop      = root.Q("shop-screen");
-        screenInventory = root.Q("inventory-screen");
-        screenAccount   = root.Q("account-screen");
-        screenSettings  = root.Q("settings-screen");
-        screenExit      = root.Q("exit-screen");
-        screenLoading   = root.Q("loading-screen");
-
-        // Settings panels
-        panelGame        = root.Q("panel-game");
-        panelVideo       = root.Q("panel-video");
-        panelControls    = root.Q("panel-controls");
-        panelKeyBindings = root.Q("panel-keybindings");
-
-        // Labels
-        loginMessage     = root.Q<Label>("login-message");
-        regMessage       = root.Q<Label>("reg-message");
-        sidebarCoins     = root.Q<Label>("sidebar-coins");
-        shopCoins        = root.Q<Label>("lbl-shop-coins");
-        sidebarPlayerName = root.Q<Label>("sidebar-player-name");
-        loadingProgress  = root.Q<ProgressBar>("loading-progress");
-        loadingPrompt    = root.Q<Label>("loading-prompt");
-
-        // top-overlay is absolutely positioned over the full screen.
-        // PickingMode.Ignore lets pointer events pass through its background
-        // to the sidebar / content below; child buttons still receive events.
-        var topOverlay = root.Q("top-overlay");
-        if (topOverlay != null) topOverlay.pickingMode = PickingMode.Ignore;
-    }
-
-    // ═══════════════════════════════════════════════════════════════
-    // CALLBACKS
-    // ═══════════════════════════════════════════════════════════════
-
-    void RegisterCallbacks()
-    {
-        // ── Auth ──────────────────────────────────────────────────
-        root.Q<Button>("btn-login")?.RegisterCallback<ClickEvent>(e => OnLoginClicked());
-        root.Q<Button>("btn-goto-register")?.RegisterCallback<ClickEvent>(e => { ShowRegister(); PlayClick(); });
-        root.Q<Button>("btn-back-to-login")?.RegisterCallback<ClickEvent>(e => { ShowLogin(); PlayClick(); });
-
-        // ── Sidebar Navigation ────────────────────────────────────
-        root.Q<Button>("nav-play")?.RegisterCallback<ClickEvent>(e =>
+        if (playFabLogin != null)
         {
-            SetActiveNav("nav-play");
-            ShowContentScreen(screenPlay);
-            PlayClick();
-        });
-        root.Q<Button>("nav-shop")?.RegisterCallback<ClickEvent>(e =>
-        {
-            SetActiveNav("nav-shop");
-            RefreshCoinDisplays();
-            ShowContentScreen(screenShop);
-            PlayClick();
-        });
-        root.Q<Button>("nav-inventory")?.RegisterCallback<ClickEvent>(e =>
-        {
-            SetActiveNav("nav-inventory");
-            ShowContentScreen(screenInventory);
-            PlayClick();
-        });
-        root.Q<Button>("nav-account")?.RegisterCallback<ClickEvent>(e =>
-        {
-            SetActiveNav("nav-account");
-            UpdateAccountDetails();
-            ShowContentScreen(screenAccount);
-            PlayClick();
-        });
-        root.Q<Button>("nav-settings")?.RegisterCallback<ClickEvent>(e =>
-        {
-            SetActiveNav("nav-settings");
-            ShowContentScreen(screenSettings);
-            PlaySwoosh();
-            Position2();
-        });
-        root.Q<Button>("nav-exit")?.RegisterCallback<ClickEvent>(e =>
-        {
-            ShowContentScreen(screenExit);
-            PlayClick();
-        });
-
-        // ── Play modes ────────────────────────────────────────────
-        root.Q<Button>("btn-mode-campaign")?.RegisterCallback<ClickEvent>(e => StartCampaign());
-        root.Q<Button>("btn-mode-survival")?.RegisterCallback<ClickEvent>(e =>
-        {
-            PlayClick();
-            Debug.Log("Survival mode not yet implemented.");
-        });
-
-        // ── Exit dialog ───────────────────────────────────────────
-        root.Q<Button>("btn-exit-yes")?.RegisterCallback<ClickEvent>(e => QuitGame());
-        root.Q<Button>("btn-exit-no")?.RegisterCallback<ClickEvent>(e =>
-        {
-            ShowContentScreen(screenPlay);
-            SetActiveNav("nav-play");
-            PlayClick();
-        });
-
-        // ── Logout ────────────────────────────────────────────────
-        root.Q<Button>("btn-logout")?.RegisterCallback<ClickEvent>(e => Logout());
-
-        // ── Social links ──────────────────────────────────────────
-        root.Q<Button>("btn-social-discord")?.RegisterCallback<ClickEvent>(e => { Application.OpenURL("https://discord.com"); PlayClick(); });
-        root.Q<Button>("btn-social-twitter")?.RegisterCallback<ClickEvent>(e => { Application.OpenURL("https://twitter.com"); PlayClick(); });
-        root.Q<Button>("btn-social-web")?.RegisterCallback<ClickEvent>(e => { Application.OpenURL("https://unity.com"); PlayClick(); });
-
-        // ── Settings Tabs ─────────────────────────────────────────
-        root.Q<Button>("tab-game")?        .RegisterCallback<ClickEvent>(e => ShowSettingsPanel("panel-game",        "tab-game"));
-        root.Q<Button>("tab-video")?       .RegisterCallback<ClickEvent>(e => ShowSettingsPanel("panel-video",       "tab-video"));
-        root.Q<Button>("tab-controls")?    .RegisterCallback<ClickEvent>(e => ShowSettingsPanel("panel-controls",    "tab-controls"));
-        root.Q<Button>("tab-keybindings")? .RegisterCallback<ClickEvent>(e => ShowSettingsPanel("panel-keybindings", "tab-keybindings"));
-
-        // ── KB Sub-Tabs ───────────────────────────────────────────
-        root.Q<Button>("tab-kb-movement")?.RegisterCallback<ClickEvent>(e => ShowKBPanel("panel-kb-movement", "tab-kb-movement"));
-        root.Q<Button>("tab-kb-combat")?  .RegisterCallback<ClickEvent>(e => ShowKBPanel("panel-kb-combat",   "tab-kb-combat"));
-        root.Q<Button>("tab-kb-general")? .RegisterCallback<ClickEvent>(e => ShowKBPanel("panel-kb-general",  "tab-kb-general"));
-
-        // ── Game Settings ─────────────────────────────────────────
-        root.Q<Button>("btn-diff-normal")?.RegisterCallback<ClickEvent>(e => { SetDifficulty(true);  PlayClick(); });
-        root.Q<Button>("btn-diff-hard")?  .RegisterCallback<ClickEvent>(e => { SetDifficulty(false); PlayClick(); });
-
-        root.Q<Toggle>("toggle-hud")?      .RegisterValueChangedCallback(e => PlayerPrefs.SetInt("ShowHUD", e.newValue ? 1 : 0));
-        root.Q<Toggle>("toggle-tooltips")? .RegisterValueChangedCallback(e => PlayerPrefs.SetInt("ToolTips", e.newValue ? 1 : 0));
-
-        root.Q<Slider>("slider-music")?.RegisterValueChangedCallback(e =>
-        {
-            PlayerPrefs.SetFloat("MusicVolume", e.newValue);
-            PlaySlider();
-            var cam = Camera.main;
-            if (cam != null)
-            {
-                var src = cam.GetComponent<AudioSource>();
-                if (src != null) src.volume = e.newValue;
-            }
-        });
-
-        // ── Video ─────────────────────────────────────────────────
-        root.Q<Toggle>("toggle-fullscreen")?   .RegisterValueChangedCallback(e => Screen.fullScreen = e.newValue);
-        root.Q<Toggle>("toggle-vsync")?        .RegisterValueChangedCallback(e => QualitySettings.vSyncCount = e.newValue ? 1 : 0);
-        root.Q<Toggle>("toggle-motionblur")?   .RegisterValueChangedCallback(e => PlayerPrefs.SetInt("MotionBlur", e.newValue ? 1 : 0));
-        root.Q<Toggle>("toggle-ao")?           .RegisterValueChangedCallback(e => PlayerPrefs.SetInt("AmbientOcclusion", e.newValue ? 1 : 0));
-        root.Q<Toggle>("toggle-cameraeffects")?.RegisterValueChangedCallback(e => PlayerPrefs.SetInt("CameraEffects", e.newValue ? 1 : 0));
-
-        root.Q<Button>("btn-tex-low")?   .RegisterCallback<ClickEvent>(e => { SetTextureQuality(0); PlayClick(); });
-        root.Q<Button>("btn-tex-med")?   .RegisterCallback<ClickEvent>(e => { SetTextureQuality(1); PlayClick(); });
-        root.Q<Button>("btn-tex-high")?  .RegisterCallback<ClickEvent>(e => { SetTextureQuality(2); PlayClick(); });
-
-        root.Q<Button>("btn-shadow-off")?.RegisterCallback<ClickEvent>(e => { SetShadowQuality(0); PlayClick(); });
-        root.Q<Button>("btn-shadow-low")?.RegisterCallback<ClickEvent>(e => { SetShadowQuality(1); PlayClick(); });
-        root.Q<Button>("btn-shadow-high")?.RegisterCallback<ClickEvent>(e => { SetShadowQuality(2); PlayClick(); });
-
-        root.Q<Button>("btn-aa-off")?.RegisterCallback<ClickEvent>(e => { QualitySettings.antiAliasing = 0; PlayClick(); });
-        root.Q<Button>("btn-aa-2x")? .RegisterCallback<ClickEvent>(e => { QualitySettings.antiAliasing = 2; PlayClick(); });
-        root.Q<Button>("btn-aa-4x")? .RegisterCallback<ClickEvent>(e => { QualitySettings.antiAliasing = 4; PlayClick(); });
-        root.Q<Button>("btn-aa-8x")? .RegisterCallback<ClickEvent>(e => { QualitySettings.antiAliasing = 8; PlayClick(); });
-
-        // ── Controls ──────────────────────────────────────────────
-        root.Q<DropdownField>("dropdown-control-scheme")?.RegisterValueChangedCallback(e =>
-            PlayerPrefs.SetInt("ControlScheme", e.newValue == "Controller" ? 1 : 0));
-        root.Q<Slider>("slider-sens-x")?.RegisterValueChangedCallback(e => { PlayerPrefs.SetFloat("MouseSensX", e.newValue); PlaySlider(); });
-        root.Q<Slider>("slider-sens-y")?.RegisterValueChangedCallback(e => { PlayerPrefs.SetFloat("MouseSensY", e.newValue); PlaySlider(); });
-        root.Q<Slider>("slider-smooth")?.RegisterValueChangedCallback(e => { PlayerPrefs.SetFloat("MouseSmooth", e.newValue); PlaySlider(); });
-        root.Q<Toggle>("toggle-invert")?.RegisterValueChangedCallback(e => PlayerPrefs.SetInt("MouseInvert", e.newValue ? 1 : 0));
-
-        // ── Shop Grid ─────────────────────────────────────────────
-        var shopTooltip = root.Q<Label>("lbl-shop-tooltip");
-        for (int i = 0; i < ShopItemNames.Length; i++)
-        {
-            int idx = i;
-            var item = root.Q("shop-item-" + idx);
-            if (item != null)
-            {
-                item.RegisterCallback<PointerOverEvent>(_ =>
-                {
-                    if (shopTooltip != null) shopTooltip.text = ShopItemTooltips[idx];
-                    PlayHover();
-                });
-                item.RegisterCallback<PointerOutEvent>(_ =>
-                {
-                    if (shopTooltip != null) shopTooltip.text = " ";
-                });
-            }
-            root.Q<Button>("btn-buy-item-" + idx)?.RegisterCallback<ClickEvent>(e => BuyItem(idx));
+            playFabLogin.Deinitialize();
         }
 
-        // ── Global hover sound ────────────────────────────────────
-        root.Query<Button>().ForEach(btn =>
-            btn.RegisterCallback<PointerOverEvent>(evt => PlayHover()));
+        if (playFabRegister != null)
+        {
+            playFabRegister.Deinitialize();
+        }
+
+        root = null;
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // SHELL NAVIGATION  (Login / Register / Main)
-    // ═══════════════════════════════════════════════════════════════
-
-    void ShowLogin()
+    private void QueryElements()
     {
-        shellLogin?   .RemoveFromClassList("hidden");
-        shellRegister?.AddToClassList("hidden");
-        shellMain?    .AddToClassList("hidden");
+        shellLogin = root.Q("login-screen");
+        shellRegister = root.Q("register-screen");
+        shellMain = root.Q("main-shell");
+
+        screenPlay = root.Q("play-screen");
+        screenShop = root.Q("shop-screen");
+        screenInventory = root.Q("inventory-screen");
+        screenAccount = root.Q("account-screen");
+        screenSettings = root.Q("settings-screen");
+        screenExit = root.Q("exit-screen");
+        screenLoading = root.Q("loading-screen");
+
+        panelGame = root.Q("panel-game");
+        panelVideo = root.Q("panel-video");
+        panelControls = root.Q("panel-controls");
+        panelKeyBindings = root.Q("panel-keybindings");
+
+        sidebarCoins = root.Q<Label>("sidebar-coins");
+        shopCoins = root.Q<Label>("lbl-shop-coins");
+        sidebarPlayerName = root.Q<Label>("sidebar-player-name");
+        loadingProgress = root.Q<ProgressBar>("loading-progress");
+        loadingPrompt = root.Q<Label>("loading-prompt");
+        loadingPanel = root.Q(className: "loading-panel");
+
+        var topOverlay = root.Q("top-overlay");
+        if (topOverlay != null)
+        {
+            topOverlay.pickingMode = PickingMode.Ignore;
+        }
+
+        shellLayers.Clear();
+        AddIfPresent(shellLayers, shellLogin);
+        AddIfPresent(shellLayers, shellRegister);
+        AddIfPresent(shellLayers, shellMain);
+
+        primaryScreens.Clear();
+        AddIfPresent(primaryScreens, screenPlay);
+        AddIfPresent(primaryScreens, screenShop);
+        AddIfPresent(primaryScreens, screenInventory);
+        AddIfPresent(primaryScreens, screenAccount);
+        AddIfPresent(primaryScreens, screenSettings);
+
+        overlayScreens.Clear();
+        AddIfPresent(overlayScreens, screenExit);
+        AddIfPresent(overlayScreens, screenLoading);
+
+        settingsPanels.Clear();
+        AddIfPresent(settingsPanels, panelGame);
+        AddIfPresent(settingsPanels, panelVideo);
+        AddIfPresent(settingsPanels, panelControls);
+        AddIfPresent(settingsPanels, panelKeyBindings);
+
+        keybindingPanels.Clear();
+        AddIfPresent(keybindingPanels, root.Q("panel-kb-movement"));
+        AddIfPresent(keybindingPanels, root.Q("panel-kb-combat"));
+        AddIfPresent(keybindingPanels, root.Q("panel-kb-general"));
+
+        reticleElements.Clear();
+        root.Query<VisualElement>(className: "range-reticle").ForEach(element => reticleElements.Add(element));
     }
 
-    void ShowRegister()
+    private static void AddIfPresent(List<VisualElement> elements, VisualElement element)
     {
-        shellLogin?   .AddToClassList("hidden");
-        shellRegister?.RemoveFromClassList("hidden");
-        shellMain?    .AddToClassList("hidden");
+        if (element != null)
+        {
+            elements.Add(element);
+        }
     }
 
-    /// <summary>
-    /// Shows the main shell (sidebar + content area) and activates a specific content screen.
-    /// Call this after successful login.
-    /// </summary>
+    private void InitializeMotionState()
+    {
+        StopAmbientMotion();
+        StopLoadingPulse();
+
+        foreach (var shell in shellLayers)
+        {
+            SetHiddenImmediate(shell);
+        }
+
+        foreach (var screen in primaryScreens)
+        {
+            SetHiddenImmediate(screen);
+        }
+
+        foreach (var overlay in overlayScreens)
+        {
+            SetHiddenImmediate(overlay);
+        }
+
+        foreach (var panel in settingsPanels)
+        {
+            SetHiddenImmediate(panel);
+        }
+
+        foreach (var panel in keybindingPanels)
+        {
+            SetHiddenImmediate(panel);
+        }
+
+        currentPrimaryScreen = screenPlay;
+        currentOverlayScreen = null;
+        currentSettingsPanel = panelGame;
+        currentKeybindingPanel = keybindingPanels.Count > 0 ? keybindingPanels[0] : null;
+
+        SetVisibleImmediate(screenPlay);
+        SetVisibleImmediate(panelGame);
+        SetVisibleImmediate(currentKeybindingPanel);
+        SetActiveButtons(SettingsTabIds, "tab-game");
+        SetActiveButtons(KeybindTabIds, "tab-kb-movement");
+
+        ResetLoadingState();
+        StartAmbientMotion();
+    }
+
+    private void RegisterCallbacks()
+    {
+        if (root == null || callbacksRegistered)
+        {
+            return;
+        }
+
+        RegisterButton("btn-login", OnLoginButtonClicked);
+        RegisterButton("btn-goto-register", OnGotoRegisterClicked);
+        RegisterButton("btn-back-to-login", OnBackToLoginClicked);
+
+        RegisterButton("nav-play", OnNavPlayClicked);
+        RegisterButton("nav-shop", OnNavShopClicked);
+        RegisterButton("nav-inventory", OnNavInventoryClicked);
+        RegisterButton("nav-account", OnNavAccountClicked);
+        RegisterButton("nav-settings", OnNavSettingsClicked);
+        RegisterButton("nav-exit", OnNavExitClicked);
+
+        RegisterButton("btn-mode-campaign", OnCampaignClicked);
+        RegisterButton("btn-mode-survival", OnSurvivalClicked);
+        RegisterButton("btn-exit-yes", OnExitYesClicked);
+        RegisterButton("btn-exit-no", OnExitNoClicked);
+        RegisterButton("btn-logout", OnLogoutClicked);
+
+        RegisterButton("btn-social-discord", OnDiscordClicked);
+        RegisterButton("btn-social-twitter", OnTwitterClicked);
+        RegisterButton("btn-social-web", OnWebClicked);
+
+        RegisterButton("tab-game", OnGameTabClicked);
+        RegisterButton("tab-video", OnVideoTabClicked);
+        RegisterButton("tab-controls", OnControlsTabClicked);
+        RegisterButton("tab-keybindings", OnKeybindingsTabClicked);
+        RegisterButton("tab-kb-movement", OnMovementKbTabClicked);
+        RegisterButton("tab-kb-combat", OnCombatKbTabClicked);
+        RegisterButton("tab-kb-general", OnGeneralKbTabClicked);
+
+        RegisterButton("btn-diff-normal", OnDiffNormalClicked);
+        RegisterButton("btn-diff-hard", OnDiffHardClicked);
+        RegisterButton("btn-tex-low", OnTextureLowClicked);
+        RegisterButton("btn-tex-med", OnTextureMediumClicked);
+        RegisterButton("btn-tex-high", OnTextureHighClicked);
+        RegisterButton("btn-shadow-off", OnShadowOffClicked);
+        RegisterButton("btn-shadow-low", OnShadowLowClicked);
+        RegisterButton("btn-shadow-high", OnShadowHighClicked);
+        RegisterButton("btn-aa-off", OnAaOffClicked);
+        RegisterButton("btn-aa-2x", OnAa2xClicked);
+        RegisterButton("btn-aa-4x", OnAa4xClicked);
+        RegisterButton("btn-aa-8x", OnAa8xClicked);
+
+        RegisterToggle("toggle-hud", OnHudToggleChanged);
+        RegisterToggle("toggle-tooltips", OnTooltipsToggleChanged);
+        RegisterToggle("toggle-fullscreen", OnFullscreenToggleChanged);
+        RegisterToggle("toggle-vsync", OnVsyncToggleChanged);
+        RegisterToggle("toggle-motionblur", OnMotionBlurToggleChanged);
+        RegisterToggle("toggle-ao", OnAoToggleChanged);
+        RegisterToggle("toggle-cameraeffects", OnCameraEffectsToggleChanged);
+        RegisterToggle("toggle-invert", OnInvertToggleChanged);
+
+        RegisterSlider("slider-music", OnMusicSliderChanged);
+        RegisterSlider("slider-sens-x", OnSensitivityXChanged);
+        RegisterSlider("slider-sens-y", OnSensitivityYChanged);
+        RegisterSlider("slider-smooth", OnSmoothSliderChanged);
+        RegisterDropdown("dropdown-control-scheme", OnControlSchemeChanged);
+
+        for (int i = 0; i < ShopItemNames.Length; i++)
+        {
+            var item = root.Q("shop-item-" + i);
+            if (item != null)
+            {
+                item.RegisterCallback<PointerOverEvent>(OnShopItemPointerOver);
+                item.RegisterCallback<PointerOutEvent>(OnShopItemPointerOut);
+            }
+
+            RegisterButton("btn-buy-item-" + i, OnBuyItemClicked);
+        }
+
+        root.Query<Button>().ForEach(button =>
+        {
+            button.RegisterCallback<PointerOverEvent>(OnAnyButtonPointerOver);
+        });
+
+        callbacksRegistered = true;
+    }
+
+    private void UnregisterCallbacks()
+    {
+        if (root == null || !callbacksRegistered)
+        {
+            return;
+        }
+
+        UnregisterButton("btn-login", OnLoginButtonClicked);
+        UnregisterButton("btn-goto-register", OnGotoRegisterClicked);
+        UnregisterButton("btn-back-to-login", OnBackToLoginClicked);
+
+        UnregisterButton("nav-play", OnNavPlayClicked);
+        UnregisterButton("nav-shop", OnNavShopClicked);
+        UnregisterButton("nav-inventory", OnNavInventoryClicked);
+        UnregisterButton("nav-account", OnNavAccountClicked);
+        UnregisterButton("nav-settings", OnNavSettingsClicked);
+        UnregisterButton("nav-exit", OnNavExitClicked);
+
+        UnregisterButton("btn-mode-campaign", OnCampaignClicked);
+        UnregisterButton("btn-mode-survival", OnSurvivalClicked);
+        UnregisterButton("btn-exit-yes", OnExitYesClicked);
+        UnregisterButton("btn-exit-no", OnExitNoClicked);
+        UnregisterButton("btn-logout", OnLogoutClicked);
+
+        UnregisterButton("btn-social-discord", OnDiscordClicked);
+        UnregisterButton("btn-social-twitter", OnTwitterClicked);
+        UnregisterButton("btn-social-web", OnWebClicked);
+
+        UnregisterButton("tab-game", OnGameTabClicked);
+        UnregisterButton("tab-video", OnVideoTabClicked);
+        UnregisterButton("tab-controls", OnControlsTabClicked);
+        UnregisterButton("tab-keybindings", OnKeybindingsTabClicked);
+        UnregisterButton("tab-kb-movement", OnMovementKbTabClicked);
+        UnregisterButton("tab-kb-combat", OnCombatKbTabClicked);
+        UnregisterButton("tab-kb-general", OnGeneralKbTabClicked);
+
+        UnregisterButton("btn-diff-normal", OnDiffNormalClicked);
+        UnregisterButton("btn-diff-hard", OnDiffHardClicked);
+        UnregisterButton("btn-tex-low", OnTextureLowClicked);
+        UnregisterButton("btn-tex-med", OnTextureMediumClicked);
+        UnregisterButton("btn-tex-high", OnTextureHighClicked);
+        UnregisterButton("btn-shadow-off", OnShadowOffClicked);
+        UnregisterButton("btn-shadow-low", OnShadowLowClicked);
+        UnregisterButton("btn-shadow-high", OnShadowHighClicked);
+        UnregisterButton("btn-aa-off", OnAaOffClicked);
+        UnregisterButton("btn-aa-2x", OnAa2xClicked);
+        UnregisterButton("btn-aa-4x", OnAa4xClicked);
+        UnregisterButton("btn-aa-8x", OnAa8xClicked);
+
+        UnregisterToggle("toggle-hud", OnHudToggleChanged);
+        UnregisterToggle("toggle-tooltips", OnTooltipsToggleChanged);
+        UnregisterToggle("toggle-fullscreen", OnFullscreenToggleChanged);
+        UnregisterToggle("toggle-vsync", OnVsyncToggleChanged);
+        UnregisterToggle("toggle-motionblur", OnMotionBlurToggleChanged);
+        UnregisterToggle("toggle-ao", OnAoToggleChanged);
+        UnregisterToggle("toggle-cameraeffects", OnCameraEffectsToggleChanged);
+        UnregisterToggle("toggle-invert", OnInvertToggleChanged);
+
+        UnregisterSlider("slider-music", OnMusicSliderChanged);
+        UnregisterSlider("slider-sens-x", OnSensitivityXChanged);
+        UnregisterSlider("slider-sens-y", OnSensitivityYChanged);
+        UnregisterSlider("slider-smooth", OnSmoothSliderChanged);
+        UnregisterDropdown("dropdown-control-scheme", OnControlSchemeChanged);
+
+        for (int i = 0; i < ShopItemNames.Length; i++)
+        {
+            var item = root.Q("shop-item-" + i);
+            if (item != null)
+            {
+                item.UnregisterCallback<PointerOverEvent>(OnShopItemPointerOver);
+                item.UnregisterCallback<PointerOutEvent>(OnShopItemPointerOut);
+            }
+
+            UnregisterButton("btn-buy-item-" + i, OnBuyItemClicked);
+        }
+
+        root.Query<Button>().ForEach(button =>
+        {
+            button.UnregisterCallback<PointerOverEvent>(OnAnyButtonPointerOver);
+        });
+
+        callbacksRegistered = false;
+    }
+
+    private void RegisterButton(string name, EventCallback<ClickEvent> callback)
+    {
+        root.Q<Button>(name)?.RegisterCallback<ClickEvent>(callback);
+    }
+
+    private void UnregisterButton(string name, EventCallback<ClickEvent> callback)
+    {
+        root.Q<Button>(name)?.UnregisterCallback<ClickEvent>(callback);
+    }
+
+    private void RegisterToggle(string name, EventCallback<ChangeEvent<bool>> callback)
+    {
+        root.Q<Toggle>(name)?.RegisterValueChangedCallback(callback);
+    }
+
+    private void UnregisterToggle(string name, EventCallback<ChangeEvent<bool>> callback)
+    {
+        root.Q<Toggle>(name)?.UnregisterValueChangedCallback(callback);
+    }
+
+    private void RegisterSlider(string name, EventCallback<ChangeEvent<float>> callback)
+    {
+        root.Q<Slider>(name)?.RegisterValueChangedCallback(callback);
+    }
+
+    private void UnregisterSlider(string name, EventCallback<ChangeEvent<float>> callback)
+    {
+        root.Q<Slider>(name)?.UnregisterValueChangedCallback(callback);
+    }
+
+    private void RegisterDropdown(string name, EventCallback<ChangeEvent<string>> callback)
+    {
+        root.Q<DropdownField>(name)?.RegisterValueChangedCallback(callback);
+    }
+
+    private void UnregisterDropdown(string name, EventCallback<ChangeEvent<string>> callback)
+    {
+        root.Q<DropdownField>(name)?.UnregisterValueChangedCallback(callback);
+    }
+
+    private int NextMotionTicket(VisualElement element)
+    {
+        if (element == null)
+        {
+            return 0;
+        }
+
+        int nextTicket = motionTickets.TryGetValue(element, out int currentTicket) ? currentTicket + 1 : 1;
+        motionTickets[element] = nextTicket;
+        return nextTicket;
+    }
+
+    private bool IsMotionTicketCurrent(VisualElement element, int ticket)
+    {
+        return element != null
+            && motionTickets.TryGetValue(element, out int currentTicket)
+            && currentTicket == ticket;
+    }
+
+    private void SetHiddenImmediate(VisualElement element)
+    {
+        if (element == null)
+        {
+            return;
+        }
+
+        NextMotionTicket(element);
+        element.RemoveFromClassList("motion-active");
+        element.AddToClassList("hidden");
+        element.pickingMode = PickingMode.Ignore;
+    }
+
+    private void SetVisibleImmediate(VisualElement element)
+    {
+        if (element == null)
+        {
+            return;
+        }
+
+        NextMotionTicket(element);
+        element.RemoveFromClassList("hidden");
+        element.AddToClassList("motion-active");
+        element.pickingMode = PickingMode.Position;
+    }
+
+    private void ShowMotionElement(VisualElement element, bool immediate = false)
+    {
+        if (element == null)
+        {
+            return;
+        }
+
+        int ticket = NextMotionTicket(element);
+        element.RemoveFromClassList("hidden");
+        element.pickingMode = PickingMode.Position;
+
+        if (immediate)
+        {
+            element.AddToClassList("motion-active");
+            return;
+        }
+
+        element.RemoveFromClassList("motion-active");
+        element.schedule.Execute(() =>
+        {
+            if (root == null || !IsMotionTicketCurrent(element, ticket))
+            {
+                return;
+            }
+
+            element.AddToClassList("motion-active");
+        }).ExecuteLater(MotionWarmupMs);
+    }
+
+    private void HideMotionElement(VisualElement element, bool immediate = false)
+    {
+        if (element == null)
+        {
+            return;
+        }
+
+        int ticket = NextMotionTicket(element);
+        element.RemoveFromClassList("motion-active");
+        element.pickingMode = PickingMode.Ignore;
+
+        if (immediate)
+        {
+            element.AddToClassList("hidden");
+            return;
+        }
+
+        element.schedule.Execute(() =>
+        {
+            if (root == null || !IsMotionTicketCurrent(element, ticket))
+            {
+                return;
+            }
+
+            element.AddToClassList("hidden");
+        }).ExecuteLater(MotionFadeMs);
+    }
+
+    private void ShowShell(VisualElement target, bool immediate = false)
+    {
+        foreach (var shell in shellLayers)
+        {
+            if (shell == target)
+            {
+                continue;
+            }
+
+            HideMotionElement(shell, immediate);
+        }
+
+        ShowMotionElement(target, immediate);
+    }
+
+    private void ShowPrimaryScreen(VisualElement target, bool immediate = false)
+    {
+        if (target == null)
+        {
+            return;
+        }
+
+        foreach (var screen in primaryScreens)
+        {
+            if (screen == target)
+            {
+                continue;
+            }
+
+            HideMotionElement(screen, immediate);
+        }
+
+        ShowMotionElement(target, immediate);
+        currentPrimaryScreen = target;
+    }
+
+    private void ShowOverlayScreen(VisualElement target, bool immediate = false)
+    {
+        foreach (var overlay in overlayScreens)
+        {
+            if (overlay == target)
+            {
+                continue;
+            }
+
+            HideOverlayScreen(overlay, immediate);
+        }
+
+        if (target == screenLoading)
+        {
+            ResetLoadingState();
+        }
+
+        ShowMotionElement(target, immediate);
+        currentOverlayScreen = target;
+    }
+
+    private void HideOverlayScreen(VisualElement target, bool immediate = false)
+    {
+        if (target == null)
+        {
+            return;
+        }
+
+        HideMotionElement(target, immediate);
+
+        if (target == screenLoading)
+        {
+            StopLoadingPulse();
+            ResetLoadingState();
+        }
+
+        if (currentOverlayScreen == target)
+        {
+            currentOverlayScreen = null;
+        }
+    }
+
+    private void SetActiveButtons(string[] buttonIds, string activeId)
+    {
+        foreach (var id in buttonIds)
+        {
+            var button = root.Q<Button>(id);
+            if (button == null)
+            {
+                continue;
+            }
+
+            button.EnableInClassList("active", id == activeId);
+        }
+    }
+
+    private void SwitchPanel(VisualElement target, List<VisualElement> panels, ref VisualElement currentPanel)
+    {
+        if (target == null)
+        {
+            return;
+        }
+
+        foreach (var panel in panels)
+        {
+            if (panel == target)
+            {
+                continue;
+            }
+
+            HideMotionElement(panel);
+        }
+
+        ShowMotionElement(target);
+        currentPanel = target;
+    }
+
+    private void StartAmbientMotion()
+    {
+        StopAmbientMotion();
+        ApplyReticleDrift(false);
+
+        if (root == null || reticleElements.Count == 0)
+        {
+            return;
+        }
+
+        reticleMotionItem = root.schedule.Execute(() =>
+        {
+            reticleMotionAlt = !reticleMotionAlt;
+            ApplyReticleDrift(reticleMotionAlt);
+        }).Every(ReticleMotionIntervalMs);
+    }
+
+    private void StopAmbientMotion()
+    {
+        reticleMotionItem?.Pause();
+        reticleMotionItem = null;
+        reticleMotionAlt = false;
+        ApplyReticleDrift(false);
+    }
+
+    private void ApplyReticleDrift(bool altState)
+    {
+        foreach (var reticle in reticleElements)
+        {
+            if (reticle == null)
+            {
+                continue;
+            }
+
+            reticle.EnableInClassList("reticle-drift-a", !altState);
+            reticle.EnableInClassList("reticle-drift-b", altState);
+        }
+    }
+
+    private void ResetLoadingState()
+    {
+        loadingReadyState = false;
+
+        if (loadingProgress != null)
+        {
+            loadingProgress.value = 0f;
+        }
+
+        if (loadingPrompt != null)
+        {
+            loadingPrompt.text = "Preparing scenario";
+            loadingPrompt.RemoveFromClassList("loading-ready");
+            loadingPrompt.RemoveFromClassList("loading-pulse");
+        }
+
+        loadingPanel?.RemoveFromClassList("loading-ready");
+    }
+
+    private void SetLoadingReadyState()
+    {
+        if (loadingReadyState)
+        {
+            return;
+        }
+
+        loadingReadyState = true;
+
+        if (loadingPrompt != null)
+        {
+            loadingPrompt.text = "Press ENTER to continue";
+            loadingPrompt.AddToClassList("loading-ready");
+        }
+
+        loadingPanel?.AddToClassList("loading-ready");
+
+        loadingPulseItem = loadingPrompt?.schedule.Execute(() =>
+        {
+            if (loadingPrompt == null)
+            {
+                return;
+            }
+
+            loadingPrompt.EnableInClassList("loading-pulse", !loadingPrompt.ClassListContains("loading-pulse"));
+        }).Every(LoadingPulseIntervalMs);
+    }
+
+    private void StopLoadingPulse()
+    {
+        loadingPulseItem?.Pause();
+        loadingPulseItem = null;
+
+        if (loadingPrompt != null)
+        {
+            loadingPrompt.RemoveFromClassList("loading-pulse");
+            loadingPrompt.RemoveFromClassList("loading-ready");
+        }
+
+        loadingPanel?.RemoveFromClassList("loading-ready");
+        loadingReadyState = false;
+    }
+
+    private void ShowLogin()
+    {
+        HideOverlayScreen(currentOverlayScreen, true);
+        ShowShell(shellLogin);
+    }
+
+    private void ShowRegister()
+    {
+        HideOverlayScreen(currentOverlayScreen, true);
+        ShowShell(shellRegister);
+    }
+
     public void ShowMainMenu()
     {
-        shellLogin?   .AddToClassList("hidden");
-        shellRegister?.AddToClassList("hidden");
-        shellMain?    .RemoveFromClassList("hidden");
+        HideOverlayScreen(currentOverlayScreen, true);
+        ShowShell(shellMain);
 
-        // Default: show Play screen
         SetActiveNav("nav-play");
-        ShowContentScreen(screenPlay);
+        ShowPrimaryScreen(screenPlay);
         RefreshCoinDisplays();
 
-        // Update sidebar player name
-        string name = PlayFabLogin.DisplayNameFromPlayFab
-                      ?? PlayerPrefs.GetString("USERNAME", "OPERATOR");
-        if (sidebarPlayerName != null) sidebarPlayerName.text = name.ToUpper();
+        string name = PlayFabLogin.DisplayNameFromPlayFab ?? PlayerPrefs.GetString("USERNAME", "OPERATOR");
+        if (sidebarPlayerName != null)
+        {
+            sidebarPlayerName.text = name.ToUpper();
+        }
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // CONTENT SCREEN MANAGEMENT
-    // ═══════════════════════════════════════════════════════════════
-
-    void ShowContentScreen(VisualElement target)
+    private void ShowContentScreen(VisualElement target)
     {
-        screenPlay?     .AddToClassList("hidden");
-        screenShop?     .AddToClassList("hidden");
-        screenInventory?.AddToClassList("hidden");
-        screenAccount?  .AddToClassList("hidden");
-        screenSettings? .AddToClassList("hidden");
-        screenExit?     .AddToClassList("hidden");
-        screenLoading?  .AddToClassList("hidden");
-
-        target?.RemoveFromClassList("hidden");
+        HideOverlayScreen(currentOverlayScreen);
+        ShowPrimaryScreen(target);
     }
 
-    /// <summary>
-    /// Legacy compatibility: called by PlayFabLogin to switch screens by name.
-    /// </summary>
     public void ShowScreen(string screenName)
     {
         switch (screenName)
@@ -381,83 +873,339 @@ public class UIToolkitMenuController : MonoBehaviour
                 ShowContentScreen(screenSettings);
                 break;
             case "exit-screen":
-                ShowContentScreen(screenExit);
+                ShowOverlayScreen(screenExit);
                 break;
             case "loading-screen":
-                ShowContentScreen(screenLoading);
+                ShowOverlayScreen(screenLoading);
                 break;
         }
     }
 
-    // ── Active nav indicator ──────────────────────────────────────
-    void SetActiveNav(string activeId)
+    private void SetActiveNav(string activeId)
     {
         foreach (var id in NavIds)
         {
-            var btn = root.Q<Button>(id);
-            if (btn == null) continue;
+            var button = root.Q<Button>(id);
+            if (button == null)
+            {
+                continue;
+            }
+
             if (id == activeId)
-                btn.AddToClassList("active");
+            {
+                button.AddToClassList("active");
+            }
             else
-                btn.RemoveFromClassList("active");
+            {
+                button.RemoveFromClassList("active");
+            }
         }
     }
 
-    // ── Settings sub-tabs ─────────────────────────────────────────
-    void ShowSettingsPanel(string panelName, string tabName)
+    private void ShowSettingsPanel(string panelName, string tabName)
     {
-        panelGame?       .AddToClassList("hidden");
-        panelVideo?      .AddToClassList("hidden");
-        panelControls?   .AddToClassList("hidden");
-        panelKeyBindings?.AddToClassList("hidden");
+        SwitchPanel(root.Q(panelName), settingsPanels, ref currentSettingsPanel);
+        SetActiveButtons(SettingsTabIds, tabName);
 
-        root.Q(panelName)?.RemoveFromClassList("hidden");
-
-        root.Q<Button>("tab-game")?        .RemoveFromClassList("active");
-        root.Q<Button>("tab-video")?       .RemoveFromClassList("active");
-        root.Q<Button>("tab-controls")?    .RemoveFromClassList("active");
-        root.Q<Button>("tab-keybindings")? .RemoveFromClassList("active");
-
-        root.Q<Button>(tabName)?.AddToClassList("active");
         PlayClick();
     }
 
-    void ShowKBPanel(string panelName, string tabName)
+    private void ShowKBPanel(string panelName, string tabName)
     {
-        root.Q("panel-kb-movement")?.AddToClassList("hidden");
-        root.Q("panel-kb-combat")?  .AddToClassList("hidden");
-        root.Q("panel-kb-general")? .AddToClassList("hidden");
+        SwitchPanel(root.Q(panelName), keybindingPanels, ref currentKeybindingPanel);
+        SetActiveButtons(KeybindTabIds, tabName);
 
-        root.Q(panelName)?.RemoveFromClassList("hidden");
-
-        root.Q<Button>("tab-kb-movement")?.RemoveFromClassList("active");
-        root.Q<Button>("tab-kb-combat")?  .RemoveFromClassList("active");
-        root.Q<Button>("tab-kb-general")? .RemoveFromClassList("active");
-
-        root.Q<Button>(tabName)?.AddToClassList("active");
         PlayClick();
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // HANDLERS
-    // ═══════════════════════════════════════════════════════════════
-
-    void OnLoginClicked() { PlayClick(); }
-
-    void StartCampaign()
+    private void OnLoginButtonClicked(ClickEvent evt)
     {
         PlayClick();
-        ShowContentScreen(screenLoading);
+    }
+
+    private void OnGotoRegisterClicked(ClickEvent evt)
+    {
+        ShowRegister();
+        PlayClick();
+    }
+
+    private void OnBackToLoginClicked(ClickEvent evt)
+    {
+        ShowLogin();
+        PlayClick();
+    }
+
+    private void OnNavPlayClicked(ClickEvent evt)
+    {
+        SetActiveNav("nav-play");
+        ShowContentScreen(screenPlay);
+        PlayClick();
+    }
+
+    private void OnNavShopClicked(ClickEvent evt)
+    {
+        SetActiveNav("nav-shop");
+        RefreshCoinDisplays();
+        ShowContentScreen(screenShop);
+        PlayClick();
+    }
+
+    private void OnNavInventoryClicked(ClickEvent evt)
+    {
+        SetActiveNav("nav-inventory");
+        ShowContentScreen(screenInventory);
+        PlayClick();
+    }
+
+    private void OnNavAccountClicked(ClickEvent evt)
+    {
+        SetActiveNav("nav-account");
+        UpdateAccountDetails();
+        ShowContentScreen(screenAccount);
+        PlayClick();
+    }
+
+    private void OnNavSettingsClicked(ClickEvent evt)
+    {
+        SetActiveNav("nav-settings");
+        ShowContentScreen(screenSettings);
+        PlaySwoosh();
+        Position2();
+    }
+
+    private void OnNavExitClicked(ClickEvent evt)
+    {
+        ShowOverlayScreen(screenExit);
+        PlayClick();
+    }
+
+    private void OnCampaignClicked(ClickEvent evt)
+    {
+        StartCampaign();
+    }
+
+    private void OnSurvivalClicked(ClickEvent evt)
+    {
+        PlayClick();
+        Debug.Log("Survival mode not yet implemented.");
+    }
+
+    private void OnExitYesClicked(ClickEvent evt)
+    {
+        QuitGame();
+    }
+
+    private void OnExitNoClicked(ClickEvent evt)
+    {
+        HideOverlayScreen(screenExit);
+        PlayClick();
+    }
+
+    private void OnLogoutClicked(ClickEvent evt)
+    {
+        Logout();
+    }
+
+    private void OnDiscordClicked(ClickEvent evt)
+    {
+        Application.OpenURL("https://discord.com");
+        PlayClick();
+    }
+
+    private void OnTwitterClicked(ClickEvent evt)
+    {
+        Application.OpenURL("https://twitter.com");
+        PlayClick();
+    }
+
+    private void OnWebClicked(ClickEvent evt)
+    {
+        Application.OpenURL("https://unity.com");
+        PlayClick();
+    }
+
+    private void OnGameTabClicked(ClickEvent evt) => ShowSettingsPanel("panel-game", "tab-game");
+    private void OnVideoTabClicked(ClickEvent evt) => ShowSettingsPanel("panel-video", "tab-video");
+    private void OnControlsTabClicked(ClickEvent evt) => ShowSettingsPanel("panel-controls", "tab-controls");
+    private void OnKeybindingsTabClicked(ClickEvent evt) => ShowSettingsPanel("panel-keybindings", "tab-keybindings");
+    private void OnMovementKbTabClicked(ClickEvent evt) => ShowKBPanel("panel-kb-movement", "tab-kb-movement");
+    private void OnCombatKbTabClicked(ClickEvent evt) => ShowKBPanel("panel-kb-combat", "tab-kb-combat");
+    private void OnGeneralKbTabClicked(ClickEvent evt) => ShowKBPanel("panel-kb-general", "tab-kb-general");
+
+    private void OnDiffNormalClicked(ClickEvent evt)
+    {
+        SetDifficulty(true);
+        PlayClick();
+    }
+
+    private void OnDiffHardClicked(ClickEvent evt)
+    {
+        SetDifficulty(false);
+        PlayClick();
+    }
+
+    private void OnTextureLowClicked(ClickEvent evt)
+    {
+        SetTextureQuality(0);
+        PlayClick();
+    }
+
+    private void OnTextureMediumClicked(ClickEvent evt)
+    {
+        SetTextureQuality(1);
+        PlayClick();
+    }
+
+    private void OnTextureHighClicked(ClickEvent evt)
+    {
+        SetTextureQuality(2);
+        PlayClick();
+    }
+
+    private void OnShadowOffClicked(ClickEvent evt)
+    {
+        SetShadowQuality(0);
+        PlayClick();
+    }
+
+    private void OnShadowLowClicked(ClickEvent evt)
+    {
+        SetShadowQuality(1);
+        PlayClick();
+    }
+
+    private void OnShadowHighClicked(ClickEvent evt)
+    {
+        SetShadowQuality(2);
+        PlayClick();
+    }
+
+    private void OnAaOffClicked(ClickEvent evt)
+    {
+        QualitySettings.antiAliasing = 0;
+        PlayClick();
+    }
+
+    private void OnAa2xClicked(ClickEvent evt)
+    {
+        QualitySettings.antiAliasing = 2;
+        PlayClick();
+    }
+
+    private void OnAa4xClicked(ClickEvent evt)
+    {
+        QualitySettings.antiAliasing = 4;
+        PlayClick();
+    }
+
+    private void OnAa8xClicked(ClickEvent evt)
+    {
+        QualitySettings.antiAliasing = 8;
+        PlayClick();
+    }
+
+    private void OnHudToggleChanged(ChangeEvent<bool> evt) => PlayerPrefs.SetInt("ShowHUD", evt.newValue ? 1 : 0);
+    private void OnTooltipsToggleChanged(ChangeEvent<bool> evt) => PlayerPrefs.SetInt("ToolTips", evt.newValue ? 1 : 0);
+    private void OnFullscreenToggleChanged(ChangeEvent<bool> evt) => Screen.fullScreen = evt.newValue;
+    private void OnVsyncToggleChanged(ChangeEvent<bool> evt) => QualitySettings.vSyncCount = evt.newValue ? 1 : 0;
+    private void OnMotionBlurToggleChanged(ChangeEvent<bool> evt) => PlayerPrefs.SetInt("MotionBlur", evt.newValue ? 1 : 0);
+    private void OnAoToggleChanged(ChangeEvent<bool> evt) => PlayerPrefs.SetInt("AmbientOcclusion", evt.newValue ? 1 : 0);
+    private void OnCameraEffectsToggleChanged(ChangeEvent<bool> evt) => PlayerPrefs.SetInt("CameraEffects", evt.newValue ? 1 : 0);
+    private void OnInvertToggleChanged(ChangeEvent<bool> evt) => PlayerPrefs.SetInt("MouseInvert", evt.newValue ? 1 : 0);
+
+    private void OnMusicSliderChanged(ChangeEvent<float> evt)
+    {
+        PlayerPrefs.SetFloat("MusicVolume", evt.newValue);
+        PlaySlider();
+
+        var cam = Camera.main;
+        if (cam == null)
+        {
+            return;
+        }
+
+        var source = cam.GetComponent<AudioSource>();
+        if (source != null)
+        {
+            source.volume = evt.newValue;
+        }
+    }
+
+    private void OnSensitivityXChanged(ChangeEvent<float> evt)
+    {
+        PlayerPrefs.SetFloat("MouseSensX", evt.newValue);
+        PlaySlider();
+    }
+
+    private void OnSensitivityYChanged(ChangeEvent<float> evt)
+    {
+        PlayerPrefs.SetFloat("MouseSensY", evt.newValue);
+        PlaySlider();
+    }
+
+    private void OnSmoothSliderChanged(ChangeEvent<float> evt)
+    {
+        PlayerPrefs.SetFloat("MouseSmooth", evt.newValue);
+        PlaySlider();
+    }
+
+    private void OnControlSchemeChanged(ChangeEvent<string> evt)
+    {
+        PlayerPrefs.SetInt("ControlScheme", evt.newValue == "Controller" ? 1 : 0);
+    }
+
+    private void OnShopItemPointerOver(PointerOverEvent evt)
+    {
+        var element = evt.currentTarget as VisualElement;
+        int index = ParseTrailingIndex(element?.name);
+        var shopTooltip = root.Q<Label>("lbl-shop-tooltip");
+
+        if (index >= 0 && index < ShopItemTooltips.Length && shopTooltip != null)
+        {
+            shopTooltip.text = ShopItemTooltips[index];
+        }
+
+        PlayHover();
+    }
+
+    private void OnShopItemPointerOut(PointerOutEvent evt)
+    {
+        var shopTooltip = root.Q<Label>("lbl-shop-tooltip");
+        if (shopTooltip != null)
+        {
+            shopTooltip.text = "Select equipment to preview acquisition details.";
+        }
+    }
+
+    private void OnBuyItemClicked(ClickEvent evt)
+    {
+        var element = evt.currentTarget as VisualElement;
+        int index = ParseTrailingIndex(element?.name);
+        if (index >= 0 && index < ShopItemNames.Length)
+        {
+            BuyItem(index);
+        }
+    }
+
+    private void OnAnyButtonPointerOver(PointerOverEvent evt)
+    {
+        PlayHover();
+    }
+
+    private void StartCampaign()
+    {
+        PlayClick();
+        ShowOverlayScreen(screenLoading);
         StartCoroutine(LoadSceneAsync());
     }
 
-    IEnumerator LoadSceneAsync()
+    private IEnumerator LoadSceneAsync()
     {
         int nextIndex = SceneManager.GetActiveScene().buildIndex + 1;
         if (nextIndex >= SceneManager.sceneCountInBuildSettings)
         {
             Debug.LogWarning("No next scene in Build Settings.");
-            ShowContentScreen(screenPlay);
+            HideOverlayScreen(screenLoading);
             yield break;
         }
 
@@ -467,183 +1215,318 @@ public class UIToolkitMenuController : MonoBehaviour
         while (!op.isDone)
         {
             float progress = Mathf.Clamp01(op.progress / 0.9f);
-            if (loadingProgress != null) loadingProgress.value = progress;
+            if (loadingProgress != null)
+            {
+                loadingProgress.value = progress;
+            }
 
             if (op.progress >= 0.9f)
             {
-                if (loadingProgress != null) loadingProgress.value = 1f;
-                if (loadingPrompt   != null) loadingPrompt.text = "Press ENTER to continue";
+                if (loadingProgress != null)
+                {
+                    loadingProgress.value = 1f;
+                }
+
+                SetLoadingReadyState();
 
                 if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+                {
                     op.allowSceneActivation = true;
+                }
             }
+
             yield return null;
         }
     }
 
-    void UpdateAccountDetails()
+    private void UpdateAccountDetails()
     {
-        string name = PlayFabLogin.DisplayNameFromPlayFab
-                      ?? PlayerPrefs.GetString("USERNAME", "Player");
+        string name = PlayFabLogin.DisplayNameFromPlayFab ?? PlayerPrefs.GetString("USERNAME", "Player");
 
-        var lblName = root.Q<Label>("lbl-account-name");
-        var lblId   = root.Q<Label>("lbl-account-id");
+        var nameLabel = root.Q<Label>("lbl-account-name");
+        var idLabel = root.Q<Label>("lbl-account-id");
 
-        if (lblName != null) lblName.text = name.ToUpper();
-        if (lblId   != null) lblId.text   = "STATUS: ONLINE";
+        if (nameLabel != null)
+        {
+            nameLabel.text = name.ToUpper();
+        }
 
-        // Also update sidebar
-        if (sidebarPlayerName != null) sidebarPlayerName.text = name.ToUpper();
+        if (idLabel != null)
+        {
+            idLabel.text = "STATUS: ONLINE";
+        }
 
-        // Update avatar first letter
-        var avatarLetter = root.Q<Label>("player-avatar-letter"); // sidebar small
-        if (avatarLetter != null && name.Length > 0)
-            avatarLetter.text = name[0].ToString().ToUpper();
+        if (sidebarPlayerName != null)
+        {
+            sidebarPlayerName.text = name.ToUpper();
+        }
+
+        string initial = name.Length > 0 ? name[0].ToString().ToUpper() : "O";
+
+        var avatarLetter = root.Q<Label>("player-avatar-letter");
+        if (avatarLetter != null)
+        {
+            avatarLetter.text = initial;
+        }
 
         var bigLetter = root.Q<Label>("account-avatar-letter");
-        if (bigLetter != null && name.Length > 0)
-            bigLetter.text = name[0].ToString().ToUpper();
+        if (bigLetter != null)
+        {
+            bigLetter.text = initial;
+        }
     }
 
-    void SetDifficulty(bool normal)
+    private void SetDifficulty(bool normal)
     {
         PlayerPrefs.SetInt("NormalDifficulty", normal ? 1 : 0);
         PlayerPrefs.SetInt("HardCoreDifficulty", normal ? 0 : 1);
     }
 
-    void SetTextureQuality(int level)
+    private void SetTextureQuality(int level)
     {
         PlayerPrefs.SetInt("Textures", level);
         QualitySettings.globalTextureMipmapLimit = 2 - level;
     }
 
-    void SetShadowQuality(int level)
+    private void SetShadowQuality(int level)
     {
         PlayerPrefs.SetInt("Shadows", level);
         switch (level)
         {
-            case 0: QualitySettings.shadowCascades = 0; QualitySettings.shadowDistance = 0;   break;
-            case 1: QualitySettings.shadowCascades = 2; QualitySettings.shadowDistance = 75;  break;
-            case 2: QualitySettings.shadowCascades = 4; QualitySettings.shadowDistance = 500; break;
+            case 0:
+                QualitySettings.shadowCascades = 0;
+                QualitySettings.shadowDistance = 0;
+                break;
+            case 1:
+                QualitySettings.shadowCascades = 2;
+                QualitySettings.shadowDistance = 75;
+                break;
+            case 2:
+                QualitySettings.shadowCascades = 4;
+                QualitySettings.shadowDistance = 500;
+                break;
         }
     }
 
-    void BuyItem(int idx)
+    private void BuyItem(int index)
     {
         PlayClick();
-        int cost = ShopItemPrices[idx];
-        var tip  = root.Q<Label>("lbl-shop-tooltip");
+
+        int cost = ShopItemPrices[index];
+        var tip = root.Q<Label>("lbl-shop-tooltip");
 
         if (coinCount < cost)
         {
             Debug.Log($"Not enough coins! Need {cost} but have {coinCount}.");
-            if (tip != null) tip.text = "⚠  NOT ENOUGH COINS";
+            if (tip != null)
+            {
+                tip.text = "Not enough coins";
+            }
+
             return;
         }
 
         coinCount -= cost;
 
-        // Lucky chest reward
         float roll = Random.value;
         int reward;
-        if      (roll < 0.70f) reward = Random.Range(10,  51);
-        else if (roll < 0.95f) reward = Random.Range(100, 301);
-        else                   reward = Random.Range(500, 1001);
+        if (roll < 0.70f)
+        {
+            reward = Random.Range(10, 51);
+        }
+        else if (roll < 0.95f)
+        {
+            reward = Random.Range(100, 301);
+        }
+        else
+        {
+            reward = Random.Range(500, 1001);
+        }
 
         coinCount += reward;
         PlayerPrefs.SetInt("CoinCount", coinCount);
         PlayerPrefs.Save();
         RefreshCoinDisplays();
 
-        if (tip != null) tip.text = $"Chest reward: +{reward} COINS";
-        Debug.Log($"[Shop] Bought '{ShopItemNames[idx]}' (−{cost}): chest gave +{reward}. Total: {coinCount}");
+        if (tip != null)
+        {
+            tip.text = $"Chest reward: +{reward} COINS";
+        }
+
+        Debug.Log($"[Shop] Bought '{ShopItemNames[index]}' (-{cost}): chest gave +{reward}. Total: {coinCount}");
     }
 
-    void RefreshCoinDisplays()
+    private void RefreshCoinDisplays()
     {
-        if (sidebarCoins != null) sidebarCoins.text = coinCount.ToString("N0");
-        if (shopCoins    != null) shopCoins.text    = coinCount.ToString("N0") + "  COINS";
+        if (sidebarCoins != null)
+        {
+            sidebarCoins.text = coinCount.ToString("N0");
+        }
+
+        if (shopCoins != null)
+        {
+            shopCoins.text = coinCount.ToString("N0") + " COINS";
+        }
     }
 
-    void Logout()
+    private void Logout()
     {
         PlayClick();
-        try { PlayFab.PlayFabClientAPI.ForgetAllCredentials(); } catch { }
+
+        try
+        {
+            PlayFab.PlayFabClientAPI.ForgetAllCredentials();
+        }
+        catch
+        {
+        }
+
         PlayerPrefs.DeleteKey("PlayFabSessionTicket");
         PlayerPrefs.Save();
         ShowLogin();
         Debug.Log("[UIToolkitMenuController] Logged out.");
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // SETTINGS LOAD
-    // ═══════════════════════════════════════════════════════════════
-
-    void LoadSettingsIntoUI()
+    private void LoadSettingsIntoUI()
     {
-        SetToggle("toggle-hud",           PlayerPrefs.GetInt("ShowHUD")                == 1);
-        SetToggle("toggle-tooltips",      PlayerPrefs.GetInt("ToolTips")               == 1);
-        SetSlider("slider-music",         PlayerPrefs.GetFloat("MusicVolume", 1f));
+        SetToggle("toggle-hud", PlayerPrefs.GetInt("ShowHUD") == 1);
+        SetToggle("toggle-tooltips", PlayerPrefs.GetInt("ToolTips") == 1);
+        SetSlider("slider-music", PlayerPrefs.GetFloat("MusicVolume", 1f));
 
-        SetToggle("toggle-fullscreen",    Screen.fullScreen);
-        SetToggle("toggle-vsync",         QualitySettings.vSyncCount > 0);
-        SetToggle("toggle-motionblur",    PlayerPrefs.GetInt("MotionBlur")             == 1);
-        SetToggle("toggle-ao",            PlayerPrefs.GetInt("AmbientOcclusion")       == 1);
-        SetToggle("toggle-cameraeffects", PlayerPrefs.GetInt("CameraEffects")          == 1);
+        SetToggle("toggle-fullscreen", Screen.fullScreen);
+        SetToggle("toggle-vsync", QualitySettings.vSyncCount > 0);
+        SetToggle("toggle-motionblur", PlayerPrefs.GetInt("MotionBlur") == 1);
+        SetToggle("toggle-ao", PlayerPrefs.GetInt("AmbientOcclusion") == 1);
+        SetToggle("toggle-cameraeffects", PlayerPrefs.GetInt("CameraEffects") == 1);
 
-        SetSlider("slider-sens-x",        PlayerPrefs.GetFloat("MouseSensX",  2f));
-        SetSlider("slider-sens-y",        PlayerPrefs.GetFloat("MouseSensY",  2f));
-        SetSlider("slider-smooth",        PlayerPrefs.GetFloat("MouseSmooth", 3f));
-        SetToggle("toggle-invert",        PlayerPrefs.GetInt("MouseInvert", 0)         == 1);
+        SetSlider("slider-sens-x", PlayerPrefs.GetFloat("MouseSensX", 2f));
+        SetSlider("slider-sens-y", PlayerPrefs.GetFloat("MouseSensY", 2f));
+        SetSlider("slider-smooth", PlayerPrefs.GetFloat("MouseSmooth", 3f));
+        SetToggle("toggle-invert", PlayerPrefs.GetInt("MouseInvert", 0) == 1);
 
-        var dd = root.Q<DropdownField>("dropdown-control-scheme");
-        if (dd != null)
-            dd.SetValueWithoutNotify(PlayerPrefs.GetInt("ControlScheme", 0) == 1
-                ? "Controller" : "Keyboard & Mouse");
+        var dropdown = root.Q<DropdownField>("dropdown-control-scheme");
+        if (dropdown != null)
+        {
+            dropdown.SetValueWithoutNotify(PlayerPrefs.GetInt("ControlScheme", 0) == 1
+                ? "Controller"
+                : "Keyboard & Mouse");
+        }
     }
 
-    void SetToggle(string name, bool value)
+    private void SetToggle(string name, bool value)
     {
-        var t = root.Q<Toggle>(name);
-        if (t != null) t.SetValueWithoutNotify(value);
+        var toggle = root.Q<Toggle>(name);
+        if (toggle != null)
+        {
+            toggle.SetValueWithoutNotify(value);
+        }
     }
 
-    void SetSlider(string name, float value)
+    private void SetSlider(string name, float value)
     {
-        var s = root.Q<Slider>(name);
-        if (s != null) s.SetValueWithoutNotify(value);
+        var slider = root.Q<Slider>(name);
+        if (slider != null)
+        {
+            slider.SetValueWithoutNotify(value);
+        }
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // LEGACY MIGRATION
-    // ═══════════════════════════════════════════════════════════════
-
-    void MigratePlayerPrefs()
+    private void MigratePlayerPrefs()
     {
         bool dirty = false;
+
         if (PlayerPrefs.HasKey("XSensitivity") && !PlayerPrefs.HasKey("MouseSensX"))
-        { PlayerPrefs.SetFloat("MouseSensX", PlayerPrefs.GetFloat("XSensitivity")); PlayerPrefs.DeleteKey("XSensitivity"); dirty = true; }
+        {
+            PlayerPrefs.SetFloat("MouseSensX", PlayerPrefs.GetFloat("XSensitivity"));
+            PlayerPrefs.DeleteKey("XSensitivity");
+            dirty = true;
+        }
+
         if (PlayerPrefs.HasKey("YSensitivity") && !PlayerPrefs.HasKey("MouseSensY"))
-        { PlayerPrefs.SetFloat("MouseSensY", PlayerPrefs.GetFloat("YSensitivity")); PlayerPrefs.DeleteKey("YSensitivity"); dirty = true; }
+        {
+            PlayerPrefs.SetFloat("MouseSensY", PlayerPrefs.GetFloat("YSensitivity"));
+            PlayerPrefs.DeleteKey("YSensitivity");
+            dirty = true;
+        }
+
         if (PlayerPrefs.HasKey("MouseSmoothing") && !PlayerPrefs.HasKey("MouseSmooth"))
-        { PlayerPrefs.SetFloat("MouseSmooth", PlayerPrefs.GetFloat("MouseSmoothing")); PlayerPrefs.DeleteKey("MouseSmoothing"); dirty = true; }
+        {
+            PlayerPrefs.SetFloat("MouseSmooth", PlayerPrefs.GetFloat("MouseSmoothing"));
+            PlayerPrefs.DeleteKey("MouseSmoothing");
+            dirty = true;
+        }
+
         if (PlayerPrefs.HasKey("Inverted") && !PlayerPrefs.HasKey("MouseInvert"))
-        { PlayerPrefs.SetInt("MouseInvert", PlayerPrefs.GetInt("Inverted")); PlayerPrefs.DeleteKey("Inverted"); dirty = true; }
-        if (dirty) { PlayerPrefs.Save(); Debug.Log("[UIToolkitMenuController] Legacy PlayerPrefs migrated."); }
+        {
+            PlayerPrefs.SetInt("MouseInvert", PlayerPrefs.GetInt("Inverted"));
+            PlayerPrefs.DeleteKey("Inverted");
+            dirty = true;
+        }
+
+        if (dirty)
+        {
+            PlayerPrefs.Save();
+            Debug.Log("[UIToolkitMenuController] Legacy PlayerPrefs migrated.");
+        }
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // UTILITY
-    // ═══════════════════════════════════════════════════════════════
+    private static int ParseTrailingIndex(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return -1;
+        }
 
-    void Position2() { if (cameraAnimator) cameraAnimator.SetFloat("Animate", 1); }
-    void Position1() { if (cameraAnimator) cameraAnimator.SetFloat("Animate", 0); }
-    void PlayHover()  { if (hoverSound)  hoverSound.Play();  }
-    void PlayClick()  { if (clickSound)  clickSound.Play();  }
-    void PlaySlider() { if (sliderSound) sliderSound.Play(); }
-    void PlaySwoosh() { if (swooshSound) swooshSound.Play(); }
+        int separatorIndex = value.LastIndexOf('-');
+        if (separatorIndex < 0 || separatorIndex >= value.Length - 1)
+        {
+            return -1;
+        }
 
-    void QuitGame()
+        return int.TryParse(value.Substring(separatorIndex + 1), out int index) ? index : -1;
+    }
+
+    private void Position2()
+    {
+        if (cameraAnimator != null)
+        {
+            cameraAnimator.SetFloat("Animate", 1);
+        }
+    }
+
+    private void PlayHover()
+    {
+        if (hoverSound != null)
+        {
+            hoverSound.Play();
+        }
+    }
+
+    private void PlayClick()
+    {
+        if (clickSound != null)
+        {
+            clickSound.Play();
+        }
+    }
+
+    private void PlaySlider()
+    {
+        if (sliderSound != null)
+        {
+            sliderSound.Play();
+        }
+    }
+
+    private void PlaySwoosh()
+    {
+        if (swooshSound != null)
+        {
+            swooshSound.Play();
+        }
+    }
+
+    private void QuitGame()
     {
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;

@@ -9,6 +9,7 @@ public class PlayFabLogin : MonoBehaviour
     private TextField user_Login;
     private TextField pass_Login;
     private Label message_Login;
+    private Button loginButton;
 
     public static string DisplayNameFromPlayFab;
 
@@ -19,17 +20,59 @@ public class PlayFabLogin : MonoBehaviour
 
     public void Initialize(VisualElement root, UIToolkitMenuController controller)
     {
+        Deinitialize();
+
+        if (root == null) return;
+
         menuController = controller;
         user_Login = root.Q<TextField>("login-username");
         pass_Login = root.Q<TextField>("login-password");
         message_Login = root.Q<Label>("login-message");
 
-        root.Q<Button>("btn-login").clicked += Login;
+        loginButton = root.Q<Button>("btn-login");
+        if (loginButton != null)
+        {
+            loginButton.clicked += Login;
+        }
+    }
+
+    public void Deinitialize()
+    {
+        if (loginButton != null)
+        {
+            loginButton.clicked -= Login;
+            loginButton = null;
+        }
+
+        CancelInvoke(nameof(AutoSwitchToMainMenu));
+
+        if (coroutine_Login != null)
+        {
+            StopCoroutine(coroutine_Login);
+            coroutine_Login = null;
+        }
+
+        user_Login = null;
+        pass_Login = null;
+        message_Login = null;
+        menuController = null;
+        isProcessing = false;
+    }
+
+    private void OnDisable()
+    {
+        Deinitialize();
     }
 
     public void Login()
     {
         if (isProcessing) return;
+
+        if (user_Login == null || pass_Login == null)
+        {
+            ShowMessage("Login form is not ready.");
+            return;
+        }
 
         if (string.IsNullOrEmpty(user_Login.value) || string.IsNullOrEmpty(pass_Login.value))
         {
@@ -62,6 +105,12 @@ public class PlayFabLogin : MonoBehaviour
 
     private void OnLoginSuccess(LoginResult result)
     {
+        if (!isActiveAndEnabled || user_Login == null)
+        {
+            isProcessing = false;
+            return;
+        }
+
         if (result.InfoResultPayload != null && result.InfoResultPayload.PlayerProfile != null &&
             !string.IsNullOrEmpty(result.InfoResultPayload.PlayerProfile.DisplayName))
         {
