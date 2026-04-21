@@ -14,29 +14,19 @@
 
         <ui:VisualElement class="auth-layout">
             <ui:VisualElement class="brand-rail">
-                <ui:Label text="FPS TUTOR" class="brand-title" />
-                <ui:Label text="TACTICAL TRAINING RANGE" class="brand-subtitle" />
-                <ui:VisualElement class="rail-rule" />
-                <ui:VisualElement class="status-stack">
-                    <ui:VisualElement class="status-line">
-                        <ui:Label text="RANGE" class="status-key" />
-                        <ui:Label text="ONLINE" class="status-value good" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="status-line">
-                        <ui:Label text="BUILD" class="status-key" />
-                        <ui:Label name="lbl-version" text="v 1.0.0" class="status-value" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="status-line">
-                        <ui:Label text="PROFILE" class="status-key" />
-                        <ui:Label text="LOCKED" class="status-value warn" />
-                    </ui:VisualElement>
+                <ui:VisualElement class="auth-rail-content">
+                    <ui:Label text="FPS TUTOR" class="brand-title" />
+                    <ui:Label text="TACTICAL TRAINING RANGE" class="brand-subtitle" />
+                    <ui:VisualElement class="rail-rule" />
+                    <ui:Label text="Progress, loadout, and range settings follow your operator profile." class="auth-rail-body" />
                 </ui:VisualElement>
+                <ui:Label name="lbl-version" text="v 1.0.0" class="auth-version" />
             </ui:VisualElement>
 
-            <ui:VisualElement class="auth-panel">
+            <ui:VisualElement name="login-panel" class="auth-panel">
                 <ui:Label text="Operator Access" class="panel-kicker" />
                 <ui:Label text="Sign In" class="auth-title" />
-                <ui:Label text="Enter credentials to sync progression and loadout." class="auth-subtitle" />
+                <ui:Label text="Continue with your operator profile." class="auth-subtitle" />
 
                 <ui:VisualElement class="field-group">
                     <ui:Label text="Username" class="field-label" />
@@ -48,10 +38,13 @@
                     <ui:TextField name="login-password" password="true" class="text-input" />
                 </ui:VisualElement>
 
-                <ui:Label name="login-message" text="" class="auth-message hidden" />
+                <ui:VisualElement name="login-message-row" class="auth-message-row hidden">
+                    <ui:Label name="login-message-badge" text="ERR" class="auth-message-badge" />
+                    <ui:Label name="login-message" text="" class="auth-message" />
+                </ui:VisualElement>
 
                 <ui:Button name="btn-login" text="Sign In" class="btn-primary btn-wide" />
-                <ui:Button name="btn-goto-register" text="Create Account" class="btn-link" />
+                <ui:Button name="btn-goto-register" text="Create Account" class="btn-secondary btn-wide auth-secondary-btn" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
@@ -65,29 +58,19 @@
 
         <ui:VisualElement class="auth-layout">
             <ui:VisualElement class="brand-rail">
-                <ui:Label text="FPS TUTOR" class="brand-title" />
-                <ui:Label text="TACTICAL TRAINING RANGE" class="brand-subtitle" />
-                <ui:VisualElement class="rail-rule" />
-                <ui:VisualElement class="status-stack">
-                    <ui:VisualElement class="status-line">
-                        <ui:Label text="RANGE" class="status-key" />
-                        <ui:Label text="ONLINE" class="status-value good" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="status-line">
-                        <ui:Label text="BUILD" class="status-key" />
-                        <ui:Label text="v 1.0.0" class="status-value" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="status-line">
-                        <ui:Label text="PROFILE" class="status-key" />
-                        <ui:Label text="NEW" class="status-value warn" />
-                    </ui:VisualElement>
+                <ui:VisualElement class="auth-rail-content">
+                    <ui:Label text="FPS TUTOR" class="brand-title" />
+                    <ui:Label text="TACTICAL TRAINING RANGE" class="brand-subtitle" />
+                    <ui:VisualElement class="rail-rule" />
+                    <ui:Label text="Create an operator profile to keep progression and settings across sessions." class="auth-rail-body" />
                 </ui:VisualElement>
+                <ui:Label text="v 1.0.0" class="auth-version" />
             </ui:VisualElement>
 
-            <ui:VisualElement class="auth-panel">
+            <ui:VisualElement name="register-panel" class="auth-panel">
                 <ui:Label text="Operator Access" class="panel-kicker" />
                 <ui:Label text="Create Account" class="auth-title" />
-                <ui:Label text="Register an operator profile for training progress." class="auth-subtitle" />
+                <ui:Label text="Set up a new operator profile." class="auth-subtitle" />
 
                 <ui:VisualElement class="field-group">
                     <ui:Label text="Display Name" class="field-label" />
@@ -104,10 +87,13 @@
                     <ui:TextField name="reg-password" password="true" class="text-input" />
                 </ui:VisualElement>
 
-                <ui:Label name="reg-message" text="" class="auth-message hidden" />
+                <ui:VisualElement name="reg-message-row" class="auth-message-row hidden">
+                    <ui:Label name="reg-message-badge" text="ERR" class="auth-message-badge" />
+                    <ui:Label name="reg-message" text="" class="auth-message" />
+                </ui:VisualElement>
 
                 <ui:Button name="btn-register" text="Create Account" class="btn-primary btn-wide" />
-                <ui:Button name="btn-back-to-login" text="Back To Sign In" class="btn-link" />
+                <ui:Button name="btn-back-to-login" text="Back To Sign In" class="btn-secondary btn-wide auth-secondary-btn" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

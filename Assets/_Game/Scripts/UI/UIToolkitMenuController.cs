@@ -133,7 +133,7 @@ public class UIToolkitMenuController : MonoBehaviour
 
         if (playFabRegister != null)
         {
-            playFabRegister.Initialize(root);
+            playFabRegister.Initialize(root, this);
         }
 
         var mainAudio = cam != null ? cam.GetComponent<AudioSource>() : null;
