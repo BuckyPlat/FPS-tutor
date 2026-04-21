@@ -28,7 +28,7 @@
     --motion-slow: 0.64s;
     color: var(--text-strong);
     letter-spacing: 0;
-    -unity-font: url("/Assets/ThirdParty/Photon/PhotonChat/Demos/Demo Chat/Resources/OpenSans/OpenSans-Regular.ttf");
+    -unity-font-definition: resource("Text/Fonts/MenuBody-Regular");
 }
 
 Label {
@@ -64,7 +64,7 @@ Label {
 .option-btn,
 .auth-message-badge,
 .keybind-key {
-    -unity-font: url("/Assets/ThirdParty/EffectExamples/Shared/Fonts/RobotoCondensed-Bold.ttf");
+    -unity-font-definition: resource("Text/Fonts/MenuHeading-Bold");
 }
 
 .app-root {
@@ -434,7 +434,7 @@ Label {
     background-color: rgba(255, 255, 255, 0.04);
     color: var(--accent-bone);
     font-size: 15px;
-    -unity-font: url("/Assets/ThirdParty/Photon/PhotonChat/Demos/Demo Chat/Resources/OpenSans/OpenSans-Regular.ttf");
+    -unity-font-definition: resource("Text/Fonts/MenuBody-Regular");
     transition-property: border-color, background-color;
     transition-duration: var(--motion-fast);
     transition-timing-function: ease;
@@ -657,7 +657,7 @@ Label {
 .player-avatar-letter {
     color: var(--accent-bone);
     font-size: 30px;
-    -unity-font: url("/Assets/ThirdParty/EffectExamples/Shared/Fonts/RobotoCondensed-Bold.ttf");
+    -unity-font-definition: resource("Text/Fonts/MenuHeading-Bold");
 }
 
 .player-meta {
@@ -668,7 +668,7 @@ Label {
 .player-name {
     color: var(--accent-bone);
     font-size: 18px;
-    -unity-font: url("/Assets/ThirdParty/EffectExamples/Shared/Fonts/RobotoCondensed-Bold.ttf");
+    -unity-font-definition: resource("Text/Fonts/MenuHeading-Bold");
 }
 
 .player-status {
@@ -1126,7 +1126,7 @@ Label {
 .item-thumb-icon {
     color: var(--accent-bone);
     font-size: 44px;
-    -unity-font: url("/Assets/ThirdParty/EffectExamples/Shared/Fonts/RobotoCondensed-Bold.ttf");
+    -unity-font-definition: resource("Text/Fonts/MenuHeading-Bold");
 }
 
 .item-tag {
@@ -1205,7 +1205,7 @@ Label {
 .account-avatar-letter {
     color: var(--accent-bone);
     font-size: 52px;
-    -unity-font: url("/Assets/ThirdParty/EffectExamples/Shared/Fonts/RobotoCondensed-Bold.ttf");
+    -unity-font-definition: resource("Text/Fonts/MenuHeading-Bold");
 }
 
 .account-username {
