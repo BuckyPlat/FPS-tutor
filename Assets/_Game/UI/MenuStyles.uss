@@ -70,7 +70,6 @@ Label {
 .profile-username, .tab-btn, .sub-tab-btn, .kb-action, .modal-title,
 .btn-primary, .btn-secondary, .btn-danger, .btn-buy {
     -unity-font-definition: var(--font-bold);
-    text-transform: uppercase;
 }
 
 /* ==========================================================================
@@ -81,14 +80,20 @@ Label {
     position: absolute;
     top: 0; right: 0; bottom: 0; left: 0;
     background-color: var(--color-bg-dark);
-    /* Transition for screen switching */
-    opacity: 0;
-    transition-property: opacity;
-    transition-duration: 0.2s;
 }
 
-.app-root.motion-active {
+/* Transition for screen switching */
+.app-root, .shell-layer, .screen-layer, .tab-panel, .kb-panel, .overlay-root {
+    opacity: 0;
+    translate: 0 10px;
+    transition-property: opacity, translate;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out;
+}
+
+.motion-active {
     opacity: 1;
+    translate: 0 0;
 }
 
 /* Auth Screens (Login/Reg) - Centered Box Layout */
@@ -136,7 +141,7 @@ Label {
 
 .rail-eyebrow { color: var(--color-accent); font-size: 14px; margin-bottom: var(--spacing-xs); }
 .brand-title { font-size: 48px; margin-bottom: var(--spacing-lg); }
-.auth-rail-body { color: var(--color-text-muted); font-size: 16px; white-space: normal; line-height: 24px; }
+.auth-rail-body { color: var(--color-text-muted); font-size: 16px; white-space: normal; }
 .rail-rule { width: 40px; height: 4px; background-color: var(--color-accent); margin-top: var(--spacing-lg); }
 .version-text { color: var(--color-text-dim); font-size: 12px; }
 
@@ -218,7 +223,7 @@ Label {
 
 .currency-strip { margin-bottom: var(--spacing-xl); }
 .currency-label { color: var(--color-text-muted); font-size: 12px; }
-.currency-amount { font-size: 28px; font-family: var(--font-bold); margin-top: 4px; color: var(--color-accent); }
+.currency-amount { font-size: 28px; -unity-font-definition: var(--font-bold); margin-top: 4px; color: var(--color-accent); }
 
 /* Navigation */
 .sidebar-nav { flex-grow: 1; /* Pushes footer down */ }
@@ -233,7 +238,7 @@ Label {
 .nav-item.active { background-color: var(--color-bg-card); border-left-color: var(--color-accent); }
 .nav-index { width: 30px; color: var(--color-text-dim); font-size: 12px; }
 .nav-item.active .nav-index { color: var(--color-accent); }
-.nav-item-label { font-size: 16px; flex-grow: 1; text-align: left; }
+.nav-item-label { font-size: 16px; flex-grow: 1; -unity-text-align: middle-left; }
 
 .sidebar-footer { margin-top: auto; padding-top: var(--spacing-md); border-top-width: 1px; border-top-color: var(--color-border); }
 .nav-exit:hover { background-color: rgba(230, 57, 70, 0.1); border-left-color: var(--color-danger); color: var(--color-danger); }
@@ -250,7 +255,7 @@ Label {
     height: 48px; margin-bottom: var(--spacing-xl);
 }
 .top-bar-left, .top-bar-right { flex-direction: row; align-items: center; }
-.top-bar-status { font-size: 14px; font-family: var(--font-bold); margin-right: var(--spacing-md); }
+.top-bar-status { font-size: 14px; -unity-font-definition: var(--font-bold); margin-right: var(--spacing-md); }
 .top-bar-desc { color: var(--color-text-muted); font-size: 12px; }
 .btn-social { height: 32px; padding: 0 16px; margin-left: var(--spacing-sm); background-color: var(--color-bg-card); border-width: 1px; border-color: var(--color-border); font-size: 12px; }
 .btn-social:hover { background-color: var(--color-bg-hover); border-color: var(--color-text-dim); }
@@ -277,7 +282,7 @@ Label {
 .card-title { font-size: 20px; margin-bottom: var(--spacing-md); color: var(--color-accent); }
 .card-title-large { font-size: 40px; margin-top: 8px; margin-bottom: 12px; }
 .kicker { font-size: 12px; color: var(--color-accent); }
-.card-desc { color: var(--color-text-muted); white-space: normal; line-height: 22px; }
+.card-desc { color: var(--color-text-muted); white-space: normal; }
 
 .screen-content-row { flex-direction: row; flex-grow: 1; }
 .hero-card { margin-right: var(--spacing-lg); justify-content: center; }
@@ -289,7 +294,7 @@ Label {
 /* Stats rows */
 .stat-row { flex-direction: row; justify-content: space-between; padding: 12px 0; border-bottom-width: 1px; border-bottom-color: var(--color-border); }
 .stat-label { color: var(--color-text-muted); font-size: 14px; text-transform: uppercase; }
-.stat-value { font-size: 16px; font-family: var(--font-bold); }
+.stat-value { font-size: 16px; -unity-font-definition: var(--font-bold); }
 
 /* ==========================================================================
    SPECIFIC SCREENS
@@ -319,7 +324,7 @@ Label {
 .btn-buy:hover { background-color: var(--color-accent); color: #000; border-color: var(--color-accent); }
 
 /* Account */
-.profile-card { width: 400px; align-items: center; text-align: center; padding: 48px; }
+.profile-card { width: 400px; align-items: center; -unity-text-align: middle-center; padding: 48px; }
 .avatar-large { width: 120px; height: 120px; background-color: var(--color-accent); align-items: center; justify-content: center; margin-bottom: var(--spacing-lg); }
 .avatar-letter-large { font-size: 48px; color: #000; }
 .profile-username { font-size: 32px; margin-bottom: 8px; }
@@ -330,7 +335,7 @@ Label {
 .settings-layout { flex-direction: row; flex-grow: 1; }
 .settings-nav { width: 200px; flex-shrink: 0; margin-right: var(--spacing-lg); }
 .settings-panels-container { flex-grow: 1; position: relative; }
-.tab-btn { height: 48px; text-align: left; padding-left: 16px; background-color: var(--color-bg-panel); border-width: 0; border-left-width: 4px; border-left-color: transparent; margin-bottom: 4px; color: var(--color-text-muted); }
+.tab-btn { height: 48px; -unity-text-align: middle-left; padding-left: 16px; background-color: var(--color-bg-panel); border-width: 0; border-left-width: 4px; border-left-color: transparent; margin-bottom: 4px; color: var(--color-text-muted); }
 .tab-btn:hover { background-color: var(--color-bg-hover); color: #FFF; }
 .tab-btn.active { background-color: var(--color-bg-card); border-left-color: var(--color-accent); color: var(--color-accent); }
 
@@ -356,7 +361,7 @@ Label {
 .kb-container { position: relative; flex-grow: 1; }
 .kb-page { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
 .kb-row { flex-direction: row; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom-width: 1px; border-bottom-color: var(--color-border); background-color: var(--color-bg-panel); margin-bottom: 2px; }
-.kb-key { background-color: var(--color-bg-dark); color: var(--color-accent); padding: 8px 16px; min-width: 60px; text-align: center; font-family: var(--font-bold); border-width: 1px; border-color: var(--color-border); }
+.kb-key { background-color: var(--color-bg-dark); color: var(--color-accent); padding: 8px 16px; min-width: 60px; -unity-text-align: middle-center; -unity-font-definition: var(--font-bold); border-width: 1px; border-color: var(--color-border); }
 
 /* ==========================================================================
    BUTTONS
@@ -386,9 +391,9 @@ Label {
 .modal-actions { margin-top: 32px; flex-direction: row; }
 
 /* Loading Bar overrides */
-.loading-card { align-items: center; text-align: center; }
+.loading-card { align-items: center; -unity-text-align: middle-center; }
 .loading-bar { width: 100%; margin: 32px 0 16px 0; }
 .loading-bar .unity-progress-bar__container { height: 8px; min-height: 8px; }
 .loading-bar .unity-progress-bar__background { background-color: var(--color-bg-dark); border-width: 0; }
 .loading-bar .unity-progress-bar__progress { background-color: var(--color-accent); margin: 0; }
-.loading-desc { color: var(--color-accent); font-size: 12px; text-transform: uppercase; letter-spacing: 2px; }
+.loading-desc { color: var(--color-accent); font-size: 12px; letter-spacing: 2px; }
