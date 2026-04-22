@@ -26,6 +26,9 @@ public class Health : MonoBehaviourPun
     public float maxVignette = 1f;
     public float vignetteSmooth = 5f;
     private float targetVignette = 0f;
+    [Header("Drops")]
+
+    public GameObject healthDropPrefab;
 
     [HideInInspector]
     public bool hasDied;
@@ -77,6 +80,16 @@ public class Health : MonoBehaviourPun
         if (health <= 0 && !hasDied)
         {
             hasDied = true;
+
+            // Spawn health drop
+            if (PhotonNetwork.IsMasterClient && healthDropPrefab != null)
+            {
+                PhotonNetwork.Instantiate(
+                    healthDropPrefab.name,
+                    transform.position,
+                    Quaternion.identity
+                );
+            }
 
             // === NGĂN KNOCKBACK KHI CHẾT ===
             DisableMovementAndPhysics();

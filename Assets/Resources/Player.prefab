@@ -324,6 +324,7 @@ MonoBehaviour:
   volume: {fileID: 5984128420421103071}
   maxVignette: 0.5
   vignetteSmooth: 5
+  healthDropPrefab: {fileID: 8449068647432487215, guid: 3359de51ceebd254eb980d9fd0a6283c, type: 3}
   hasDied: 0
 --- !u!114 &5036693326501063854
 MonoBehaviour:
