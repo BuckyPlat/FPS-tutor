@@ -389,7 +389,7 @@
                                         </ui:VisualElement>
 
                                         <ui:VisualElement class="kb-container">
-                                            <ui:VisualElement name="panel-kb-movement" class="kb-page">
+                                            <ui:VisualElement name="panel-kb-movement" class="kb-panel">
                                                 <ui:VisualElement class="kb-row"><ui:Label text="Forward" class="kb-action" /><ui:Label text="W" class="kb-key" /></ui:VisualElement>
                                                 <ui:VisualElement class="kb-row"><ui:Label text="Backward" class="kb-action" /><ui:Label text="S" class="kb-key" /></ui:VisualElement>
                                                 <ui:VisualElement class="kb-row"><ui:Label text="Left" class="kb-action" /><ui:Label text="A" class="kb-key" /></ui:VisualElement>
@@ -397,13 +397,13 @@
                                                 <ui:VisualElement class="kb-row"><ui:Label text="Jump" class="kb-action" /><ui:Label text="SPACE" class="kb-key" /></ui:VisualElement>
                                             </ui:VisualElement>
 
-                                            <ui:VisualElement name="panel-kb-combat" class="kb-page hidden">
+                                            <ui:VisualElement name="panel-kb-combat" class="kb-panel hidden">
                                                 <ui:VisualElement class="kb-row"><ui:Label text="Fire" class="kb-action" /><ui:Label text="LMB" class="kb-key" /></ui:VisualElement>
                                                 <ui:VisualElement class="kb-row"><ui:Label text="Aim" class="kb-action" /><ui:Label text="RMB" class="kb-key" /></ui:VisualElement>
                                                 <ui:VisualElement class="kb-row"><ui:Label text="Reload" class="kb-action" /><ui:Label text="R" class="kb-key" /></ui:VisualElement>
                                             </ui:VisualElement>
 
-                                            <ui:VisualElement name="panel-kb-general" class="kb-page hidden">
+                                            <ui:VisualElement name="panel-kb-general" class="kb-panel hidden">
                                                 <ui:VisualElement class="kb-row"><ui:Label text="Scoreboard" class="kb-action" /><ui:Label text="TAB" class="kb-key" /></ui:VisualElement>
                                                 <ui:VisualElement class="kb-row"><ui:Label text="Pause" class="kb-action" /><ui:Label text="ESC" class="kb-key" /></ui:VisualElement>
                                             </ui:VisualElement>

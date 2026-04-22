@@ -293,7 +293,7 @@ Label {
 
 /* Stats rows */
 .stat-row { flex-direction: row; justify-content: space-between; padding: 12px 0; border-bottom-width: 1px; border-bottom-color: var(--color-border); }
-.stat-label { color: var(--color-text-muted); font-size: 14px; text-transform: uppercase; }
+.stat-label { color: var(--color-text-muted); font-size: 14px; }
 .stat-value { font-size: 16px; -unity-font-definition: var(--font-bold); }
 
 /* ==========================================================================
@@ -335,6 +335,7 @@ Label {
 .settings-layout { flex-direction: row; flex-grow: 1; }
 .settings-nav { width: 200px; flex-shrink: 0; margin-right: var(--spacing-lg); }
 .settings-panels-container { flex-grow: 1; position: relative; }
+.tab-panel { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
 .tab-btn { height: 48px; -unity-text-align: middle-left; padding-left: 16px; background-color: var(--color-bg-panel); border-width: 0; border-left-width: 4px; border-left-color: transparent; margin-bottom: 4px; color: var(--color-text-muted); }
 .tab-btn:hover { background-color: var(--color-bg-hover); color: #FFF; }
 .tab-btn.active { background-color: var(--color-bg-card); border-left-color: var(--color-accent); color: var(--color-accent); }
@@ -349,9 +350,10 @@ Label {
 
 .slider-field { flex-grow: 1; }
 .slider-field .unity-slider__input { flex-grow: 1; }
-.slider-field .unity-base-slider__drag-container { height: 4px; background-color: var(--color-bg-dark); }
-.slider-field .unity-base-slider__tracker { background-color: var(--color-accent); height: 4px; margin-top: -2px; border-width: 0; }
-.slider-field .unity-base-slider__thumb { width: 16px; height: 16px; border-radius: 0; background-color: var(--color-text-main); border-width: 0; margin-top: -8px; }
+.slider-field .unity-base-slider__drag-container { height: 4px; background-color: transparent; }
+.slider-field .unity-base-slider__tracker { background-color: var(--color-bg-dark); height: 4px; margin-top: -2px; border-width: 0; }
+.slider-field .unity-base-slider__fill { background-color: var(--color-accent); height: 4px; margin-top: -2px; }
+.slider-field .unity-base-slider__dragger { width: 16px; height: 16px; border-radius: 0; background-color: var(--color-accent); border-width: 0; margin-top: -8px; }
 
 /* Keybinds */
 .sub-nav { flex-direction: row; margin-bottom: var(--spacing-md); border-bottom-width: 1px; border-bottom-color: var(--color-border); }
