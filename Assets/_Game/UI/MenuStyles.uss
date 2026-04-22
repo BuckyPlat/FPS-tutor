@@ -350,10 +350,10 @@ Label {
 
 .slider-field { flex-grow: 1; }
 .slider-field .unity-slider__input { flex-grow: 1; }
-.slider-field .unity-base-slider__drag-container { height: 4px; background-color: transparent; }
-.slider-field .unity-base-slider__tracker { background-color: var(--color-bg-dark); height: 4px; margin-top: -2px; border-width: 0; border-radius: 0; }
-.slider-field .unity-base-slider__fill { background-color: var(--color-accent); height: 100%; margin-top: 0; border-radius: 0; }
-.slider-field .unity-base-slider__dragger { width: 16px; height: 16px; border-radius: 0; background-color: var(--color-accent); border-width: 0; margin-top: -8px; }
+.slider-field .unity-base-slider__drag-container { }
+.slider-field .unity-base-slider__tracker { background-color: var(--color-bg-dark); border-width: 0; border-radius: 0; }
+.slider-field .unity-base-slider__fill { background-color: var(--color-accent); }
+.slider-field .unity-base-slider__dragger { border-radius: 0; background-color: var(--color-accent); border-width: 0; }
 .slider-field .unity-base-slider__dragger-border { display: none; }
 
 /* Keybinds */
