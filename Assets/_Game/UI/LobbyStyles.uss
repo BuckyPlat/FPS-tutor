@@ -1,0 +1,164 @@
+.lobby-sidebar {
+    background-color: var(--color-bg-panel);
+}
+
+.lobby-content-area {
+    background-color: var(--color-bg-dark);
+}
+
+.lobby-sidebar-card {
+    margin-bottom: var(--spacing-lg);
+}
+
+.lobby-inline-badge {
+    align-self: flex-start;
+    margin-top: 10px;
+}
+
+.lobby-status-copy {
+    margin-top: var(--spacing-md);
+    white-space: normal;
+}
+
+.lobby-room-count-strip {
+    margin-bottom: var(--spacing-lg);
+}
+
+.lobby-room-browser-card,
+.lobby-create-card {
+    min-height: 0;
+}
+
+.lobby-section-copy {
+    margin-bottom: var(--spacing-md);
+}
+
+.lobby-empty-state {
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text-muted);
+}
+
+.lobby-room-list {
+    flex-grow: 1;
+    margin-top: var(--spacing-md);
+    background-color: transparent;
+    border-width: 0;
+}
+
+.lobby-room-list .unity-collection-view__item {
+    padding: 0 0 12px 0;
+    background-color: transparent;
+    border-bottom-width: 0;
+}
+
+.lobby-room-list .unity-collection-view__item:hover,
+.lobby-room-list .unity-collection-view__item--selected {
+    background-color: transparent;
+}
+
+.room-row-shell {
+    height: 78px;
+}
+
+.room-row-button {
+    height: 78px;
+    padding: 0 20px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--color-bg-card);
+    border-width: 1px;
+    border-color: var(--color-border);
+}
+
+.room-row-button:hover {
+    background-color: var(--color-bg-hover);
+    border-color: var(--color-accent);
+}
+
+.room-row-main,
+.room-row-side {
+    flex-direction: column;
+}
+
+.room-row-side {
+    align-items: flex-end;
+}
+
+.room-row-name,
+.lobby-map-title {
+    -unity-font-definition: var(--font-bold);
+    font-size: 18px;
+}
+
+.room-row-map,
+.lobby-map-desc {
+    color: var(--color-text-muted);
+    font-size: 13px;
+    margin-top: 6px;
+    white-space: normal;
+}
+
+.room-row-count {
+    -unity-font-definition: var(--font-bold);
+    font-size: 22px;
+    color: var(--color-accent);
+}
+
+.room-row-cta {
+    font-size: 11px;
+    margin-top: 8px;
+    color: var(--color-text-dim);
+}
+
+.lobby-side-card,
+.lobby-guide-card {
+    justify-content: flex-start;
+}
+
+.lobby-side-actions {
+    margin-top: auto;
+}
+
+.lobby-form {
+    max-width: 100%;
+    margin-top: var(--spacing-lg);
+}
+
+.lobby-room-name-field {
+    max-width: 520px;
+}
+
+.lobby-map-stack {
+    margin-top: var(--spacing-md);
+}
+
+.lobby-map-button {
+    min-height: 96px;
+    margin-bottom: 14px;
+    padding: 18px 20px;
+    background-color: var(--color-bg-card);
+    border-width: 1px;
+    border-color: var(--color-border);
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.lobby-map-button:hover {
+    background-color: var(--color-bg-hover);
+}
+
+.lobby-map-button.tier-standard {
+    border-left-width: 4px;
+    border-left-color: var(--color-accent);
+}
+
+.lobby-map-button.tier-rare {
+    border-left-width: 4px;
+    border-left-color: var(--color-success);
+}
+
+.lobby-create-actions {
+    margin-top: var(--spacing-md);
+}
