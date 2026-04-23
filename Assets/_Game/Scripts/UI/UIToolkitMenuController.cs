@@ -102,6 +102,25 @@ public class UIToolkitMenuController : MonoBehaviour
         "Exclusive bundle with all premium skins included!"
     };
 
+    private static readonly Dictionary<string, string> MenuIconResources = new Dictionary<string, string>()
+    {
+            { "icon-auth-login", "Icons/Menu/user-circle" },
+        { "icon-auth-register", "Icons/Menu/user-plus" },
+        { "icon-currency", "Icons/Menu/coins" },
+        { "icon-nav-play", "Icons/Menu/player-play" },
+        { "icon-nav-shop", "Icons/Menu/shopping-bag" },
+        { "icon-nav-inventory", "Icons/Menu/luggage" },
+        { "icon-nav-account", "Icons/Menu/user-circle" },
+        { "icon-nav-settings", "Icons/Menu/settings" },
+        { "icon-nav-exit", "Icons/Menu/logout" },
+        { "icon-screen-play", "Icons/Menu/player-play" },
+        { "icon-screen-shop", "Icons/Menu/shopping-bag" },
+        { "icon-screen-inventory", "Icons/Menu/luggage" },
+        { "icon-screen-account", "Icons/Menu/user-circle" },
+        { "icon-screen-settings", "Icons/Menu/settings" },
+        { "icon-hero-play", "Icons/Menu/target-arrow" }
+    };
+
     private void OnEnable()
     {
         if (uiDocument == null)
@@ -123,6 +142,7 @@ public class UIToolkitMenuController : MonoBehaviour
         }
 
         QueryElements();
+        ApplyMenuIcons();
         InitializeMotionState();
         RegisterCallbacks();
 
@@ -237,6 +257,32 @@ public class UIToolkitMenuController : MonoBehaviour
         if (element != null)
         {
             elements.Add(element);
+        }
+    }
+
+    private void ApplyMenuIcons()
+    {
+        if (root == null)
+        {
+            return;
+        }
+
+        foreach (var iconEntry in MenuIconResources)
+        {
+            var iconElement = root.Q<VisualElement>(iconEntry.Key);
+            if (iconElement == null)
+            {
+                continue;
+            }
+
+            var vectorImage = Resources.Load<VectorImage>(iconEntry.Value);
+            if (vectorImage == null)
+            {
+                continue;
+            }
+
+            iconElement.style.backgroundImage = new StyleBackground(vectorImage);
+            iconElement.pickingMode = PickingMode.Ignore;
         }
     }
 

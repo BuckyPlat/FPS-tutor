@@ -1,0 +1,20 @@
+Selected menu icon assets in this folder are derived from Tabler Icons.
+
+Source:
+- https://tabler.io/icons
+- https://new.tabler.io/docs/components/icons
+
+License:
+- MIT License
+
+Imported icons:
+- login
+- user-plus
+- coins
+- player-play
+- shopping-bag
+- luggage
+- user-circle
+- settings
+- logout
+- target-arrow
