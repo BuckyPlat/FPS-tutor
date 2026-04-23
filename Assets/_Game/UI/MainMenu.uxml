@@ -213,47 +213,33 @@
                                 </ui:VisualElement>
                             </ui:VisualElement>
 
-                            <ui:VisualElement class="screen-stage screen-stage-focus">
+                            <ui:VisualElement class="screen-stage screen-stage-focus screen-stage-play">
                                 <ui:VisualElement class="stage-main">
                                     <ui:VisualElement class="card stage-card play-hero-card">
-                                        <ui:VisualElement class="play-hero-shell">
-                                            <ui:VisualElement class="play-hero-copy">
-                                                <ui:VisualElement class="hero-kicker-row">
-                                                    <ui:VisualElement name="icon-hero-play" class="menu-icon hero-kicker-icon" />
-                                                    <ui:Label text="PLAY" class="kicker" />
-                                                </ui:VisualElement>
-                                                <ui:Label text="Open Lobby" class="card-title-large play-hero-title" />
-                                                <ui:Label text="Browse rooms, join a squad, and start a live match." class="card-desc play-hero-desc" />
-                                                <ui:VisualElement class="card-actions-bottom">
-                                                    <ui:Button name="btn-mode-campaign" text="Open Lobby" class="btn-primary" />
-                                                    <ui:Button name="btn-mode-survival" text="Practice Range" class="btn-secondary" />
-                                                </ui:VisualElement>
-                                            </ui:VisualElement>
-                                            <ui:VisualElement class="play-hero-aside">
-                                                <ui:VisualElement class="play-hero-aside-card">
-                                                    <ui:Label text="Quick Context" class="card-title support-card-title play-context-title" />
-                                                    <ui:Label text="Use this screen as the match entry point, then move through the left rail without leaving the menu shell." class="card-desc support-desc" />
-                                                </ui:VisualElement>
-                                                <ui:VisualElement class="play-hero-aside-card play-hero-aside-card-secondary">
-                                                    <ui:Label text="Menu Flow" class="card-title support-card-title play-context-title" />
-                                                    <ui:Label text="Open Store, Loadout, Profile, or Settings from the left rail at any time." class="card-desc support-desc play-helper-text" />
-                                                </ui:VisualElement>
-                                            </ui:VisualElement>
+                                        <ui:VisualElement class="hero-kicker-row">
+                                            <ui:VisualElement name="icon-hero-play" class="menu-icon hero-kicker-icon" />
+                                            <ui:Label text="PLAY" class="kicker" />
+                                        </ui:VisualElement>
+                                        <ui:Label text="Choose Your Mode" class="card-title-large play-hero-title" />
+                                        <ui:Label text="Open a live lobby with your squad, or warm up solo before the next match." class="card-desc play-hero-desc" />
+                                        <ui:VisualElement class="card-actions-bottom play-actions-row">
+                                            <ui:Button name="btn-mode-campaign" text="Open Lobby" class="btn-primary" />
+                                            <ui:Button name="btn-mode-survival" text="Practice Range" class="btn-secondary" />
                                         </ui:VisualElement>
                                     </ui:VisualElement>
                                 </ui:VisualElement>
 
                                 <ui:VisualElement class="stage-support stage-column">
-                                    <ui:VisualElement class="card stage-card support-card play-support-card play-match-card">
-                                        <ui:Label text="Match Flow" class="card-title support-card-title" />
+                                    <ui:VisualElement class="card stage-card support-card play-support-card play-modes-card">
+                                        <ui:Label text="Modes" class="card-title support-card-title" />
                                         <ui:VisualElement class="support-list">
                                             <ui:VisualElement class="support-row">
-                                                <ui:Label text="Live Rooms" class="support-row-title" />
-                                                <ui:Label text="Open Lobby to browse active rooms and deploy with a squad." class="support-row-desc" />
+                                                <ui:Label text="Open Lobby" class="support-row-title" />
+                                                <ui:Label text="Browse live rooms and join a squad." class="support-row-desc" />
                                             </ui:VisualElement>
                                             <ui:VisualElement class="support-row">
                                                 <ui:Label text="Practice Range" class="support-row-title" />
-                                                <ui:Label text="Warm up offline before entering a live room." class="support-row-desc" />
+                                                <ui:Label text="Warm up solo before entering a live match." class="support-row-desc" />
                                             </ui:VisualElement>
                                         </ui:VisualElement>
                                     </ui:VisualElement>

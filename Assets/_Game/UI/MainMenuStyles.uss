@@ -715,55 +715,49 @@
 .menu-root .play-hero-card {
     flex-grow: 1;
     min-height: 0;
-    padding: 32px 34px 28px 34px;
-    justify-content: flex-start;
+    padding: 36px 38px;
+    justify-content: center;
+    align-items: flex-start;
     border-top-width: 2px;
     border-top-color: var(--color-accent);
     background-color: rgba(14, 14, 14, 0.82);
 }
 
-.menu-root .play-hero-shell {
-    flex-direction: row;
-    flex-grow: 1;
-    min-height: 0;
+.menu-root .screen-stage-play .stage-main {
+    margin-right: 18px;
 }
 
-.menu-root .play-hero-copy {
-    flex-grow: 1;
-    min-width: 0;
-    min-height: 0;
-    flex-direction: column;
-    justify-content: flex-start;
+.menu-root .screen-stage-play .stage-support {
+    width: 256px;
 }
 
-.menu-root .play-hero-copy .card-actions-bottom {
-    margin-top: 28px;
+.menu-root .screen-stage-play .play-actions-row {
+    margin-top: 26px;
     padding-top: 0;
 }
 
-.menu-root .play-hero-aside {
-    width: 304px;
-    margin-left: 20px;
-    min-height: 0;
-    flex-shrink: 0;
-    flex-direction: column;
+.menu-root .screen-stage-play .play-actions-row .unity-button {
+    width: 208px;
 }
 
-.menu-root .play-hero-aside-card {
-    flex-grow: 1;
-    min-height: 0;
-    padding: 18px 20px;
-    background-color: rgba(255, 255, 255, 0.03);
-    border-width: 1px;
-    border-color: rgba(255, 255, 255, 0.06);
+.menu-root .screen-stage-play .play-modes-card {
+    padding: 20px 18px;
 }
 
-.menu-root .play-hero-aside-card-secondary {
-    margin-top: 14px;
+.menu-root .screen-stage-play .play-support-card {
+    flex-grow: 0;
 }
 
-.menu-root .play-context-title {
+.menu-root .screen-stage-play .play-modes-card .support-card-title {
     margin-bottom: 10px;
+}
+
+.menu-root .screen-stage-play .play-modes-card .support-row {
+    padding: 10px 0;
+}
+
+.menu-root .screen-stage-play .play-modes-card .support-row-desc {
+    font-size: 13px;
 }
 
 .hero-kicker-row {
@@ -779,11 +773,11 @@
 }
 
 .play-hero-title {
-    max-width: 680px;
+    max-width: 560px;
 }
 
 .play-hero-desc {
-    max-width: 560px;
+    max-width: 500px;
 }
 
 .menu-root .card-actions-bottom {
@@ -797,14 +791,6 @@
     width: 200px;
     margin-right: 12px;
     margin-bottom: 10px;
-}
-
-.play-helper-text {
-    margin-top: 0;
-    max-width: none;
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 13px;
-    white-space: normal;
 }
 
 .menu-root .support-card {
@@ -1021,7 +1007,7 @@
     flex-grow: 1;
 }
 
-.menu-root .play-match-card {
+.menu-root .play-modes-card {
     justify-content: flex-start;
 }
 
