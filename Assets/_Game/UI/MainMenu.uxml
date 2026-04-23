@@ -355,26 +355,22 @@
                                 </ui:VisualElement>
                             </ui:VisualElement>
 
-                            <ui:VisualElement class="screen-stage screen-stage-profile">
-                                <ui:VisualElement class="stage-shell profile-stage-shell">
-                                    <ui:VisualElement class="stage-main-shell profile-stage-main-shell">
-                                        <ui:VisualElement class="stage-main">
-                                            <ui:VisualElement class="card stage-card profile-card">
-                                                <ui:VisualElement class="avatar-large">
-                                                    <ui:Label name="account-avatar-letter" text="O" class="avatar-letter-large" />
-                                                </ui:VisualElement>
-                                                <ui:Label name="lbl-account-name" text="USERNAME" class="profile-username" />
-                                                <ui:Label name="lbl-account-id" text="STATUS: READY" class="profile-status" />
-                                            </ui:VisualElement>
+                            <ui:VisualElement class="screen-stage screen-stage-split">
+                                <ui:VisualElement class="stage-main">
+                                    <ui:VisualElement class="card stage-card profile-card">
+                                        <ui:VisualElement class="avatar-large">
+                                            <ui:Label name="account-avatar-letter" text="O" class="avatar-letter-large" />
                                         </ui:VisualElement>
+                                        <ui:Label name="lbl-account-name" text="USERNAME" class="profile-username" />
+                                        <ui:Label name="lbl-account-id" text="STATUS: READY" class="profile-status" />
                                     </ui:VisualElement>
+                                </ui:VisualElement>
 
-                                    <ui:VisualElement class="stage-support stage-column profile-stage-support">
-                                        <ui:VisualElement class="card stage-card support-card account-action-card">
-                                            <ui:Label text="Session" class="card-title support-card-title" />
-                                            <ui:Label text="Log out to return to the authentication screen." class="card-desc support-desc" />
-                                            <ui:Button name="btn-logout" text="Log Out" class="btn-danger logout-btn" />
-                                        </ui:VisualElement>
+                                <ui:VisualElement class="stage-support stage-column">
+                                    <ui:VisualElement class="card stage-card support-card account-action-card">
+                                        <ui:Label text="Session" class="card-title support-card-title" />
+                                        <ui:Label text="Log out to return to the authentication screen." class="card-desc support-desc" />
+                                        <ui:Button name="btn-logout" text="Log Out" class="btn-danger logout-btn" />
                                     </ui:VisualElement>
                                 </ui:VisualElement>
                             </ui:VisualElement>

@@ -959,7 +959,7 @@
 
 .menu-root .profile-card {
     width: 100%;
-    max-width: 560px;
+    max-width: none;
     flex-grow: 0;
     min-height: 304px;
     padding: 34px 32px 30px 32px;
@@ -1066,32 +1066,6 @@
 .menu-root .account-action-card {
     justify-content: flex-start;
     padding: 20px 20px 22px 20px;
-}
-
-.menu-root .screen-stage-profile {
-    align-items: flex-start;
-    justify-content: center;
-}
-
-.menu-root .profile-stage-shell {
-    max-width: 862px;
-    align-items: flex-start;
-}
-
-.menu-root .profile-stage-main-shell {
-    max-width: 560px;
-    margin-right: 22px;
-    justify-content: flex-start;
-}
-
-.menu-root .profile-stage-main-shell > .stage-main {
-    flex-grow: 0;
-}
-
-.menu-root .profile-stage-support {
-    width: 280px;
-    align-self: flex-start;
-    justify-content: flex-start;
 }
 
 .menu-root .screen-stage-settings .tab-panel .card {
