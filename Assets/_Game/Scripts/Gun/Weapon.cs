@@ -84,8 +84,10 @@ public class Weapon : MonoBehaviourPun
 
     void Start()
     {
-        magText.text = mag.ToString();
-        ammoText.text = ammo + "/" + magAmmo;
+        if (magText != null)
+            magText.text = mag.ToString();
+        if (ammoText != null)
+            ammoText.text = ammo + "/" + magAmmo;
         SetAmmo();
 
         originalPosition = transform.localPosition;
@@ -124,8 +126,10 @@ public class Weapon : MonoBehaviourPun
 
     void UpdateAmmoUI()
     {
-        magText.text = mag.ToString();
-        ammoText.text = ammo + "/" + magAmmo;
+        if (magText != null)
+            magText.text = mag.ToString();
+        if (ammoText != null)
+            ammoText.text = ammo + "/" + magAmmo;
         SetAmmo();
     }
 
@@ -139,7 +143,11 @@ public class Weapon : MonoBehaviourPun
 
     void SetAmmo()
     {
-        ammoCircle.fillAmount = (float)ammo / magAmmo;
+        if (ammoCircle != null)
+            ammoCircle.fillAmount = (float)ammo / magAmmo;
+
+        if (photonView != null && photonView.IsMine)
+            UIToolkitGameplayUIController.Instance?.SetAmmo(ammo, mag, magAmmo);
     }
 
     void Reload()

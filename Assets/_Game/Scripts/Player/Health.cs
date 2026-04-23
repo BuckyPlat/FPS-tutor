@@ -155,10 +155,14 @@ public class Health : MonoBehaviourPun
 
     private void UpdateUI()
     {
-        healthText.text = health.ToString();           // Local player HUD health bar
+        if (healthText != null)
+            healthText.text = health.ToString();
 
         if (HealthImage != null)
             HealthImage.fillAmount = (float)health / maxHealth;
+
+        if (photonView.IsMine || isLocalPlayer)
+            UIToolkitGameplayUIController.Instance?.SetLocalHealth(health, maxHealth);
 
         // Update overhead health bar (if any)
         if (overheadHealthBar != null)

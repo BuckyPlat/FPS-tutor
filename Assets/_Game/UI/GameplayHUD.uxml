@@ -1,0 +1,100 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements"
+         xsi="http://www.w3.org/2001/XMLSchema-instance"
+         engine="UnityEngine.UIElements" editor="UnityEditor.UIElements"
+         noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
+         editor-extension-mode="False">
+    <ui:Style src="project://database/Assets/_Game/UI/MenuStyles.uss" />
+    <ui:Style src="project://database/Assets/_Game/UI/GameplayHUDStyles.uss" />
+
+    <ui:VisualElement name="gameplay-shell" class="app-root gameplay-shell motion-active">
+        <ui:VisualElement class="gameplay-root">
+            <ui:VisualElement class="gameplay-top-left">
+                <ui:VisualElement class="gameplay-card gameplay-session-card">
+                    <ui:Label text="FPS TUTOR" class="gameplay-eyebrow" />
+                    <ui:Label name="lbl-session-room" text="ROOM" class="gameplay-room-label" />
+                    <ui:Label name="lbl-session-map" text="MAP" class="gameplay-map-label" />
+                    <ui:Label name="lbl-session-state" text="CONNECTING" class="screen-badge gameplay-status-badge" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="gameplay-card gameplay-health-card">
+                    <ui:VisualElement class="gameplay-section-header">
+                        <ui:Label text="Vitals" class="gameplay-section-title" />
+                        <ui:Label text="LOCAL" class="gameplay-section-meta" />
+                    </ui:VisualElement>
+                    <ui:Label name="lbl-health-value" text="100" class="gameplay-stat-value" />
+                    <ui:VisualElement class="hud-meter">
+                        <ui:VisualElement name="health-fill" class="hud-meter-fill health-fill" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="gameplay-bottom-left">
+                <ui:VisualElement class="gameplay-card gameplay-chat-card">
+                    <ui:VisualElement class="gameplay-section-header">
+                        <ui:Label text="Channel" class="gameplay-section-title" />
+                        <ui:Label name="lbl-chat-hint" text="PRESS Y TO CHAT" class="gameplay-section-meta" />
+                    </ui:VisualElement>
+
+                    <ui:ScrollView name="chat-log-view" class="gameplay-chat-log" />
+
+                    <ui:VisualElement name="chat-input-row" class="gameplay-chat-input-row hidden">
+                        <ui:Label text=">" class="gameplay-chat-prompt" />
+                        <ui:TextField name="chat-input-field" class="text-input gameplay-chat-input" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="gameplay-bottom-right">
+                <ui:VisualElement class="gameplay-card gameplay-ammo-card">
+                    <ui:VisualElement class="gameplay-section-header">
+                        <ui:Label text="Weapon" class="gameplay-section-title" />
+                        <ui:Label name="lbl-ammo-reserve" text="MAG x0" class="gameplay-section-meta" />
+                    </ui:VisualElement>
+                    <ui:Label name="lbl-ammo-value" text="0/0" class="gameplay-stat-value" />
+                    <ui:VisualElement class="hud-meter">
+                        <ui:VisualElement name="ammo-fill" class="hud-meter-fill ammo-fill" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="crosshair-root" class="crosshair-root">
+                <ui:VisualElement class="crosshair-line crosshair-line-top" />
+                <ui:VisualElement class="crosshair-line crosshair-line-bottom" />
+                <ui:VisualElement class="crosshair-line crosshair-line-left" />
+                <ui:VisualElement class="crosshair-line crosshair-line-right" />
+                <ui:VisualElement class="crosshair-dot" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="connecting-overlay" class="gameplay-overlay hidden">
+                <ui:VisualElement class="gameplay-overlay-card">
+                    <ui:Label name="lbl-connecting-title" text="Joining Room" class="modal-title" />
+                    <ui:Label name="lbl-connecting-body" text="Matchmaking in progress." class="modal-desc" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="respawn-overlay" class="gameplay-overlay hidden">
+                <ui:VisualElement class="gameplay-overlay-card gameplay-respawn-card">
+                    <ui:Label text="Respawn" class="modal-title" />
+                    <ui:Label name="lbl-respawn-countdown" text="Respawn in: 3" class="gameplay-respawn-value" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="leaderboard-overlay" class="gameplay-overlay hidden">
+                <ui:VisualElement class="gameplay-overlay-card gameplay-leaderboard-card">
+                    <ui:VisualElement class="gameplay-leaderboard-header">
+                        <ui:Label text="Leaderboard" class="modal-title" />
+                        <ui:Label text="TAB HELD" class="screen-badge gameplay-status-badge" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="gameplay-leaderboard-columns">
+                        <ui:Label text="#" class="gameplay-leaderboard-head gameplay-leaderboard-head-rank" />
+                        <ui:Label text="PLAYER" class="gameplay-leaderboard-head gameplay-leaderboard-head-name" />
+                        <ui:Label text="SCORE" class="gameplay-leaderboard-head gameplay-leaderboard-head-score" />
+                        <ui:Label text="K/D" class="gameplay-leaderboard-head gameplay-leaderboard-head-kd" />
+                    </ui:VisualElement>
+                    <ui:Label name="lbl-empty-leaderboard" text="No players in room." class="card-desc hidden" />
+                    <ui:ListView name="leaderboard-list" class="gameplay-leaderboard-list" fixed-item-height="60" selection-type="None" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

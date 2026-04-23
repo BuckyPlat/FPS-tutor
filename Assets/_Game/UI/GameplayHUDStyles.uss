@@ -1,0 +1,338 @@
+.gameplay-root {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 24px;
+}
+
+.gameplay-card {
+    background-color: rgba(20, 20, 20, 0.92);
+    border-width: 1px;
+    border-color: var(--color-border);
+    padding: 16px;
+}
+
+.gameplay-top-left,
+.gameplay-bottom-left,
+.gameplay-bottom-right {
+    position: absolute;
+}
+
+.gameplay-top-left {
+    top: 24px;
+    left: 24px;
+    width: 320px;
+}
+
+.gameplay-bottom-left {
+    left: 24px;
+    bottom: 24px;
+    width: 440px;
+}
+
+.gameplay-bottom-right {
+    right: 24px;
+    bottom: 24px;
+    width: 280px;
+}
+
+.gameplay-session-card {
+    margin-bottom: 12px;
+}
+
+.gameplay-eyebrow {
+    color: var(--color-accent);
+    font-size: 11px;
+    -unity-font-definition: var(--font-bold);
+    margin-bottom: 2px;
+}
+
+.gameplay-room-label {
+    font-size: 26px;
+    -unity-font-definition: var(--font-bold);
+}
+
+.gameplay-map-label {
+    color: var(--color-text-muted);
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.gameplay-status-badge {
+    margin-top: 12px;
+    align-self: flex-start;
+}
+
+.gameplay-section-header {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.gameplay-section-title {
+    -unity-font-definition: var(--font-bold);
+    font-size: 15px;
+}
+
+.gameplay-section-meta {
+    margin-left: auto;
+    color: var(--color-text-muted);
+    font-size: 11px;
+}
+
+.gameplay-stat-value {
+    -unity-font-definition: var(--font-bold);
+    font-size: 42px;
+    margin-bottom: 12px;
+}
+
+.hud-meter {
+    height: 8px;
+    background-color: var(--color-bg-dark);
+    border-width: 1px;
+    border-color: var(--color-border);
+}
+
+.hud-meter-fill {
+    height: 100%;
+    width: 100%;
+}
+
+.health-fill {
+    background-color: var(--color-success);
+}
+
+.ammo-fill {
+    background-color: var(--color-accent);
+}
+
+.gameplay-chat-card {
+    min-height: 210px;
+}
+
+.gameplay-chat-log {
+    max-height: 132px;
+    margin-bottom: 12px;
+    background-color: transparent;
+    border-width: 0;
+}
+
+.gameplay-chat-log .unity-scroll-view__content-container {
+    padding-right: 8px;
+}
+
+.gameplay-chat-message {
+    color: var(--color-text-main);
+    font-size: 13px;
+    white-space: normal;
+    margin-bottom: 6px;
+}
+
+.gameplay-chat-input-row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.gameplay-chat-prompt {
+    width: 20px;
+    color: var(--color-accent);
+    -unity-font-definition: var(--font-bold);
+}
+
+.gameplay-chat-input {
+    flex-grow: 1;
+}
+
+.gameplay-chat-input .unity-base-text-field__input,
+.gameplay-chat-input .unity-text-field__input {
+    height: 38px;
+    font-size: 14px;
+}
+
+.crosshair-root {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 34px;
+    height: 34px;
+    margin-left: -17px;
+    margin-top: -17px;
+}
+
+.crosshair-line,
+.crosshair-dot {
+    position: absolute;
+    background-color: var(--color-accent);
+}
+
+.crosshair-line {
+    width: 2px;
+    height: 10px;
+}
+
+.crosshair-line-top {
+    top: 0;
+    left: 16px;
+}
+
+.crosshair-line-bottom {
+    bottom: 0;
+    left: 16px;
+}
+
+.crosshair-line-left,
+.crosshair-line-right {
+    width: 10px;
+    height: 2px;
+}
+
+.crosshair-line-left {
+    top: 16px;
+    left: 0;
+}
+
+.crosshair-line-right {
+    top: 16px;
+    right: 0;
+}
+
+.crosshair-dot {
+    width: 4px;
+    height: 4px;
+    top: 15px;
+    left: 15px;
+}
+
+.gameplay-overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.58);
+    align-items: center;
+    justify-content: center;
+}
+
+.gameplay-overlay-card {
+    width: 420px;
+    background-color: var(--color-bg-panel);
+    border-width: 1px;
+    border-color: var(--color-border);
+    border-top-width: 4px;
+    border-top-color: var(--color-accent);
+    padding: 32px;
+}
+
+.gameplay-respawn-card {
+    width: 360px;
+    -unity-text-align: middle-center;
+    align-items: center;
+}
+
+.gameplay-respawn-value {
+    -unity-font-definition: var(--font-bold);
+    font-size: 36px;
+    margin-top: 16px;
+}
+
+.gameplay-leaderboard-card {
+    width: 760px;
+    min-height: 520px;
+}
+
+.gameplay-leaderboard-header,
+.gameplay-leaderboard-columns,
+.gameplay-leaderboard-row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.gameplay-leaderboard-header {
+    margin-bottom: 18px;
+}
+
+.gameplay-leaderboard-header .screen-badge {
+    margin-left: auto;
+}
+
+.gameplay-leaderboard-columns {
+    padding: 0 18px 12px 18px;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--color-border);
+}
+
+.gameplay-leaderboard-head,
+.gameplay-leaderboard-rank,
+.gameplay-leaderboard-score,
+.gameplay-leaderboard-kd {
+    -unity-font-definition: var(--font-bold);
+}
+
+.gameplay-leaderboard-head {
+    font-size: 11px;
+    color: var(--color-text-muted);
+}
+
+.gameplay-leaderboard-head-rank,
+.gameplay-leaderboard-rank {
+    width: 56px;
+}
+
+.gameplay-leaderboard-head-name,
+.gameplay-leaderboard-name {
+    flex-grow: 1;
+}
+
+.gameplay-leaderboard-head-score,
+.gameplay-leaderboard-score {
+    width: 110px;
+    -unity-text-align: middle-right;
+}
+
+.gameplay-leaderboard-head-kd,
+.gameplay-leaderboard-kd {
+    width: 110px;
+    -unity-text-align: middle-right;
+}
+
+.gameplay-leaderboard-list {
+    flex-grow: 1;
+    min-height: 0;
+    margin-top: 12px;
+    background-color: transparent;
+    border-width: 0;
+}
+
+.gameplay-leaderboard-list .unity-collection-view__item {
+    padding: 0 0 8px 0;
+    background-color: transparent;
+    border-bottom-width: 0;
+}
+
+.gameplay-leaderboard-list .unity-collection-view__item:hover,
+.gameplay-leaderboard-list .unity-collection-view__item--selected {
+    background-color: transparent;
+}
+
+.gameplay-leaderboard-row-shell {
+    height: 52px;
+}
+
+.gameplay-leaderboard-row {
+    height: 52px;
+    padding: 0 18px;
+    background-color: var(--color-bg-card);
+    border-width: 1px;
+    border-color: var(--color-border);
+}
+
+.gameplay-leaderboard-name {
+    font-size: 15px;
+}
+
+.gameplay-leaderboard-score,
+.gameplay-leaderboard-kd {
+    color: var(--color-accent);
+    font-size: 15px;
+}

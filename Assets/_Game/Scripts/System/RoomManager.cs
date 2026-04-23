@@ -1,12 +1,12 @@
-using UnityEngine;
-using Photon.Pun;
-using Hashtable = ExitGames.Client.Photon.Hashtable;
 using System.Collections;
+using System.Collections.Generic;
+using Photon.Pun;
 using Photon.Realtime;
-using UnityEngine.SceneManagement;
 using PlayFab;
 using PlayFab.ClientModels;
-using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class RoomManager : MonoBehaviourPunCallbacks
 {
@@ -25,17 +25,14 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public string mapName = "Nothing";
 
-    [HideInInspector]
-    public int Kills = 0;
-    [HideInInspector]
-    public int Deaths = 0;
+    [HideInInspector] public int Kills;
+    [HideInInspector] public int Deaths;
 
-    // === HỆ THỐNG CHỐNG 409 CONFLICT ===
-    private int pendingKills = 0;
-    private int pendingDeaths = 0;
-    private float nextPlayFabUpdateTime = 0f;
-    private const float MIN_UPDATE_INTERVAL = 1.2f;     // Chỉ update PlayFab tối đa 1 lần mỗi 1.2 giây
-    private bool isUpdatingStats = false;
+    private int pendingKills;
+    private int pendingDeaths;
+    private float nextPlayFabUpdateTime;
+    private const float MinUpdateInterval = 1.2f;
+    private bool isUpdatingStats;
 
     void Awake()
     {
@@ -48,6 +45,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
+        UIToolkitGameplayUIController.Instance?.SetSessionInfo(PlayerPrefs.GetString("RoomNameToJoin"), mapName);
+        UIToolkitGameplayUIController.Instance?.SetSessionState("CONNECTING");
         JoinRoomButtonPressed();
     }
 
@@ -55,9 +54,9 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("Connecting....");
 
-        RoomOptions ro = new RoomOptions
+        RoomOptions roomOptions = new RoomOptions
         {
-            CustomRoomProperties = new Hashtable()
+            CustomRoomProperties = new Hashtable
             {
                 { "mapSceneIndex", SceneManager.GetActiveScene().buildIndex },
                 { "mapName", mapName }
@@ -65,16 +64,27 @@ public class RoomManager : MonoBehaviourPunCallbacks
             CustomRoomPropertiesForLobby = new[] { "mapSceneIndex", "mapName" }
         };
 
-        PhotonNetwork.JoinOrCreateRoom(PlayerPrefs.GetString("RoomNameToJoin"), ro, null);
-        connectingUI.SetActive(true);
+        PhotonNetwork.JoinOrCreateRoom(PlayerPrefs.GetString("RoomNameToJoin"), roomOptions, null);
+
+        if (connectingUI != null)
+            connectingUI.SetActive(true);
+
+        UIToolkitGameplayUIController.Instance?.SetConnectingVisible(true, "Joining Room", "Matchmaking in progress.");
     }
 
     public override void OnJoinedRoom()
     {
         base.OnJoinedRoom();
 
-        roomCam.SetActive(false);
-        if (connectingUI != null) connectingUI.SetActive(false);
+        if (roomCam != null)
+            roomCam.SetActive(false);
+
+        if (connectingUI != null)
+            connectingUI.SetActive(false);
+
+        UIToolkitGameplayUIController.Instance?.SetSessionInfo(PhotonNetwork.CurrentRoom?.Name, mapName);
+        UIToolkitGameplayUIController.Instance?.SetSessionState("LIVE");
+        UIToolkitGameplayUIController.Instance?.SetConnectingVisible(false);
 
         Debug.Log("We're connected and in a room!!!");
         SpawnPlayer();
@@ -84,15 +94,14 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
 
-        GameObject _player = PhotonNetwork.Instantiate(player.name, spawnPoint.position, Quaternion.identity);
-        _player.GetComponent<PlayerSetup>().IsLocalPlayer();
-        _player.GetComponent<Health>().isLocalPlayer = true;
+        GameObject spawnedPlayer = PhotonNetwork.Instantiate(player.name, spawnPoint.position, Quaternion.identity);
+        spawnedPlayer.GetComponent<PlayerSetup>().IsLocalPlayer();
+        spawnedPlayer.GetComponent<Health>().isLocalPlayer = true;
 
-        _player.GetComponent<PhotonView>().RPC("SetNickName", RpcTarget.AllBuffered, nickname);
+        spawnedPlayer.GetComponent<PhotonView>().RPC("SetNickName", RpcTarget.AllBuffered, nickname);
         PhotonNetwork.LocalPlayer.NickName = nickname;
     }
 
-    // Hàm mới - Nên gọi từ Weapon hoặc nơi khác
     public void AddKill(int amount = 1)
     {
         Kills += amount;
@@ -118,7 +127,9 @@ public class RoomManager : MonoBehaviourPunCallbacks
             hash["Deaths"] = Deaths;
             PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
         }
-        catch { }
+        catch
+        {
+        }
     }
 
     private void TryUpdatePlayFab()
@@ -153,7 +164,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         pendingKills = 0;
         pendingDeaths = 0;
         isUpdatingStats = false;
-        nextPlayFabUpdateTime = Time.time + MIN_UPDATE_INTERVAL;
+        nextPlayFabUpdateTime = Time.time + MinUpdateInterval;
     }
 
     private void OnPlayFabStatsUpdateError(PlayFabError error)
@@ -161,19 +172,18 @@ public class RoomManager : MonoBehaviourPunCallbacks
         isUpdatingStats = false;
         Debug.LogError("PlayFab stats update error: " + error.GenerateErrorReport());
 
-        // Xử lý lỗi 409 Conflict
-        bool isConflict = (error.Error == PlayFabErrorCode.StatisticUpdateInProgress) ||
-                          (error.HttpStatus == "409") ||
+        bool isConflict = error.Error == PlayFabErrorCode.StatisticUpdateInProgress ||
+                          error.HttpStatus == "409" ||
                           (error.ErrorMessage != null && error.ErrorMessage.ToLower().Contains("conflict"));
 
         if (isConflict)
         {
-            Debug.LogWarning("PlayFab 409 Conflict - Retry sau 0.8 giây...");
+            Debug.LogWarning("PlayFab 409 Conflict - retry after 0.8 seconds.");
             Invoke(nameof(RetryPlayFabUpdate), 0.8f);
         }
         else
         {
-            nextPlayFabUpdateTime = Time.time + MIN_UPDATE_INTERVAL;
+            nextPlayFabUpdateTime = Time.time + MinUpdateInterval;
         }
     }
 
@@ -193,12 +203,15 @@ public class RoomManager : MonoBehaviourPunCallbacks
         if (RespawnUI.Instance != null)
             RespawnUI.Instance.Show(delay);
 
+        UIToolkitGameplayUIController.Instance?.SetSessionState("RESPAWNING");
+
         yield return new WaitForSeconds(delay);
 
         if (Spectator.Instance != null)
             Spectator.Instance.gameObject.SetActive(false);
 
         SpawnPlayer();
-        AddDeath(1);                    // Dùng hàm mới
+        UIToolkitGameplayUIController.Instance?.SetSessionState("LIVE");
+        AddDeath(1);
     }
 }

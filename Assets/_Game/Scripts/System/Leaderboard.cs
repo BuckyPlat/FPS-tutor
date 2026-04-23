@@ -1,22 +1,13 @@
-using UnityEngine;
+using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
-using TMPro;
 using Photon.Pun.UtilityScripts;
+using UnityEngine;
 
 public class Leaderboard : MonoBehaviour
 {
-    public GameObject playersHolder;
     [Header("Options")]
     public float refreshRate = 1f;
-
-    [Header("UI")]
-    public GameObject[] slots;
-    [Space]
-    public TextMeshProUGUI[] scoreTexts;
-    public TextMeshProUGUI[] nameTexts;
-    public TextMeshProUGUI[] kdTexts;
-
 
     private void Start()
     {
@@ -25,33 +16,42 @@ public class Leaderboard : MonoBehaviour
 
     public void Refresh()
     {
-        foreach( var slot in slots)
+        var controller = UIToolkitGameplayUIController.Instance;
+        if (controller == null)
         {
-            slot.SetActive(false);
+            return;
         }
+
         var sortedPlayerList =
             (from player in PhotonNetwork.PlayerList orderby player.GetScore() descending select player).ToList();
-        int i = 0;
-        foreach( var player in sortedPlayerList)
+
+        var entries = new List<UIToolkitGameplayUIController.LeaderboardEntryData>(sortedPlayerList.Count);
+
+        for (int i = 0; i < sortedPlayerList.Count; i++)
         {
-            slots[i].SetActive(true);
-            if (player.NickName == "")
-                player.NickName = "Unnamed";
-            nameTexts[i].text = player.NickName;
-            scoreTexts[i].text = player.GetScore().ToString();
-            if (player.CustomProperties["Kills"]!= null)
+            var player = sortedPlayerList[i];
+            string playerName = string.IsNullOrWhiteSpace(player.NickName) ? "Unnamed" : player.NickName;
+            string kd = "0/0";
+
+            if (player.CustomProperties["Kills"] != null)
             {
-                kdTexts[i].text = player.CustomProperties["Kills"] + "/" + player.CustomProperties["Deaths"];
+                kd = player.CustomProperties["Kills"] + "/" + player.CustomProperties["Deaths"];
             }
-            else
+
+            entries.Add(new UIToolkitGameplayUIController.LeaderboardEntryData
             {
-                kdTexts[i].text = "0/0";
-            }
-            i++;
+                Rank = i + 1,
+                Name = playerName,
+                Score = player.GetScore(),
+                Kd = kd
+            });
         }
+
+        controller.SetLeaderboardEntries(entries);
     }
+
     private void Update()
     {
-        playersHolder.SetActive(Input.GetKey(KeyCode.Tab));
+        UIToolkitGameplayUIController.Instance?.SetLeaderboardVisible(Input.GetKey(KeyCode.Tab));
     }
 }

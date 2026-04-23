@@ -1,22 +1,17 @@
-using TMPro;
 using UnityEngine;
 
 public class RespawnUI : MonoBehaviour
 {
     public static RespawnUI Instance;
 
-    public GameObject panel;
-    public TextMeshProUGUI countdownText;
-
     void Awake()
     {
         Instance = this;
-        panel.SetActive(false);
+        UIToolkitGameplayUIController.Instance?.HideRespawn();
     }
 
     public void Show(float time)
     {
-        panel.SetActive(true);
         StartCoroutine(Countdown(time));
     }
 
@@ -26,11 +21,11 @@ public class RespawnUI : MonoBehaviour
 
         while (t > 0)
         {
-            countdownText.text = "Respawn in: " + Mathf.Ceil(t);
+            UIToolkitGameplayUIController.Instance?.ShowRespawnCountdown(Mathf.CeilToInt(t));
             yield return new WaitForSeconds(1f);
             t--;
         }
 
-        panel.SetActive(false);
+        UIToolkitGameplayUIController.Instance?.HideRespawn();
     }
 }
