@@ -57,6 +57,8 @@ public class PlayerLayerSetup : MonoBehaviourPun
         if (body == null)
             return;
 
+        body.interpolation = isMine ? RigidbodyInterpolation.Interpolate : RigidbodyInterpolation.None;
+
         if (isMine)
         {
             body.isKinematic = false;

@@ -410,6 +410,7 @@ GameObject:
   - component: {fileID: 5659835536198674383}
   - component: {fileID: 9130576521373158611}
   - component: {fileID: 8561359195888693406}
+  - component: {fileID: 8472513946650213612}
   - component: {fileID: 1247275179068294925}
   - component: {fileID: 5984128420421103071}
   m_Layer: 0
@@ -514,6 +515,19 @@ MonoBehaviour:
   smoothing: {x: 3, y: 3}
   characterBody: {fileID: 2079277038122972246}
   scoped: 0
+--- !u!114 &8472513946650213612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3193757577024942674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f2f3a188b554cf4a93f19fa3036a157, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalPlayerCameraPresenter
+  positionSmoothTime: 0.015
 --- !u!114 &1247275179068294925
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1673,7 +1687,7 @@ Transform:
   m_GameObject: {fileID: 9038488595944861636}
   serializedVersion: 2
   m_LocalRotation: {x: 0.564194, y: 0.4636588, z: -0.42404416, w: -0.53562325}
-  m_LocalPosition: {x: -1.7480555, y: -1.2297027, z: 0.043054502}
+  m_LocalPosition: {x: -1.725, y: -1.235, z: 0.045}
   m_LocalScale: {x: 0.585, y: 0.585, z: 0.585}
   m_ConstrainProportionsScale: 1
   m_Children:

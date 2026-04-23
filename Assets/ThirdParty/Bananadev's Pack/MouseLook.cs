@@ -37,6 +37,10 @@ public class MouseLook : MonoBehaviour
     [HideInInspector]
     public bool scoped;
 
+    public float PitchDegrees => -_mouseAbsolute.y;
+    public float DesiredBodyYawDegrees =>
+        characterBody != null ? desiredBodyRotation.eulerAngles.y : transform.eulerAngles.y;
+
     void Start()
     {
         instance = this;
