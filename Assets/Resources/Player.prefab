@@ -846,7 +846,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2905eb4f666880747b69928f05a682f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  playerSetupView: {fileID: 5505660671824477274}
   _animation: {fileID: 6854366453476085011}
   draw: {fileID: 7400000, guid: 23502740119809947919373ca9f71610, type: 2}
 --- !u!111 &6854366453476085011

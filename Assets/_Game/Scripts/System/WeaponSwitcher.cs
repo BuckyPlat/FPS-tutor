@@ -1,17 +1,24 @@
 using Photon.Pun;
 using UnityEngine;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class WeaponSwitcher : MonoBehaviour
 {
-    public PhotonView playerSetupView;
     public Animation _animation;
     public AnimationClip draw;
-    private int selectedWeapon = 0;
-    private int weaponCount = 0;
+    private int selectedWeapon;
+    private int weaponCount;
+    private bool hasStarted;
+    private bool hasExternalInitialization;
 
     void Start()
     {
-        weaponCount = transform.childCount;
+        RefreshWeaponCount();
+        hasStarted = true;
+
+        if (!hasExternalInitialization)
+            selectedWeapon = GetInitialSelectedWeapon();
+
         SelectWeapon();
     }
 
@@ -21,7 +28,6 @@ public class WeaponSwitcher : MonoBehaviour
 
         int previousSelectedWeapon = selectedWeapon;
 
-        // Mouse scroll
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (scroll > 0f)
         {
@@ -32,7 +38,6 @@ public class WeaponSwitcher : MonoBehaviour
             selectedWeapon = (selectedWeapon + 1) % weaponCount;
         }
 
-        // Number keys
         KeyCode pressedKey = GetPressedWeaponKey();
         switch (pressedKey)
         {
@@ -42,27 +47,102 @@ public class WeaponSwitcher : MonoBehaviour
             case KeyCode.Alpha4: selectedWeapon = 3; break;
         }
 
-        // Clamp in case weaponCount changes
-        selectedWeapon = Mathf.Clamp(selectedWeapon, 0, weaponCount - 1);
+        selectedWeapon = ClampWeaponIndex(selectedWeapon);
 
         if (previousSelectedWeapon != selectedWeapon)
-        {
             SelectWeapon();
-        }
+    }
+
+    public void InitializeSelectedWeapon(int weaponIndex)
+    {
+        RefreshWeaponCount();
+        selectedWeapon = ClampWeaponIndex(weaponIndex);
+        hasExternalInitialization = true;
+
+        if (hasStarted)
+            SelectWeapon();
     }
 
     void SelectWeapon()
     {
-        playerSetupView.RPC("SetTPWeapon", RpcTarget.All, selectedWeapon);
-        _animation.Stop();
-        _animation.Play(draw.name);
+        RefreshWeaponCount();
+        selectedWeapon = ClampWeaponIndex(selectedWeapon);
+
+        if (_animation != null)
+        {
+            _animation.Stop();
+
+            if (draw != null)
+                _animation.Play(draw.name);
+        }
 
         int i = 0;
-        foreach (Transform _weapon in transform)
+        foreach (Transform weapon in transform)
         {
-            _weapon.gameObject.SetActive(i == selectedWeapon);
+            weapon.gameObject.SetActive(i == selectedWeapon);
             i++;
         }
+
+        PublishSelectedWeaponStateIfNeeded();
+    }
+
+    private int GetInitialSelectedWeapon()
+    {
+        if (!PhotonNetwork.IsConnected || PhotonNetwork.LocalPlayer == null)
+            return 0;
+
+        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue(PlayerSetup.SelectedWeaponPropertyKey, out object weaponIndexValue))
+            return ParseWeaponIndex(weaponIndexValue);
+
+        return 0;
+    }
+
+    private void PublishSelectedWeaponStateIfNeeded()
+    {
+        if (!PhotonNetwork.IsConnected || PhotonNetwork.LocalPlayer == null)
+            return;
+
+        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue(PlayerSetup.SelectedWeaponPropertyKey, out object currentValue) &&
+            ParseWeaponIndex(currentValue) == selectedWeapon)
+        {
+            return;
+        }
+
+        Hashtable selectedWeaponProperty = new Hashtable
+        {
+            { PlayerSetup.SelectedWeaponPropertyKey, selectedWeapon }
+        };
+
+        PhotonNetwork.LocalPlayer.SetCustomProperties(selectedWeaponProperty);
+    }
+
+    private void RefreshWeaponCount()
+    {
+        weaponCount = transform.childCount;
+    }
+
+    private int ClampWeaponIndex(int weaponIndex)
+    {
+        if (weaponCount <= 0)
+            return 0;
+
+        return Mathf.Clamp(weaponIndex, 0, weaponCount - 1);
+    }
+
+    private int ParseWeaponIndex(object weaponIndexValue)
+    {
+        int parsedIndex = weaponIndexValue switch
+        {
+            byte byteValue => byteValue,
+            short shortValue => shortValue,
+            int intValue => intValue,
+            long longValue when longValue >= int.MinValue && longValue <= int.MaxValue => (int)longValue,
+            float floatValue => Mathf.RoundToInt(floatValue),
+            double doubleValue => Mathf.RoundToInt((float)doubleValue),
+            _ => 0
+        };
+
+        return ClampWeaponIndex(parsedIndex);
     }
 
     private KeyCode GetPressedWeaponKey()

@@ -92,11 +92,17 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public void SpawnPlayer()
     {
+        ResetLocalSelectedWeapon();
+
         Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
 
         GameObject spawnedPlayer = PhotonNetwork.Instantiate(player.name, spawnPoint.position, Quaternion.identity);
         spawnedPlayer.GetComponent<PlayerSetup>().IsLocalPlayer();
         spawnedPlayer.GetComponent<Health>().isLocalPlayer = true;
+
+        WeaponSwitcher weaponSwitcher = spawnedPlayer.GetComponentInChildren<WeaponSwitcher>(true);
+        if (weaponSwitcher != null)
+            weaponSwitcher.InitializeSelectedWeapon(0);
 
         spawnedPlayer.GetComponent<PhotonView>().RPC("SetNickName", RpcTarget.AllBuffered, nickname);
         PhotonNetwork.LocalPlayer.NickName = nickname;
@@ -191,6 +197,19 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         if (pendingKills > 0 || pendingDeaths > 0)
             UpdatePlayFabStats();
+    }
+
+    private void ResetLocalSelectedWeapon()
+    {
+        if (PhotonNetwork.LocalPlayer == null)
+            return;
+
+        Hashtable hash = new Hashtable
+        {
+            { PlayerSetup.SelectedWeaponPropertyKey, 0 }
+        };
+
+        PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
     }
 
     public void StartRespawn(float delay)
