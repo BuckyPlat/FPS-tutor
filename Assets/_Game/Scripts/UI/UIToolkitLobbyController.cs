@@ -14,16 +14,13 @@ public class UIToolkitLobbyController : MonoBehaviour
     [SerializeField] private UIDocument uiDocument;
     [SerializeField] private RoomList roomList;
 
-    private VisualElement root;
-    private VisualElement browserScreen;
-    private VisualElement createScreen;
-    private VisualElement createMessageRow;
+    private readonly List<RoomList.RoomEntryData> roomEntries = new List<RoomList.RoomEntryData>();
 
-    private Label topStatusLabel;
-    private Label topStatusDescription;
-    private Label sidebarStatusChip;
-    private Label sidebarStatusCopy;
-    private Label sidebarRoomCount;
+    private VisualElement root;
+    private VisualElement drawerScrim;
+    private VisualElement createDrawer;
+
+    private Label connectionStatusLabel;
     private Label roomCountBadge;
     private Label emptyRoomsLabel;
     private Label createMessageBadge;
@@ -33,18 +30,19 @@ public class UIToolkitLobbyController : MonoBehaviour
     private Label mapTwoTitleLabel;
     private Label mapTwoDescriptionLabel;
 
-    private Button browseNavButton;
-    private Button createNavButton;
-    private Button openCreateButton;
-    private Button backToBrowserButton;
-    private Button createMapOneButton;
-    private Button createMapTwoButton;
+    private Button openDrawerButton;
+    private Button closeDrawerButton;
+    private Button cancelCreateButton;
+    private Button createRoomButton;
+    private Button selectMapOneButton;
+    private Button selectMapTwoButton;
 
     private TextField createRoomNameField;
     private ListView roomListView;
 
-    private readonly List<RoomList.RoomEntryData> roomEntries = new List<RoomList.RoomEntryData>();
     private bool callbacksRegistered;
+    private int selectedSceneIndex = SceneTemplateBuildIndex;
+    private int lastRoomCount = -1;
 
     private void OnEnable()
     {
@@ -76,7 +74,8 @@ public class UIToolkitLobbyController : MonoBehaviour
         UpdateMapLabels();
         RegisterCallbacks();
         SyncRoomNameField();
-        ShowBrowserScreen();
+        SelectMap(SceneTemplateBuildIndex);
+        CloseDrawer();
         HandleConnectionStatusChanged(roomList.CurrentStatus);
         HandleRoomEntriesChanged(roomList.CurrentRoomEntries);
     }
@@ -85,20 +84,16 @@ public class UIToolkitLobbyController : MonoBehaviour
     {
         UnregisterCallbacks();
         roomEntries.Clear();
+        lastRoomCount = -1;
         root = null;
     }
 
     private void QueryElements()
     {
-        browserScreen = root.Q("room-browser-screen");
-        createScreen = root.Q("room-create-screen");
-        createMessageRow = root.Q("create-message-row");
+        drawerScrim = root.Q("drawer-scrim");
+        createDrawer = root.Q("create-drawer");
 
-        topStatusLabel = root.Q<Label>("lbl-lobby-status");
-        topStatusDescription = root.Q<Label>("lbl-lobby-status-desc");
-        sidebarStatusChip = root.Q<Label>("sidebar-status-chip");
-        sidebarStatusCopy = root.Q<Label>("sidebar-status-copy");
-        sidebarRoomCount = root.Q<Label>("sidebar-room-count");
+        connectionStatusLabel = root.Q<Label>("lbl-connection-status");
         roomCountBadge = root.Q<Label>("lbl-room-count-badge");
         emptyRoomsLabel = root.Q<Label>("lbl-empty-rooms");
         createMessageBadge = root.Q<Label>("create-message-badge");
@@ -108,12 +103,12 @@ public class UIToolkitLobbyController : MonoBehaviour
         mapTwoTitleLabel = root.Q<Label>("lbl-map-2-title");
         mapTwoDescriptionLabel = root.Q<Label>("lbl-map-2-desc");
 
-        browseNavButton = root.Q<Button>("nav-browse");
-        createNavButton = root.Q<Button>("nav-create");
-        openCreateButton = root.Q<Button>("btn-open-create-room");
-        backToBrowserButton = root.Q<Button>("btn-back-to-browser");
-        createMapOneButton = root.Q<Button>("btn-create-map-1");
-        createMapTwoButton = root.Q<Button>("btn-create-map-2");
+        openDrawerButton = root.Q<Button>("btn-open-drawer");
+        closeDrawerButton = root.Q<Button>("btn-close-drawer");
+        cancelCreateButton = root.Q<Button>("btn-cancel-create");
+        createRoomButton = root.Q<Button>("btn-create-room");
+        selectMapOneButton = root.Q<Button>("btn-select-map-1");
+        selectMapTwoButton = root.Q<Button>("btn-select-map-2");
 
         createRoomNameField = root.Q<TextField>("create-room-name");
         roomListView = root.Q<ListView>("room-list-view");
@@ -128,10 +123,10 @@ public class UIToolkitLobbyController : MonoBehaviour
 
         roomListView.selectionType = SelectionType.None;
         roomListView.showBorder = false;
+        roomListView.reorderable = false;
         roomListView.itemsSource = roomEntries;
         roomListView.makeItem = MakeRoomItem;
         roomListView.bindItem = BindRoomItem;
-        roomListView.reorderable = false;
     }
 
     private VisualElement MakeRoomItem()
@@ -142,6 +137,13 @@ public class UIToolkitLobbyController : MonoBehaviour
         var joinButton = new Button();
         joinButton.name = "room-row-button";
         joinButton.AddToClassList("room-row-button");
+        joinButton.clicked += () =>
+        {
+            if (joinButton.userData is RoomList.RoomEntryData roomEntry)
+            {
+                roomList.JoinRoomByName(roomEntry.RoomName, roomEntry.SceneIndex);
+            }
+        };
 
         var mainColumn = new VisualElement();
         mainColumn.AddToClassList("room-row-main");
@@ -164,7 +166,7 @@ public class UIToolkitLobbyController : MonoBehaviour
         roomCountLabel.name = "room-row-count";
         roomCountLabel.AddToClassList("room-row-count");
 
-        var joinLabel = new Label("Join");
+        var joinLabel = new Label("JOIN");
         joinLabel.AddToClassList("room-row-cta");
 
         sideColumn.Add(roomCountLabel);
@@ -172,14 +174,6 @@ public class UIToolkitLobbyController : MonoBehaviour
 
         joinButton.Add(mainColumn);
         joinButton.Add(sideColumn);
-        joinButton.clicked += () =>
-        {
-            if (joinButton.userData is RoomList.RoomEntryData roomEntry)
-            {
-                roomList.JoinRoomByName(roomEntry.RoomName, roomEntry.SceneIndex);
-            }
-        };
-
         rowShell.Add(joinButton);
         return rowShell;
     }
@@ -200,7 +194,6 @@ public class UIToolkitLobbyController : MonoBehaviour
         if (joinButton != null)
         {
             joinButton.userData = roomEntry;
-            joinButton.tooltip = $"Join {roomEntry.RoomName}";
         }
 
         if (roomNameLabel != null)
@@ -226,13 +219,16 @@ public class UIToolkitLobbyController : MonoBehaviour
             return;
         }
 
-        browseNavButton?.RegisterCallback<ClickEvent>(OnBrowseClicked);
-        createNavButton?.RegisterCallback<ClickEvent>(OnCreateClicked);
-        openCreateButton?.RegisterCallback<ClickEvent>(OnCreateClicked);
-        backToBrowserButton?.RegisterCallback<ClickEvent>(OnBrowseClicked);
-        createMapOneButton?.RegisterCallback<ClickEvent>(OnCreateSceneTemplateClicked);
-        createMapTwoButton?.RegisterCallback<ClickEvent>(OnCreateSecondMapClicked);
-        createRoomNameField?.RegisterValueChangedCallback(OnRoomNameChanged);
+        openDrawerButton.clicked += OnOpenDrawerClicked;
+        closeDrawerButton.clicked += OnCloseDrawerClicked;
+        cancelCreateButton.clicked += OnCloseDrawerClicked;
+        createRoomButton.clicked += OnCreateRoomClicked;
+        selectMapOneButton.clicked += OnSelectMapOneClicked;
+        selectMapTwoButton.clicked += OnSelectMapTwoClicked;
+
+        createRoomNameField.RegisterValueChangedCallback(OnRoomNameChanged);
+        drawerScrim.RegisterCallback<PointerDownEvent>(OnDrawerScrimPointerDown);
+        root.RegisterCallback<KeyDownEvent>(OnKeyDown);
 
         roomList.RoomEntriesChanged += HandleRoomEntriesChanged;
         roomList.ConnectionStatusChanged += HandleConnectionStatusChanged;
@@ -247,13 +243,16 @@ public class UIToolkitLobbyController : MonoBehaviour
             return;
         }
 
-        browseNavButton?.UnregisterCallback<ClickEvent>(OnBrowseClicked);
-        createNavButton?.UnregisterCallback<ClickEvent>(OnCreateClicked);
-        openCreateButton?.UnregisterCallback<ClickEvent>(OnCreateClicked);
-        backToBrowserButton?.UnregisterCallback<ClickEvent>(OnBrowseClicked);
-        createMapOneButton?.UnregisterCallback<ClickEvent>(OnCreateSceneTemplateClicked);
-        createMapTwoButton?.UnregisterCallback<ClickEvent>(OnCreateSecondMapClicked);
-        createRoomNameField?.UnregisterValueChangedCallback(OnRoomNameChanged);
+        openDrawerButton.clicked -= OnOpenDrawerClicked;
+        closeDrawerButton.clicked -= OnCloseDrawerClicked;
+        cancelCreateButton.clicked -= OnCloseDrawerClicked;
+        createRoomButton.clicked -= OnCreateRoomClicked;
+        selectMapOneButton.clicked -= OnSelectMapOneClicked;
+        selectMapTwoButton.clicked -= OnSelectMapTwoClicked;
+
+        createRoomNameField.UnregisterValueChangedCallback(OnRoomNameChanged);
+        drawerScrim.UnregisterCallback<PointerDownEvent>(OnDrawerScrimPointerDown);
+        root.UnregisterCallback<KeyDownEvent>(OnKeyDown);
 
         roomList.RoomEntriesChanged -= HandleRoomEntriesChanged;
         roomList.ConnectionStatusChanged -= HandleConnectionStatusChanged;
@@ -261,24 +260,29 @@ public class UIToolkitLobbyController : MonoBehaviour
         callbacksRegistered = false;
     }
 
-    private void OnBrowseClicked(ClickEvent evt)
+    private void OnOpenDrawerClicked()
     {
-        ShowBrowserScreen();
+        OpenDrawer();
     }
 
-    private void OnCreateClicked(ClickEvent evt)
+    private void OnCloseDrawerClicked()
     {
-        ShowCreateScreen();
+        CloseDrawer();
     }
 
-    private void OnCreateSceneTemplateClicked(ClickEvent evt)
+    private void OnCreateRoomClicked()
     {
-        TryCreateRoom(SceneTemplateBuildIndex);
+        TryCreateRoom();
     }
 
-    private void OnCreateSecondMapClicked(ClickEvent evt)
+    private void OnSelectMapOneClicked()
     {
-        TryCreateRoom(SecondMapBuildIndex);
+        SelectMap(SceneTemplateBuildIndex);
+    }
+
+    private void OnSelectMapTwoClicked()
+    {
+        SelectMap(SecondMapBuildIndex);
     }
 
     private void OnRoomNameChanged(ChangeEvent<string> evt)
@@ -291,23 +295,72 @@ public class UIToolkitLobbyController : MonoBehaviour
         }
     }
 
-    private void TryCreateRoom(int sceneIndex)
+    private void OnDrawerScrimPointerDown(PointerDownEvent evt)
     {
-        if (createRoomNameField == null)
+        CloseDrawer();
+        evt.StopPropagation();
+    }
+
+    private void OnKeyDown(KeyDownEvent evt)
+    {
+        if (!IsDrawerOpen())
         {
             return;
         }
 
+        if (evt.keyCode == KeyCode.Escape)
+        {
+            CloseDrawer();
+            evt.StopPropagation();
+        }
+    }
+
+    private void OpenDrawer()
+    {
+        drawerScrim.RemoveFromClassList("hidden");
+        createDrawer.RemoveFromClassList("hidden");
+        ClearCreateMessage();
+        SyncRoomNameField();
+        createRoomNameField.schedule.Execute(() => createRoomNameField.Focus());
+    }
+
+    private void CloseDrawer()
+    {
+        drawerScrim.AddToClassList("hidden");
+        createDrawer.AddToClassList("hidden");
+        ClearCreateMessage();
+    }
+
+    private bool IsDrawerOpen()
+    {
+        return createDrawer != null && !createDrawer.ClassListContains("hidden");
+    }
+
+    private void TryCreateRoom()
+    {
         var trimmedRoomName = createRoomNameField.value?.Trim() ?? string.Empty;
         if (string.IsNullOrEmpty(trimmedRoomName))
         {
-            SetCreateMessage("Enter a room name before selecting a battleground.");
+            SetCreateMessage("Enter a room name.");
             createRoomNameField.Focus();
             return;
         }
 
+        ClearCreateMessage();
         roomList.ChangeRoomToCreateName(trimmedRoomName);
-        roomList.CreateRoomByIndex(sceneIndex);
+        roomList.CreateRoomByIndex(selectedSceneIndex);
+    }
+
+    private void SelectMap(int buildIndex)
+    {
+        selectedSceneIndex = buildIndex;
+        selectMapOneButton.EnableInClassList("selected", buildIndex == SceneTemplateBuildIndex);
+        selectMapTwoButton.EnableInClassList("selected", buildIndex == SecondMapBuildIndex);
+    }
+
+    private void SyncRoomNameField()
+    {
+        createRoomNameField.SetValueWithoutNotify(roomList.CurrentRoomNameToCreate);
     }
 
     private void HandleRoomEntriesChanged(IReadOnlyList<RoomList.RoomEntryData> updatedRooms)
@@ -320,94 +373,31 @@ public class UIToolkitLobbyController : MonoBehaviour
 
         if (roomListView != null)
         {
-            roomListView.itemsSource = roomEntries;
-            roomListView.Rebuild();
+            if (lastRoomCount != roomEntries.Count)
+            {
+                roomListView.Rebuild();
+            }
+            else
+            {
+                roomListView.RefreshItems();
+            }
         }
+
+        lastRoomCount = roomEntries.Count;
 
         var hasRooms = roomEntries.Count > 0;
-        emptyRoomsLabel?.EnableInClassList("hidden", hasRooms);
-        if (roomCountBadge != null)
-        {
-            roomCountBadge.text = $"{roomEntries.Count} ROOMS";
-        }
-
-        if (sidebarRoomCount != null)
-        {
-            sidebarRoomCount.text = roomEntries.Count.ToString();
-        }
-
-        if (topStatusDescription != null)
-        {
-            topStatusDescription.text = hasRooms
-                ? $"{roomEntries.Count} deployable room(s) available."
-                : "No deployable rooms detected yet.";
-        }
+        emptyRoomsLabel.EnableInClassList("hidden", hasRooms);
+        roomCountBadge.text = roomEntries.Count == 1 ? "1 ROOM" : $"{roomEntries.Count} ROOMS";
     }
 
     private void HandleConnectionStatusChanged(string status)
     {
         var resolvedStatus = string.IsNullOrWhiteSpace(status) ? "Lobby idle." : status.Trim();
-        var compactStatus = resolvedStatus.ToUpperInvariant();
+        connectionStatusLabel.text = GetCompactStatusLabel(resolvedStatus);
 
-        if (topStatusLabel != null)
-        {
-            topStatusLabel.text = compactStatus;
-        }
-
-        if (sidebarStatusChip != null)
-        {
-            sidebarStatusChip.text = compactStatus;
-        }
-
-        if (sidebarStatusCopy != null)
-        {
-            sidebarStatusCopy.text = resolvedStatus;
-        }
-    }
-
-    private void ShowBrowserScreen()
-    {
-        ShowScreen(browserScreen, createScreen);
-        SetNavState(true);
-        ClearCreateMessage();
-    }
-
-    private void ShowCreateScreen()
-    {
-        ShowScreen(createScreen, browserScreen);
-        SetNavState(false);
-        SyncRoomNameField();
-    }
-
-    private void ShowScreen(VisualElement screenToShow, VisualElement screenToHide)
-    {
-        if (screenToShow != null)
-        {
-            screenToShow.RemoveFromClassList("hidden");
-            screenToShow.AddToClassList("motion-active");
-        }
-
-        if (screenToHide != null)
-        {
-            screenToHide.RemoveFromClassList("motion-active");
-            screenToHide.AddToClassList("hidden");
-        }
-    }
-
-    private void SetNavState(bool browsing)
-    {
-        browseNavButton?.EnableInClassList("active", browsing);
-        createNavButton?.EnableInClassList("active", !browsing);
-    }
-
-    private void SyncRoomNameField()
-    {
-        if (createRoomNameField == null || roomList == null)
-        {
-            return;
-        }
-
-        createRoomNameField.SetValueWithoutNotify(roomList.CurrentRoomNameToCreate);
+        var isLobbyOnline = resolvedStatus.StartsWith("Lobby feed online", StringComparison.OrdinalIgnoreCase);
+        openDrawerButton.SetEnabled(isLobbyOnline);
+        createRoomButton.SetEnabled(isLobbyOnline);
     }
 
     private void UpdateMapLabels()
@@ -419,15 +409,8 @@ public class UIToolkitLobbyController : MonoBehaviour
     private static void SetMapLabel(Label titleLabel, Label descriptionLabel, int buildIndex)
     {
         var sceneName = GetSceneDisplayName(buildIndex);
-        if (titleLabel != null)
-        {
-            titleLabel.text = sceneName;
-        }
-
-        if (descriptionLabel != null)
-        {
-            descriptionLabel.text = $"Load build scene {buildIndex} ({sceneName}) and join or create the selected Photon room.";
-        }
+        titleLabel.text = sceneName;
+        descriptionLabel.text = $"Build scene {buildIndex}";
     }
 
     private static string GetSceneDisplayName(int buildIndex)
@@ -441,26 +424,47 @@ public class UIToolkitLobbyController : MonoBehaviour
         return Path.GetFileNameWithoutExtension(scenePath).Replace('_', ' ');
     }
 
-    private void SetCreateMessage(string message)
+    private static string GetCompactStatusLabel(string status)
     {
-        if (createMessageRow == null || createMessageLabel == null || createMessageBadge == null)
+        if (status.StartsWith("Lobby feed online", StringComparison.OrdinalIgnoreCase))
         {
-            return;
+            return "ONLINE";
         }
 
-        createMessageLabel.text = message;
+        if (status.StartsWith("Loading room", StringComparison.OrdinalIgnoreCase))
+        {
+            return "LOADING";
+        }
+
+        if (status.StartsWith("Disconnected", StringComparison.OrdinalIgnoreCase))
+        {
+            return "DISCONNECTED";
+        }
+
+        if (status.StartsWith("Connected", StringComparison.OrdinalIgnoreCase) ||
+            status.StartsWith("Connecting", StringComparison.OrdinalIgnoreCase))
+        {
+            return "CONNECTING";
+        }
+
+        if (status.StartsWith("Resetting", StringComparison.OrdinalIgnoreCase))
+        {
+            return "RESETTING";
+        }
+
+        return "LOBBY";
+    }
+
+    private void SetCreateMessage(string message)
+    {
         createMessageBadge.text = "ERR";
-        createMessageRow.RemoveFromClassList("hidden");
+        createMessageLabel.text = message;
+        createMessageLabel.parent.RemoveFromClassList("hidden");
     }
 
     private void ClearCreateMessage()
     {
-        if (createMessageRow == null || createMessageLabel == null)
-        {
-            return;
-        }
-
         createMessageLabel.text = string.Empty;
-        createMessageRow.AddToClassList("hidden");
+        createMessageLabel.parent.AddToClassList("hidden");
     }
 }

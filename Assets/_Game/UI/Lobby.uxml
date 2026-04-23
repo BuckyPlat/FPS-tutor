@@ -7,157 +7,71 @@
     <ui:Style src="project://database/Assets/_Game/UI/LobbyStyles.uss" />
 
     <ui:VisualElement name="lobby-shell" class="app-root shell-layer motion-active">
-        <ui:VisualElement class="main-layout">
-            <ui:VisualElement class="sidebar lobby-sidebar">
-                <ui:VisualElement class="sidebar-header">
-                    <ui:Label text="FPS TUTOR" class="sidebar-logo-title" />
-                    <ui:Label text="TACTICAL LOBBY" class="sidebar-logo-sub" />
+        <ui:VisualElement class="lobby-page">
+            <ui:VisualElement class="lobby-header">
+                <ui:VisualElement class="lobby-brand">
+                    <ui:Label text="FPS TUTOR" class="lobby-eyebrow" />
+                    <ui:Label text="Lobby" class="lobby-title" />
                 </ui:VisualElement>
 
-                <ui:VisualElement class="card lobby-sidebar-card">
-                    <ui:Label text="Network Status" class="card-title" />
-                    <ui:Label name="sidebar-status-chip" text="CONNECTING" class="screen-badge lobby-inline-badge" />
-                    <ui:Label name="sidebar-status-copy" text="Preparing Photon room feed." class="card-desc lobby-status-copy" />
-                </ui:VisualElement>
+                <ui:Label name="lbl-connection-status" text="CONNECTING" class="screen-badge lobby-status-badge" />
+                <ui:Label name="lbl-room-count-badge" text="0 ROOMS" class="screen-badge lobby-count-badge" />
+                <ui:Button name="btn-open-drawer" text="Create Room" class="btn-primary lobby-header-button" />
+            </ui:VisualElement>
 
-                <ui:VisualElement class="currency-strip lobby-room-count-strip">
-                    <ui:Label text="ACTIVE ROOMS" class="currency-label" />
-                    <ui:Label name="sidebar-room-count" text="0" class="currency-amount" />
-                </ui:VisualElement>
+            <ui:VisualElement class="lobby-main">
+                <ui:VisualElement class="card lobby-room-card">
+                    <ui:VisualElement class="lobby-card-header">
+                        <ui:Label text="Active Rooms" class="card-title" />
+                    </ui:VisualElement>
 
-                <ui:VisualElement class="sidebar-nav">
-                    <ui:Button name="nav-browse" class="nav-item active">
-                        <ui:Label text="01" class="nav-index" />
-                        <ui:Label text="Browse Rooms" class="nav-item-label" />
-                    </ui:Button>
-                    <ui:Button name="nav-create" class="nav-item">
-                        <ui:Label text="02" class="nav-index" />
-                        <ui:Label text="Create Room" class="nav-item-label" />
-                    </ui:Button>
-                </ui:VisualElement>
-
-                <ui:VisualElement class="sidebar-footer">
-                    <ui:Label text="Shared visual system with Scene Menu." class="version-text" />
-                    <ui:Label text="Photon room browser" class="version-text" />
+                    <ui:Label name="lbl-empty-rooms" text="No active rooms. Create the first room." class="card-desc lobby-empty-state hidden" />
+                    <ui:ListView name="room-list-view" class="lobby-room-list" fixed-item-height="96" selection-type="None" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
-            <ui:VisualElement class="content-area lobby-content-area">
-                <ui:VisualElement class="top-bar">
-                    <ui:VisualElement class="top-bar-left">
-                        <ui:Label name="lbl-lobby-status" text="CONNECTING" class="top-bar-status" />
-                        <ui:Label name="lbl-lobby-status-desc" text="Preparing lobby updates." class="top-bar-desc" />
+            <ui:VisualElement name="drawer-scrim" class="lobby-drawer-scrim hidden" />
+
+            <ui:VisualElement name="create-drawer" class="card lobby-drawer hidden">
+                <ui:VisualElement class="lobby-drawer-header">
+                    <ui:VisualElement class="lobby-drawer-copy">
+                        <ui:Label text="Create Room" class="card-title" />
+                        <ui:Label text="Choose a room name and map." class="card-desc" />
                     </ui:VisualElement>
-                    <ui:VisualElement class="top-bar-right">
-                        <ui:Label text="Overlay UI Toolkit Runtime" class="screen-badge lobby-inline-badge" />
-                    </ui:VisualElement>
+                    <ui:Button name="btn-close-drawer" text="Close" class="btn-secondary lobby-drawer-close" />
                 </ui:VisualElement>
 
-                <ui:VisualElement class="screens-container">
-                    <ui:VisualElement name="room-browser-screen" class="screen screen-layer motion-active">
-                        <ui:VisualElement class="screen-header">
-                            <ui:VisualElement>
-                                <ui:Label text="Room Browser" class="screen-title" />
-                                <ui:Label text="Join an active room or prepare a new deployment." class="screen-subtitle" />
-                            </ui:VisualElement>
-                            <ui:Label name="lbl-room-count-badge" text="0 ROOMS" class="screen-badge" />
+                <ui:VisualElement class="field-group">
+                    <ui:Label text="Room Name" class="field-label" />
+                    <ui:TextField name="create-room-name" class="text-input lobby-room-name-field" />
+                </ui:VisualElement>
+
+                <ui:VisualElement name="create-message-row" class="auth-message-row hidden">
+                    <ui:Label name="create-message-badge" text="ERR" class="auth-message-badge" />
+                    <ui:Label name="create-message" text="" class="auth-message" />
+                </ui:VisualElement>
+
+                <ui:Label text="Map" class="field-label lobby-section-label" />
+
+                <ui:VisualElement class="lobby-map-stack">
+                    <ui:Button name="btn-select-map-1" class="lobby-map-option selected">
+                        <ui:VisualElement class="lobby-map-copy">
+                            <ui:Label name="lbl-map-1-title" text="Scene Template" class="lobby-map-title" />
+                            <ui:Label name="lbl-map-1-desc" text="Build scene 2" class="lobby-map-desc" />
                         </ui:VisualElement>
+                    </ui:Button>
 
-                        <ui:VisualElement class="screen-content-row">
-                            <ui:VisualElement class="card flex-grow lobby-room-browser-card">
-                                <ui:Label text="Active Rooms" class="card-title" />
-                                <ui:Label text="Synced from Photon lobby metadata." class="card-desc lobby-section-copy" />
-                                <ui:Label name="lbl-empty-rooms" text="No active rooms yet. Create the first room from the panel on the right." class="card-desc lobby-empty-state hidden" />
-                                <ui:ListView name="room-list-view" class="lobby-room-list" fixed-item-height="90" />
-                            </ui:VisualElement>
-
-                            <ui:VisualElement class="card side-card lobby-side-card">
-                                <ui:Label text="Deployment Brief" class="card-title" />
-                                <ui:Label text="Room names are stored in PlayerPrefs and used by the target gameplay scene to join or create the Photon room." class="card-desc" />
-
-                                <ui:VisualElement class="stat-row">
-                                    <ui:Label text="Input Model" class="stat-label" />
-                                    <ui:Label text="Input System" class="stat-value" />
-                                </ui:VisualElement>
-                                <ui:VisualElement class="stat-row">
-                                    <ui:Label text="UI Stack" class="stat-label" />
-                                    <ui:Label text="UI Toolkit" class="stat-value" />
-                                </ui:VisualElement>
-                                <ui:VisualElement class="stat-row">
-                                    <ui:Label text="Panel" class="stat-label" />
-                                    <ui:Label text="MenuPanelSettings" class="stat-value" />
-                                </ui:VisualElement>
-
-                                <ui:VisualElement class="button-group lobby-side-actions">
-                                    <ui:Button name="btn-open-create-room" text="Create New Room" class="btn-primary btn-wide" />
-                                </ui:VisualElement>
-                            </ui:VisualElement>
+                    <ui:Button name="btn-select-map-2" class="lobby-map-option">
+                        <ui:VisualElement class="lobby-map-copy">
+                            <ui:Label name="lbl-map-2-title" text="Second Map" class="lobby-map-title" />
+                            <ui:Label name="lbl-map-2-desc" text="Build scene 3" class="lobby-map-desc" />
                         </ui:VisualElement>
-                    </ui:VisualElement>
+                    </ui:Button>
+                </ui:VisualElement>
 
-                    <ui:VisualElement name="room-create-screen" class="screen screen-layer hidden">
-                        <ui:VisualElement class="screen-header">
-                            <ui:VisualElement>
-                                <ui:Label text="Create Room" class="screen-title" />
-                                <ui:Label text="Name the room, pick a battleground, then hand off to the gameplay scene." class="screen-subtitle" />
-                            </ui:VisualElement>
-                            <ui:Label text="NEW ROOM" class="screen-badge" />
-                        </ui:VisualElement>
-
-                        <ui:VisualElement class="screen-content-row">
-                            <ui:VisualElement class="card hero-card flex-grow lobby-create-card">
-                                <ui:Label text="Photon Hand-Off" class="kicker" />
-                                <ui:Label text="Configure The Next Match" class="card-title-large" />
-                                <ui:Label text="This screen mirrors the old UGUI create-room flow, but now uses UIDocument, UXML, USS, and runtime event wiring." class="card-desc" />
-
-                                <ui:VisualElement class="form-container lobby-form">
-                                    <ui:VisualElement class="field-group">
-                                        <ui:Label text="Room Name" class="field-label" />
-                                        <ui:TextField name="create-room-name" class="text-input lobby-room-name-field" />
-                                    </ui:VisualElement>
-
-                                    <ui:VisualElement name="create-message-row" class="auth-message-row hidden">
-                                        <ui:Label name="create-message-badge" text="ERR" class="auth-message-badge" />
-                                        <ui:Label name="create-message" text="" class="auth-message" />
-                                    </ui:VisualElement>
-
-                                    <ui:VisualElement class="lobby-map-stack">
-                                        <ui:Button name="btn-create-map-1" class="lobby-map-button tier-standard">
-                                            <ui:Label name="lbl-map-1-title" text="Scene Template" class="lobby-map-title" />
-                                            <ui:Label name="lbl-map-1-desc" text="Load build scene 2 and create or join the named room." class="lobby-map-desc" />
-                                        </ui:Button>
-
-                                        <ui:Button name="btn-create-map-2" class="lobby-map-button tier-rare">
-                                            <ui:Label name="lbl-map-2-title" text="Second Map" class="lobby-map-title" />
-                                            <ui:Label name="lbl-map-2-desc" text="Load build scene 3 and create or join the named room." class="lobby-map-desc" />
-                                        </ui:Button>
-                                    </ui:VisualElement>
-
-                                    <ui:VisualElement class="button-group lobby-create-actions">
-                                        <ui:Button name="btn-back-to-browser" text="Back To Browser" class="btn-secondary btn-wide" />
-                                    </ui:VisualElement>
-                                </ui:VisualElement>
-                            </ui:VisualElement>
-
-                            <ui:VisualElement class="card side-card lobby-guide-card">
-                                <ui:Label text="Migration Notes" class="card-title" />
-                                <ui:Label text="uGUI prefab rows were replaced with a virtualized ListView. Button callbacks and TMP input events are now runtime UI Toolkit queries and callbacks." class="card-desc" />
-
-                                <ui:VisualElement class="stat-row">
-                                    <ui:Label text="Room Name Source" class="stat-label" />
-                                    <ui:Label text="PlayerPrefs" class="stat-value" />
-                                </ui:VisualElement>
-                                <ui:VisualElement class="stat-row">
-                                    <ui:Label text="Map Route A" class="stat-label" />
-                                    <ui:Label text="Build Scene 2" class="stat-value" />
-                                </ui:VisualElement>
-                                <ui:VisualElement class="stat-row">
-                                    <ui:Label text="Map Route B" class="stat-label" />
-                                    <ui:Label text="Build Scene 3" class="stat-value" />
-                                </ui:VisualElement>
-                            </ui:VisualElement>
-                        </ui:VisualElement>
-                    </ui:VisualElement>
+                <ui:VisualElement class="lobby-drawer-footer">
+                    <ui:Button name="btn-cancel-create" text="Cancel" class="btn-secondary lobby-footer-button" />
+                    <ui:Button name="btn-create-room" text="Create Room" class="btn-primary lobby-footer-button lobby-footer-primary" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

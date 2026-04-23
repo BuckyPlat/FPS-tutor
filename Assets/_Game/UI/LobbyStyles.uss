@@ -1,46 +1,75 @@
-.lobby-sidebar {
-    background-color: var(--color-bg-panel);
-}
-
-.lobby-content-area {
+.lobby-page {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 28px 32px 32px 32px;
     background-color: var(--color-bg-dark);
 }
 
-.lobby-sidebar-card {
+.lobby-header {
+    flex-direction: row;
+    align-items: center;
     margin-bottom: var(--spacing-lg);
 }
 
-.lobby-inline-badge {
-    align-self: flex-start;
-    margin-top: 10px;
+.lobby-brand {
+    min-width: 220px;
 }
 
-.lobby-status-copy {
-    margin-top: var(--spacing-md);
-    white-space: normal;
+.lobby-eyebrow {
+    color: var(--color-accent);
+    font-size: 12px;
+    -unity-font-definition: var(--font-bold);
 }
 
-.lobby-room-count-strip {
-    margin-bottom: var(--spacing-lg);
+.lobby-title {
+    font-size: 40px;
+    -unity-font-definition: var(--font-bold);
 }
 
-.lobby-room-browser-card,
-.lobby-create-card {
+.lobby-status-badge {
+    margin-left: auto;
+    margin-right: var(--spacing-sm);
+}
+
+.lobby-count-badge {
+    margin-right: var(--spacing-sm);
+}
+
+.lobby-header-button {
+    width: 180px;
+}
+
+.lobby-main {
+    flex-grow: 1;
     min-height: 0;
 }
 
-.lobby-section-copy {
-    margin-bottom: var(--spacing-md);
+.lobby-room-card {
+    flex-grow: 1;
+    min-height: 0;
+    padding: 0;
+}
+
+.lobby-card-header {
+    padding: var(--spacing-lg);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--color-border);
+}
+
+.lobby-card-header .card-title {
+    margin-bottom: 0;
 }
 
 .lobby-empty-state {
-    margin-bottom: var(--spacing-md);
+    margin: var(--spacing-lg) var(--spacing-lg) 0 var(--spacing-lg);
     color: var(--color-text-muted);
 }
 
 .lobby-room-list {
     flex-grow: 1;
-    margin-top: var(--spacing-md);
+    min-height: 0;
+    margin: var(--spacing-md) var(--spacing-lg) var(--spacing-lg) var(--spacing-lg);
     background-color: transparent;
     border-width: 0;
 }
@@ -57,11 +86,11 @@
 }
 
 .room-row-shell {
-    height: 78px;
+    height: 84px;
 }
 
 .room-row-button {
-    height: 78px;
+    height: 84px;
     padding: 0 20px;
     flex-direction: row;
     justify-content: space-between;
@@ -76,13 +105,10 @@
     border-color: var(--color-accent);
 }
 
-.room-row-main,
-.room-row-side {
+.room-row-main {
     flex-direction: column;
-}
-
-.room-row-side {
-    align-items: flex-end;
+    flex-grow: 1;
+    min-width: 0;
 }
 
 .room-row-name,
@@ -99,6 +125,12 @@
     white-space: normal;
 }
 
+.room-row-side {
+    flex-direction: column;
+    align-items: flex-end;
+    margin-left: var(--spacing-md);
+}
+
 .room-row-count {
     -unity-font-definition: var(--font-bold);
     font-size: 22px;
@@ -106,59 +138,103 @@
 }
 
 .room-row-cta {
+    -unity-font-definition: var(--font-bold);
     font-size: 11px;
     margin-top: 8px;
     color: var(--color-text-dim);
 }
 
-.lobby-side-card,
-.lobby-guide-card {
-    justify-content: flex-start;
+.lobby-drawer-scrim {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.58);
 }
 
-.lobby-side-actions {
-    margin-top: auto;
-}
-
-.lobby-form {
-    max-width: 100%;
-    margin-top: var(--spacing-lg);
-}
-
-.lobby-room-name-field {
-    max-width: 520px;
-}
-
-.lobby-map-stack {
-    margin-top: var(--spacing-md);
-}
-
-.lobby-map-button {
-    min-height: 96px;
-    margin-bottom: 14px;
-    padding: 18px 20px;
-    background-color: var(--color-bg-card);
-    border-width: 1px;
+.lobby-drawer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 420px;
+    background-color: var(--color-bg-panel);
+    border-width: 1px 0 0 1px;
     border-color: var(--color-border);
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-}
-
-.lobby-map-button:hover {
-    background-color: var(--color-bg-hover);
-}
-
-.lobby-map-button.tier-standard {
     border-left-width: 4px;
     border-left-color: var(--color-accent);
 }
 
-.lobby-map-button.tier-rare {
-    border-left-width: 4px;
-    border-left-color: var(--color-success);
+.lobby-drawer-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-lg);
 }
 
-.lobby-create-actions {
-    margin-top: var(--spacing-md);
+.lobby-drawer-copy {
+    flex-grow: 1;
+}
+
+.lobby-drawer-copy .card-title {
+    margin-bottom: 8px;
+}
+
+.lobby-drawer-close {
+    width: 96px;
+    margin-left: var(--spacing-md);
+}
+
+.lobby-room-name-field {
+    max-width: 100%;
+}
+
+.lobby-section-label {
+    margin-bottom: 10px;
+}
+
+.lobby-map-stack {
+    margin-top: 2px;
+}
+
+.lobby-map-option {
+    min-height: 92px;
+    margin-bottom: 12px;
+    padding: 18px 20px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--color-bg-card);
+    border-width: 1px;
+    border-color: var(--color-border);
+}
+
+.lobby-map-option:hover {
+    background-color: var(--color-bg-hover);
+    border-color: var(--color-border-light);
+}
+
+.lobby-map-option.selected {
+    background-color: var(--color-accent-bg);
+    border-color: var(--color-accent);
+}
+
+.lobby-map-copy {
+    flex-direction: column;
+    align-items: flex-start;
+    flex-grow: 1;
+}
+
+.lobby-drawer-footer {
+    flex-direction: row;
+    margin-top: auto;
+}
+
+.lobby-footer-button {
+    flex-grow: 1;
+}
+
+.lobby-footer-primary {
+    margin-left: var(--spacing-sm);
 }
