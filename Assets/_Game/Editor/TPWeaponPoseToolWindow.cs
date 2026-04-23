@@ -372,6 +372,7 @@ public sealed class TPWeaponPoseToolWindow : EditorWindow
         EditorGUI.BeginChangeCheck();
         Vector3 localPosition = EditorGUILayout.Vector3Field("Local Position", target.localPosition);
         Vector3 localEulerAngles = EditorGUILayout.Vector3Field("Local Rotation", target.localEulerAngles);
+        Vector3 localScale = EditorGUILayout.Vector3Field("Local Scale", target.localScale);
 
         if (!EditorGUI.EndChangeCheck())
             return;
@@ -379,6 +380,7 @@ public sealed class TPWeaponPoseToolWindow : EditorWindow
         Undo.RecordObject(target, $"Adjust {target.name} pose");
         target.localPosition = localPosition;
         target.localEulerAngles = localEulerAngles;
+        target.localScale = localScale;
         MarkTargetDirty(target);
     }
 
@@ -457,6 +459,9 @@ public sealed class TPWeaponPoseToolWindow : EditorWindow
         builder.AppendLine();
         builder.Append("Local Rotation: ");
         AppendVector(builder, target.localEulerAngles);
+        builder.AppendLine();
+        builder.Append("Local Scale: ");
+        AppendVector(builder, target.localScale);
 
         EditorGUIUtility.systemCopyBuffer = builder.ToString();
         Debug.Log($"Copied pose for {target.name} to clipboard.");
@@ -510,6 +515,7 @@ public sealed class TPWeaponPoseToolWindow : EditorWindow
         Undo.RecordObject(target, undoName);
         target.localPosition = pose.LocalPosition;
         target.localEulerAngles = pose.LocalEulerAngles;
+        target.localScale = pose.LocalScale;
         MarkTargetDirty(target);
     }
 
@@ -519,8 +525,9 @@ public sealed class TPWeaponPoseToolWindow : EditorWindow
         if (!CanApplyCurrentLiveTarget() || target == null)
             return;
 
-        PrefabUtility.RecordPrefabInstancePropertyModifications(target);
-        PrefabUtility.ApplyObjectOverride(target, PlayerPrefabPath, InteractionMode.UserAction);
+        if (!TryApplyLiveTargetToPrefab(target))
+            return;
+
         UpdateLiveDefaultPose(target);
         liveModifiedTargets.Remove(target);
 
@@ -533,7 +540,9 @@ public sealed class TPWeaponPoseToolWindow : EditorWindow
         if (!CanRevertCurrentLiveTarget() || target == null)
             return;
 
-        PrefabUtility.RevertObjectOverride(target, InteractionMode.UserAction);
+        if (!TryRevertLiveTargetFromPrefab(target))
+            return;
+
         UpdateLiveDefaultPose(target);
         liveModifiedTargets.Remove(target);
 
@@ -732,9 +741,9 @@ public sealed class TPWeaponPoseToolWindow : EditorWindow
         ClearLiveBinding(false);
 
         boundLivePlayer = player;
-        boundLiveAssetPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(player.gameObject);
         liveHolderTransform = player.TPweaponHolder != null ? player.TPweaponHolder : FindHolderTransform(player.transform);
-        if (liveHolderTransform == null || boundLiveAssetPath != PlayerPrefabPath)
+        boundLiveAssetPath = ResolveAssetPath(liveHolderTransform != null ? liveHolderTransform.gameObject : player.gameObject);
+        if (liveHolderTransform == null)
         {
             ClearLiveBinding(true);
             return;
@@ -924,8 +933,7 @@ public sealed class TPWeaponPoseToolWindow : EditorWindow
     {
         return boundLivePlayer != null &&
                liveHolderTransform != null &&
-               liveWeaponTransforms.All(weapon => weapon != null) &&
-               boundLiveAssetPath == PlayerPrefabPath;
+               liveWeaponTransforms.All(weapon => weapon != null);
     }
 
     private bool CanBindAnyLivePlayer()
@@ -938,16 +946,14 @@ public sealed class TPWeaponPoseToolWindow : EditorWindow
         Transform target = GetCurrentTarget();
         return HasValidLiveContext() &&
                target != null &&
-               liveModifiedTargets.Contains(target) &&
-               PrefabUtility.IsPartOfPrefabInstance(target);
+               liveModifiedTargets.Contains(target);
     }
 
     private bool CanRevertCurrentLiveTarget()
     {
         Transform target = GetCurrentTarget();
         return HasValidLiveContext() &&
-               target != null &&
-               PrefabUtility.IsPartOfPrefabInstance(target);
+               target != null;
     }
 
     private Transform GetHolderTransform()
@@ -1009,6 +1015,94 @@ public sealed class TPWeaponPoseToolWindow : EditorWindow
             .FirstOrDefault(child => child.name == HolderName);
     }
 
+    private static string ResolveAssetPath(Object instanceObject)
+    {
+        if (instanceObject == null)
+            return null;
+
+        string assetPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(instanceObject);
+        if (!string.IsNullOrEmpty(assetPath))
+            return assetPath;
+
+        Object sourceObject = PrefabUtility.GetCorrespondingObjectFromSource(instanceObject);
+        return sourceObject != null ? AssetDatabase.GetAssetPath(sourceObject) : null;
+    }
+
+    private bool TryApplyLiveTargetToPrefab(Transform liveTarget)
+    {
+        GameObject prefabRoot = PrefabUtility.LoadPrefabContents(PlayerPrefabPath);
+        try
+        {
+            Transform assetTarget = ResolveAssetTarget(prefabRoot.transform, liveTarget);
+            if (assetTarget == null)
+            {
+                Debug.LogError("TP Weapon Pose Tool could not resolve the matching target inside Player.prefab.");
+                return false;
+            }
+
+            assetTarget.localPosition = liveTarget.localPosition;
+            assetTarget.localEulerAngles = liveTarget.localEulerAngles;
+            assetTarget.localScale = liveTarget.localScale;
+
+            PrefabUtility.SaveAsPrefabAsset(prefabRoot, PlayerPrefabPath, out bool success);
+            if (!success)
+            {
+                Debug.LogError("TP Weapon Pose Tool failed to save the updated pose into Player.prefab.");
+                return false;
+            }
+
+            return true;
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(prefabRoot);
+        }
+    }
+
+    private bool TryRevertLiveTargetFromPrefab(Transform liveTarget)
+    {
+        GameObject prefabRoot = PrefabUtility.LoadPrefabContents(PlayerPrefabPath);
+        try
+        {
+            Transform assetTarget = ResolveAssetTarget(prefabRoot.transform, liveTarget);
+            if (assetTarget == null)
+            {
+                Debug.LogError("TP Weapon Pose Tool could not resolve the matching prefab target for revert.");
+                return false;
+            }
+
+            Undo.RecordObject(liveTarget, $"Revert {liveTarget.name} live pose");
+            liveTarget.localPosition = assetTarget.localPosition;
+            liveTarget.localEulerAngles = assetTarget.localEulerAngles;
+            liveTarget.localScale = assetTarget.localScale;
+            EditorUtility.SetDirty(liveTarget);
+            return true;
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(prefabRoot);
+        }
+    }
+
+    private Transform ResolveAssetTarget(Transform prefabRoot, Transform liveTarget)
+    {
+        if (prefabRoot == null || liveTarget == null)
+            return null;
+
+        Transform assetHolder = FindHolderTransform(prefabRoot);
+        if (assetHolder == null)
+            return null;
+
+        if (liveTarget == liveHolderTransform)
+            return assetHolder;
+
+        int weaponIndex = liveWeaponTransforms.IndexOf(liveTarget);
+        if (weaponIndex < 0 || weaponIndex >= assetHolder.childCount)
+            return null;
+
+        return assetHolder.GetChild(weaponIndex);
+    }
+
     private static int GetFirstActiveWeaponIndex(List<Transform> weaponTransforms)
     {
         for (int index = 0; index < weaponTransforms.Count; index++)
@@ -1044,18 +1138,20 @@ public sealed class TPWeaponPoseToolWindow : EditorWindow
 
     private readonly struct TransformPose
     {
-        public TransformPose(Vector3 localPosition, Vector3 localEulerAngles)
+        public TransformPose(Vector3 localPosition, Vector3 localEulerAngles, Vector3 localScale)
         {
             LocalPosition = localPosition;
             LocalEulerAngles = localEulerAngles;
+            LocalScale = localScale;
         }
 
         public Vector3 LocalPosition { get; }
         public Vector3 LocalEulerAngles { get; }
+        public Vector3 LocalScale { get; }
 
         public static TransformPose From(Transform target)
         {
-            return new TransformPose(target.localPosition, target.localEulerAngles);
+            return new TransformPose(target.localPosition, target.localEulerAngles, target.localScale);
         }
     }
 }
