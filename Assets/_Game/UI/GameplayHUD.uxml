@@ -6,7 +6,7 @@
     <ui:Style src="project://database/Assets/_Game/UI/MenuStyles.uss" />
     <ui:Style src="project://database/Assets/_Game/UI/GameplayHUDStyles.uss" />
 
-    <ui:VisualElement name="gameplay-shell" class="app-root gameplay-shell motion-active">
+    <ui:VisualElement name="gameplay-shell" class="gameplay-shell motion-active">
         <ui:VisualElement class="gameplay-root">
             <ui:VisualElement class="gameplay-top-left">
                 <ui:VisualElement class="gameplay-card gameplay-session-card">
