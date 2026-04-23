@@ -727,7 +727,7 @@
 .menu-root .play-hero-card {
     flex-grow: 0;
     width: 100%;
-    max-width: 880px;
+    max-width: none;
     min-height: 328px;
     padding: 34px 36px 30px 36px;
     justify-content: flex-start;
@@ -735,34 +735,6 @@
     border-top-width: 2px;
     border-top-color: var(--color-accent);
     background-color: rgba(14, 14, 14, 0.82);
-}
-
-.menu-root .screen-stage-play {
-    align-items: flex-start;
-    justify-content: center;
-}
-
-.menu-root .play-stage-shell {
-    max-width: 1144px;
-    align-items: flex-start;
-    justify-content: center;
-}
-
-.menu-root .play-stage-main-shell {
-    max-width: 880px;
-    margin-right: 16px;
-    align-items: center;
-    justify-content: flex-start;
-}
-
-.menu-root .play-stage-main-shell > .stage-main {
-    width: 100%;
-    flex-grow: 0;
-}
-
-.menu-root .play-stage-support {
-    width: 248px;
-    align-self: flex-start;
 }
 
 .menu-root .play-hero-content {
