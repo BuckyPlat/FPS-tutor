@@ -1,4 +1,4 @@
-﻿using Photon.Pun;
+using Photon.Pun;
 using UnityEngine;
 
 public class Movement : MonoBehaviour
@@ -10,26 +10,28 @@ public class Movement : MonoBehaviour
     public float jumpHeight = 30f;
 
     [Header("Jump")]
-    public float jumpDelay = 0.1f;        // delay trước khi vọt lên
+    [Tooltip("Legacy compatibility only. Jump now commits immediately on the next physics tick.")]
+    public float jumpDelay = 0f;
 
     [Header("Animation")]
     public Animator animator;
 
+    private const int GroundProbeCapacity = 16;
+
     private Vector2 input;
     private Rigidbody rb;
     private PhotonView pv;
+    private SphereCollider groundProbe;
+    private readonly Collider[] groundProbeResults = new Collider[GroundProbeCapacity];
     private bool sprinting;
-    private bool isGrounded = false;
-    private bool isFalling = false;
-    private bool animationGrounded = false;
+    private bool isGrounded;
+    private bool isFalling;
+    private bool animationGrounded;
+    private bool jumpRequested;
+    private int jumpSequence;
 
-    private bool jumpQueued = false;  // đang chờ delay
-    private bool hasJumped = false;  // đã vọt lên rồi, chờ chạm đất
-    private float jumpTimer = 0f;
-    private int jumpSequence = 0;
-
-    private float currentXVelocity = 0f;
-    private float currentYVelocity = 0f;
+    private float currentXVelocity;
+    private float currentYVelocity;
     public float animationSmoothSpeed = 12f;
 
     public float AnimationXVelocity => currentXVelocity;
@@ -42,6 +44,7 @@ public class Movement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         pv = GetComponent<PhotonView>();
+        groundProbe = GetComponent<SphereCollider>();
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
     }
@@ -54,39 +57,15 @@ public class Movement : MonoBehaviour
         if (PhotonNetwork.IsConnected && pv != null && !pv.IsMine)
             return;
 
-        if (GameChat.IsPlayerChatting()) return;
+        if (GameChat.IsPlayerChatting())
+            return;
 
         input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
         input.Normalize();
         sprinting = Input.GetButton("Sprint");
 
-        // Chỉ nhận input khi đang đứng yên dưới đất, chưa queue jump
-        if (Input.GetButtonDown("Jump") && isGrounded && !jumpQueued && !hasJumped)
-        {
-            jumpQueued = true;
-            jumpTimer = 0f;
-            jumpSequence++;
-
-            if (animator != null)
-                animator.SetTrigger("Jump");   // kích hoạt animation chuẩn bị nhảy
-        }
-
-        // Đếm delay
-        if (jumpQueued)
-        {
-            jumpTimer += Time.deltaTime;
-            if (jumpTimer >= jumpDelay)
-            {
-                jumpQueued = false;
-                hasJumped = true;
-                DoJump();
-            }
-        }
-    }
-
-    private void DoJump()
-    {
-        rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpHeight, rb.linearVelocity.z);
+        if (Input.GetButtonDown("Jump"))
+            jumpRequested = true;
     }
 
     void FixedUpdate()
@@ -97,9 +76,13 @@ public class Movement : MonoBehaviour
         if (PhotonNetwork.IsConnected && pv != null && !pv.IsMine)
             return;
 
-        if (GameChat.IsPlayerChatting()) return;
+        if (GameChat.IsPlayerChatting())
+            return;
 
-        if (isGrounded)
+        bool groundedThisTick = EvaluateGrounded();
+        bool shouldJump = jumpRequested && groundedThisTick;
+
+        if (groundedThisTick)
         {
             if (input.magnitude > 0.1f)
             {
@@ -108,32 +91,41 @@ public class Movement : MonoBehaviour
             }
             else
             {
-                var vel = rb.linearVelocity;
-                vel.x = Mathf.Lerp(vel.x, 0, 0.25f);
-                vel.z = Mathf.Lerp(vel.z, 0, 0.25f);
-                rb.linearVelocity = vel;
+                Vector3 velocity = rb.linearVelocity;
+                velocity.x = Mathf.Lerp(velocity.x, 0f, 0.25f);
+                velocity.z = Mathf.Lerp(velocity.z, 0f, 0.25f);
+                rb.linearVelocity = velocity;
             }
         }
-        else
+        else if (input.magnitude > 0.1f)
         {
-            if (input.magnitude > 0.1f)
-            {
-                float speed = sprinting ? sprintSpeed * airControl : walkSpeed * airControl;
-                rb.AddForce(CalculationMovement(speed), ForceMode.VelocityChange);
-            }
+            float speed = sprinting ? sprintSpeed * airControl : walkSpeed * airControl;
+            rb.AddForce(CalculationMovement(speed), ForceMode.VelocityChange);
         }
 
-        // Reset hasJumped khi chạm đất
-        if (isGrounded && hasJumped && rb.linearVelocity.y <= 0f)
-            hasJumped = false;
+        if (shouldJump)
+            CommitJump();
 
         UpdateAnimationParameters();
+        jumpRequested = false;
+    }
+
+    private void CommitJump()
+    {
+        jumpSequence++;
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpHeight, rb.linearVelocity.z);
         isGrounded = false;
+        animationGrounded = false;
+        isFalling = false;
+
+        if (animator != null)
+            animator.SetTrigger("Jump");
     }
 
     private void UpdateAnimationParameters()
     {
-        if (animator == null) return;
+        if (animator == null)
+            return;
 
         Vector3 localVel = transform.InverseTransformDirection(rb.linearVelocity);
         float smoothingDelta = Time.inFixedTimeStep ? Time.fixedDeltaTime : Time.deltaTime;
@@ -149,19 +141,77 @@ public class Movement : MonoBehaviour
         animator.SetBool("Falling", isFalling);
     }
 
-    Vector3 CalculationMovement(float _speed)
+    private Vector3 CalculationMovement(float speed)
     {
-        Vector3 targetVel = new Vector3(input.x, 0, input.y);
-        targetVel = transform.TransformDirection(targetVel) * _speed;
-        Vector3 velocityChange = targetVel - rb.linearVelocity;
+        Vector3 targetVelocity = new Vector3(input.x, 0f, input.y);
+        targetVelocity = transform.TransformDirection(targetVelocity) * speed;
+
+        Vector3 velocityChange = targetVelocity - rb.linearVelocity;
         velocityChange.x = Mathf.Clamp(velocityChange.x, -MaxVelocityChange, MaxVelocityChange);
         velocityChange.z = Mathf.Clamp(velocityChange.z, -MaxVelocityChange, MaxVelocityChange);
-        velocityChange.y = 0;
+        velocityChange.y = 0f;
         return velocityChange;
     }
 
-    private void OnTriggerStay(Collider other)
+    private bool EvaluateGrounded()
     {
-        isGrounded = true;
+        if (groundProbe == null)
+        {
+            groundProbe = GetComponent<SphereCollider>();
+            if (groundProbe == null)
+            {
+                isGrounded = false;
+                return false;
+            }
+        }
+
+        Vector3 probeCenter = groundProbe.transform.TransformPoint(groundProbe.center);
+        Vector3 probeScale = groundProbe.transform.lossyScale;
+        float maxScale = Mathf.Max(Mathf.Abs(probeScale.x), Mathf.Abs(probeScale.y), Mathf.Abs(probeScale.z));
+        float probeRadius = groundProbe.radius * maxScale;
+
+        int hitCount = Physics.OverlapSphereNonAlloc(
+            probeCenter,
+            probeRadius,
+            groundProbeResults,
+            Physics.AllLayers,
+            QueryTriggerInteraction.Ignore);
+
+        for (int i = 0; i < hitCount; i++)
+        {
+            if (!IsValidGroundContact(groundProbeResults[i]))
+                continue;
+
+            isGrounded = true;
+            return true;
+        }
+
+        isGrounded = false;
+        return false;
+    }
+
+    private bool IsValidGroundContact(Collider other)
+    {
+        if (other == null || other.isTrigger)
+            return false;
+
+        Transform otherRoot = other.transform.root;
+        if (otherRoot == transform.root)
+            return false;
+
+        if (otherRoot.CompareTag("Player"))
+            return false;
+
+        if (otherRoot.GetComponent<Movement>() != null)
+            return false;
+
+        return true;
+    }
+
+    private void OnDisable()
+    {
+        isGrounded = false;
+        animationGrounded = false;
+        jumpRequested = false;
     }
 }
