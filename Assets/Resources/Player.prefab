@@ -79,7 +79,6 @@ Transform:
   - {fileID: 5520719656109590378}
   - {fileID: 6051612260520466634}
   - {fileID: 362264426063830373}
-  - {fileID: 422895690245940303}
   - {fileID: 3464199801823495384}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -381,7 +380,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b39cf389881c2748b276aa2044bf3d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BodyRotationWithDeadzone
-  deadzoneAngle: 0
+  deadzoneAngle: 35
   bodyTurnSpeed: 10
   cameraTransform: {fileID: 5520719656109590378}
   modelTransform: {fileID: 0}
@@ -397,8 +396,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eece4c04f9a27bd43970f0d76373d64c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  fullBodyModel: {fileID: 0}
+  fullBodyModel: {fileID: 4276343703626014306}
   fpsProp: {fileID: 7557872453880145920}
+  worldWeaponRoot: {fileID: 9038488595944861636}
+  hideLocalFullBodyRenderers: 1
 --- !u!114 &2913546631745806053
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -492,7 +493,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 119
+    m_Bits: 55
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1690,16 +1691,16 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9038488595944861636}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.000000096857526, y: -0.00000005960463, z: -0.000000048428763, w: 1}
-  m_LocalPosition: {x: 0.038, y: 0.44999987, z: 0.606}
-  m_LocalScale: {x: 1.3000005, y: 1.2999998, z: 1.3000003}
+  m_LocalRotation: {x: 0.564194, y: 0.4636588, z: -0.42404416, w: -0.53562325}
+  m_LocalPosition: {x: -1.7480555, y: -1.2297027, z: 0.043054502}
+  m_LocalScale: {x: 0.585, y: 0.585, z: 0.585}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 4841554115502345}
   - {fileID: 2738886372106801686}
   - {fileID: 785874724762827053}
   - {fileID: 7628554077581451261}
-  m_Father: {fileID: 7408425784961855453}
+  m_Father: {fileID: 3327134188699491579}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9197610985973610080
 GameObject:
@@ -2216,12 +2217,20 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1852576806548013000, guid: 2327b026b77d1104a9766c11021d7b9c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 422895690245940303}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2327b026b77d1104a9766c11021d7b9c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2316286013386430083}
   m_SourcePrefab: {fileID: 100100000, guid: 2327b026b77d1104a9766c11021d7b9c, type: 3}
+--- !u!4 &3327134188699491579 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1852576806548013000, guid: 2327b026b77d1104a9766c11021d7b9c, type: 3}
+  m_PrefabInstance: {fileID: 4006503964648825651}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3464199801823495384 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2327b026b77d1104a9766c11021d7b9c, type: 3}
@@ -2251,7 +2260,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UpperBodyLook
   spine2: {fileID: 3642598738741572444}
   localLookSource: {fileID: 0}
-  spine2Weight: 0.75
+  spine2Weight: 0.55
   maxLookUp: 62
   maxLookDown: 50
 --- !u!95 &7418382451805183650 stripped
