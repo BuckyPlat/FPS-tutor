@@ -1,9 +1,13 @@
-﻿using UnityEngine;
+using Photon.Pun;
+using UnityEngine;
 
-public class UpperBodyLook : MonoBehaviour
+public class UpperBodyLook : MonoBehaviourPun
 {
     [Header("Bones")]
     public Transform spine2;
+
+    [Header("References")]
+    [SerializeField] private Transform localLookSource;
 
     [Header("Weights")]
     [Range(0, 1)] public float spine2Weight = 0.22f;
@@ -12,27 +16,64 @@ public class UpperBodyLook : MonoBehaviour
     public float maxLookUp = 62f;
     public float maxLookDown = 50f;
 
-    private Transform cam;
     private float currentPitch = 0f;
+    private float networkPitch = 0f;
+
+    public float CurrentPitch => currentPitch;
 
     void Start()
     {
-        cam = Camera.main.transform;
+        ResolveLocalLookSource();
     }
 
     void LateUpdate()
     {
-        if (cam == null) return;
+        bool useLocalLookSource = ShouldUseLocalLookSource();
+        float targetPitch = useLocalLookSource
+            ? GetLocalTargetPitch()
+            : networkPitch;
 
-        Vector3 camForward = cam.forward;
-
-        // Clamp trước khi Asin để tránh NaN
-        float clampedY = Mathf.Clamp(camForward.y, -1f, 1f);
-        float targetPitch = Mathf.Asin(clampedY) * Mathf.Rad2Deg;
-
-        currentPitch = Mathf.Lerp(currentPitch, targetPitch, 16f * Time.deltaTime);
-
+        currentPitch = useLocalLookSource
+            ? Mathf.Lerp(currentPitch, targetPitch, 16f * Time.deltaTime)
+            : targetPitch;
         ApplyPitch(spine2, currentPitch, spine2Weight);
+    }
+
+    public void SetNetworkPitch(float pitch)
+    {
+        networkPitch = pitch;
+    }
+
+    private bool ShouldUseLocalLookSource()
+    {
+        return !PhotonNetwork.IsConnected || photonView.IsMine;
+    }
+
+    private void ResolveLocalLookSource()
+    {
+        if (localLookSource != null)
+            return;
+
+        PlayerSetup playerSetup = GetComponentInParent<PlayerSetup>();
+        if (playerSetup != null && playerSetup.camera != null)
+        {
+            localLookSource = playerSetup.camera.transform;
+            return;
+        }
+
+        if (Camera.main != null)
+            localLookSource = Camera.main.transform;
+    }
+
+    private float GetLocalTargetPitch()
+    {
+        ResolveLocalLookSource();
+        if (localLookSource == null)
+            return currentPitch;
+
+        Vector3 lookForward = localLookSource.forward;
+        float clampedY = Mathf.Clamp(lookForward.y, -1f, 1f);
+        return Mathf.Asin(clampedY) * Mathf.Rad2Deg;
     }
 
     private void ApplyPitch(Transform bone, float pitch, float weight)
@@ -40,12 +81,9 @@ public class UpperBodyLook : MonoBehaviour
         if (bone == null) return;
 
         float finalPitch = Mathf.Clamp(pitch * weight, -maxLookDown, maxLookUp);
-
-        // Guard thêm để chắc chắn không NaN
         if (float.IsNaN(finalPitch)) return;
 
         Quaternion targetRot = Quaternion.Euler(-finalPitch, 0, 0);
-
         bone.localRotation = Quaternion.Slerp(bone.localRotation, targetRot, 1f);
     }
 }

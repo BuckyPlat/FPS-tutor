@@ -55,6 +55,7 @@ GameObject:
   - component: {fileID: 5457431914558626312}
   - component: {fileID: 3830947092919981639}
   - component: {fileID: 3872398552481662761}
+  - component: {fileID: 2913546631745806053}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -226,10 +227,11 @@ MonoBehaviour:
   prefixField: -1
   Synchronization: 3
   OwnershipTransfer: 0
-  observableSearch: 2
+  observableSearch: 0
   ObservedComponents:
   - {fileID: 4477175242771393925}
   - {fileID: 766313150229712290}
+  - {fileID: 2913546631745806053}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -397,6 +399,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   fullBodyModel: {fileID: 0}
   fpsProp: {fileID: 7557872453880145920}
+--- !u!114 &2913546631745806053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2079277038122972246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e40b13b435caaa64ba7a01d20e008be6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimationNetworkSync
+  movement: {fileID: 1862255491924460128}
+  playerSetup: {fileID: 3167158185583491345}
+  animator: {fileID: 7418382451805183650}
+  upperBodyLook: {fileID: 2316286013386430083}
 --- !u!1 &3193757577024942674
 GameObject:
   m_ObjectHideFlags: 0
@@ -2232,9 +2250,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpperBodyLook
   spine2: {fileID: 3642598738741572444}
+  localLookSource: {fileID: 0}
   spine2Weight: 0.75
   maxLookUp: 62
   maxLookDown: 50
+--- !u!95 &7418382451805183650 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 2327b026b77d1104a9766c11021d7b9c, type: 3}
+  m_PrefabInstance: {fileID: 4006503964648825651}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4502878815342418685
 PrefabInstance:
   m_ObjectHideFlags: 0

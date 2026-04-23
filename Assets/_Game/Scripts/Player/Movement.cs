@@ -20,14 +20,23 @@ public class Movement : MonoBehaviour
     private PhotonView pv;
     private bool sprinting;
     private bool isGrounded = false;
+    private bool isFalling = false;
+    private bool animationGrounded = false;
 
     private bool jumpQueued = false;  // đang chờ delay
     private bool hasJumped = false;  // đã vọt lên rồi, chờ chạm đất
     private float jumpTimer = 0f;
+    private int jumpSequence = 0;
 
     private float currentXVelocity = 0f;
     private float currentYVelocity = 0f;
     public float animationSmoothSpeed = 12f;
+
+    public float AnimationXVelocity => currentXVelocity;
+    public float AnimationYVelocity => currentYVelocity;
+    public bool IsGroundedForAnimation => animationGrounded;
+    public bool IsFallingForAnimation => isFalling;
+    public int JumpSequence => jumpSequence;
 
     void Start()
     {
@@ -39,6 +48,12 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
+        if (pv == null)
+            pv = GetComponent<PhotonView>();
+
+        if (PhotonNetwork.IsConnected && pv != null && !pv.IsMine)
+            return;
+
         if (GameChat.IsPlayerChatting()) return;
 
         input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
@@ -50,7 +65,10 @@ public class Movement : MonoBehaviour
         {
             jumpQueued = true;
             jumpTimer = 0f;
-            animator.SetTrigger("Jump");   // kích hoạt animation chuẩn bị nhảy
+            jumpSequence++;
+
+            if (animator != null)
+                animator.SetTrigger("Jump");   // kích hoạt animation chuẩn bị nhảy
         }
 
         // Đếm delay
@@ -73,7 +91,13 @@ public class Movement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!pv.IsMine || GameChat.IsPlayerChatting()) return;
+        if (pv == null)
+            pv = GetComponent<PhotonView>();
+
+        if (PhotonNetwork.IsConnected && pv != null && !pv.IsMine)
+            return;
+
+        if (GameChat.IsPlayerChatting()) return;
 
         if (isGrounded)
         {
@@ -112,13 +136,17 @@ public class Movement : MonoBehaviour
         if (animator == null) return;
 
         Vector3 localVel = transform.InverseTransformDirection(rb.linearVelocity);
-        currentXVelocity = Mathf.Lerp(currentXVelocity, localVel.x, animationSmoothSpeed * Time.deltaTime);
-        currentYVelocity = Mathf.Lerp(currentYVelocity, localVel.z, animationSmoothSpeed * Time.deltaTime);
+        float smoothingDelta = Time.inFixedTimeStep ? Time.fixedDeltaTime : Time.deltaTime;
+
+        currentXVelocity = Mathf.Lerp(currentXVelocity, localVel.x, animationSmoothSpeed * smoothingDelta);
+        currentYVelocity = Mathf.Lerp(currentYVelocity, localVel.z, animationSmoothSpeed * smoothingDelta);
+        animationGrounded = isGrounded;
+        isFalling = !isGrounded && rb.linearVelocity.y < -1f;
 
         animator.SetFloat("X_Velocity", currentXVelocity);
         animator.SetFloat("Y_Velocity", currentYVelocity);
-        animator.SetBool("Grounded", isGrounded);
-        animator.SetBool("Falling", !isGrounded && rb.linearVelocity.y < -1f);
+        animator.SetBool("Grounded", animationGrounded);
+        animator.SetBool("Falling", isFalling);
     }
 
     Vector3 CalculationMovement(float _speed)
