@@ -672,6 +672,22 @@
     align-items: stretch;
 }
 
+.menu-root .stage-shell {
+    width: 100%;
+    flex-direction: row;
+    flex-grow: 1;
+    min-width: 0;
+    min-height: 0;
+    align-items: stretch;
+}
+
+.menu-root .stage-main-shell {
+    flex-grow: 1;
+    min-width: 0;
+    min-height: 0;
+    flex-direction: column;
+}
+
 .menu-root .stage-main {
     flex-grow: 1;
     flex-basis: 0;
@@ -680,11 +696,7 @@
     flex-direction: column;
 }
 
-.menu-root .screen-stage-focus .stage-main {
-    margin-right: 22px;
-}
-
-.menu-root .screen-stage-split .stage-main {
+.menu-root .screen-stage-split > .stage-main {
     margin-right: 22px;
 }
 
@@ -713,50 +725,89 @@
 }
 
 .menu-root .play-hero-card {
-    flex-grow: 1;
-    min-height: 0;
-    padding: 36px 38px;
-    justify-content: center;
+    flex-grow: 0;
+    width: 100%;
+    max-width: 880px;
+    min-height: 328px;
+    padding: 34px 36px 30px 36px;
+    justify-content: flex-start;
     align-items: flex-start;
     border-top-width: 2px;
     border-top-color: var(--color-accent);
     background-color: rgba(14, 14, 14, 0.82);
 }
 
-.menu-root .screen-stage-play .stage-main {
-    margin-right: 18px;
+.menu-root .screen-stage-play {
+    align-items: flex-start;
+    justify-content: center;
 }
 
-.menu-root .screen-stage-play .stage-support {
-    width: 256px;
+.menu-root .play-stage-shell {
+    max-width: 1144px;
+    align-items: flex-start;
+    justify-content: center;
 }
 
-.menu-root .screen-stage-play .play-actions-row {
-    margin-top: 26px;
-    padding-top: 0;
+.menu-root .play-stage-main-shell {
+    max-width: 880px;
+    margin-right: 16px;
+    align-items: center;
+    justify-content: flex-start;
 }
 
-.menu-root .screen-stage-play .play-actions-row .unity-button {
-    width: 208px;
-}
-
-.menu-root .screen-stage-play .play-modes-card {
-    padding: 20px 18px;
-}
-
-.menu-root .screen-stage-play .play-support-card {
+.menu-root .play-stage-main-shell > .stage-main {
+    width: 100%;
     flex-grow: 0;
 }
 
-.menu-root .screen-stage-play .play-modes-card .support-card-title {
+.menu-root .play-stage-support {
+    width: 248px;
+    align-self: flex-start;
+}
+
+.menu-root .play-hero-content {
+    width: 100%;
+    max-width: 664px;
+    min-width: 0;
+    align-self: flex-start;
+    flex-direction: column;
+}
+
+.menu-root .play-actions-row {
+    margin-top: 24px;
+    padding-top: 0;
+}
+
+.menu-root .play-hero-content .play-hero-title {
+    max-width: none;
+}
+
+.menu-root .play-hero-content .play-hero-desc {
+    max-width: 560px;
+}
+
+.menu-root .play-actions-row .unity-button {
+    width: 208px;
+}
+
+.menu-root .play-modes-card {
+    padding: 20px 18px;
+    align-self: stretch;
+}
+
+.menu-root .play-support-card {
+    flex-grow: 0;
+}
+
+.menu-root .play-modes-card .support-card-title {
     margin-bottom: 10px;
 }
 
-.menu-root .screen-stage-play .play-modes-card .support-row {
+.menu-root .play-modes-card .support-row {
     padding: 10px 0;
 }
 
-.menu-root .screen-stage-play .play-modes-card .support-row-desc {
+.menu-root .play-modes-card .support-row-desc {
     font-size: 13px;
 }
 
@@ -773,11 +824,11 @@
 }
 
 .play-hero-title {
-    max-width: 560px;
+    max-width: 520px;
 }
 
 .play-hero-desc {
-    max-width: 500px;
+    max-width: 468px;
 }
 
 .menu-root .card-actions-bottom {
@@ -908,11 +959,12 @@
 
 .menu-root .profile-card {
     width: 100%;
-    max-width: 620px;
-    flex-grow: 1;
-    padding: 32px;
+    max-width: 560px;
+    flex-grow: 0;
+    min-height: 304px;
+    padding: 34px 32px 30px 32px;
     align-items: flex-start;
-    justify-content: center;
+    justify-content: flex-start;
     -unity-text-align: upper-left;
 }
 
@@ -1012,12 +1064,34 @@
 }
 
 .menu-root .account-action-card {
+    justify-content: flex-start;
+    padding: 20px 20px 22px 20px;
+}
+
+.menu-root .screen-stage-profile {
+    align-items: flex-start;
     justify-content: center;
 }
 
-.menu-root .screen-stage-account .stage-main,
-.menu-root .screen-stage-account .stage-support {
-    justify-content: center;
+.menu-root .profile-stage-shell {
+    max-width: 862px;
+    align-items: flex-start;
+}
+
+.menu-root .profile-stage-main-shell {
+    max-width: 560px;
+    margin-right: 22px;
+    justify-content: flex-start;
+}
+
+.menu-root .profile-stage-main-shell > .stage-main {
+    flex-grow: 0;
+}
+
+.menu-root .profile-stage-support {
+    width: 280px;
+    align-self: flex-start;
+    justify-content: flex-start;
 }
 
 .menu-root .screen-stage-settings .tab-panel .card {

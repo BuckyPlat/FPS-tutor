@@ -213,33 +213,39 @@
                                 </ui:VisualElement>
                             </ui:VisualElement>
 
-                            <ui:VisualElement class="screen-stage screen-stage-focus screen-stage-play">
-                                <ui:VisualElement class="stage-main">
-                                    <ui:VisualElement class="card stage-card play-hero-card">
-                                        <ui:VisualElement class="hero-kicker-row">
-                                            <ui:VisualElement name="icon-hero-play" class="menu-icon hero-kicker-icon" />
-                                            <ui:Label text="PLAY" class="kicker" />
-                                        </ui:VisualElement>
-                                        <ui:Label text="Choose Your Mode" class="card-title-large play-hero-title" />
-                                        <ui:Label text="Open a live lobby with your squad, or warm up solo before the next match." class="card-desc play-hero-desc" />
-                                        <ui:VisualElement class="card-actions-bottom play-actions-row">
-                                            <ui:Button name="btn-mode-campaign" text="Open Lobby" class="btn-primary" />
-                                            <ui:Button name="btn-mode-survival" text="Practice Range" class="btn-secondary" />
+                            <ui:VisualElement class="screen-stage screen-stage-play">
+                                <ui:VisualElement class="stage-shell play-stage-shell">
+                                    <ui:VisualElement class="stage-main-shell play-stage-main-shell">
+                                        <ui:VisualElement class="stage-main">
+                                            <ui:VisualElement class="card stage-card play-hero-card">
+                                                <ui:VisualElement class="play-hero-content">
+                                                    <ui:VisualElement class="hero-kicker-row">
+                                                        <ui:VisualElement name="icon-hero-play" class="menu-icon hero-kicker-icon" />
+                                                        <ui:Label text="PLAY" class="kicker" />
+                                                    </ui:VisualElement>
+                                                    <ui:Label text="Choose Your Mode" class="card-title-large play-hero-title" />
+                                                    <ui:Label text="Open a live lobby with your squad, or warm up solo before the next match." class="card-desc play-hero-desc" />
+                                                    <ui:VisualElement class="card-actions-bottom play-actions-row">
+                                                        <ui:Button name="btn-mode-campaign" text="Open Lobby" class="btn-primary" />
+                                                        <ui:Button name="btn-mode-survival" text="Practice Range" class="btn-secondary" />
+                                                    </ui:VisualElement>
+                                                </ui:VisualElement>
+                                            </ui:VisualElement>
                                         </ui:VisualElement>
                                     </ui:VisualElement>
-                                </ui:VisualElement>
 
-                                <ui:VisualElement class="stage-support stage-column">
-                                    <ui:VisualElement class="card stage-card support-card play-support-card play-modes-card">
-                                        <ui:Label text="Modes" class="card-title support-card-title" />
-                                        <ui:VisualElement class="support-list">
-                                            <ui:VisualElement class="support-row">
-                                                <ui:Label text="Open Lobby" class="support-row-title" />
-                                                <ui:Label text="Browse live rooms and join a squad." class="support-row-desc" />
-                                            </ui:VisualElement>
-                                            <ui:VisualElement class="support-row">
-                                                <ui:Label text="Practice Range" class="support-row-title" />
-                                                <ui:Label text="Warm up solo before entering a live match." class="support-row-desc" />
+                                    <ui:VisualElement class="stage-support stage-column play-stage-support">
+                                        <ui:VisualElement class="card stage-card support-card play-support-card play-modes-card">
+                                            <ui:Label text="Modes" class="card-title support-card-title" />
+                                            <ui:VisualElement class="support-list">
+                                                <ui:VisualElement class="support-row">
+                                                    <ui:Label text="Open Lobby" class="support-row-title" />
+                                                    <ui:Label text="Browse live rooms and join a squad." class="support-row-desc" />
+                                                </ui:VisualElement>
+                                                <ui:VisualElement class="support-row">
+                                                    <ui:Label text="Practice Range" class="support-row-title" />
+                                                    <ui:Label text="Warm up solo before entering a live match." class="support-row-desc" />
+                                                </ui:VisualElement>
                                             </ui:VisualElement>
                                         </ui:VisualElement>
                                     </ui:VisualElement>
@@ -349,22 +355,26 @@
                                 </ui:VisualElement>
                             </ui:VisualElement>
 
-                            <ui:VisualElement class="screen-stage screen-stage-split screen-stage-account">
-                                <ui:VisualElement class="stage-main">
-                                    <ui:VisualElement class="card stage-card profile-card">
-                                        <ui:VisualElement class="avatar-large">
-                                            <ui:Label name="account-avatar-letter" text="O" class="avatar-letter-large" />
+                            <ui:VisualElement class="screen-stage screen-stage-profile">
+                                <ui:VisualElement class="stage-shell profile-stage-shell">
+                                    <ui:VisualElement class="stage-main-shell profile-stage-main-shell">
+                                        <ui:VisualElement class="stage-main">
+                                            <ui:VisualElement class="card stage-card profile-card">
+                                                <ui:VisualElement class="avatar-large">
+                                                    <ui:Label name="account-avatar-letter" text="O" class="avatar-letter-large" />
+                                                </ui:VisualElement>
+                                                <ui:Label name="lbl-account-name" text="USERNAME" class="profile-username" />
+                                                <ui:Label name="lbl-account-id" text="STATUS: READY" class="profile-status" />
+                                            </ui:VisualElement>
                                         </ui:VisualElement>
-                                        <ui:Label name="lbl-account-name" text="USERNAME" class="profile-username" />
-                                        <ui:Label name="lbl-account-id" text="STATUS: READY" class="profile-status" />
                                     </ui:VisualElement>
-                                </ui:VisualElement>
 
-                                <ui:VisualElement class="stage-support stage-column">
-                                    <ui:VisualElement class="card stage-card support-card account-action-card">
-                                        <ui:Label text="Session" class="card-title support-card-title" />
-                                        <ui:Label text="Log out to return to the authentication screen." class="card-desc support-desc" />
-                                        <ui:Button name="btn-logout" text="Log Out" class="btn-danger logout-btn" />
+                                    <ui:VisualElement class="stage-support stage-column profile-stage-support">
+                                        <ui:VisualElement class="card stage-card support-card account-action-card">
+                                            <ui:Label text="Session" class="card-title support-card-title" />
+                                            <ui:Label text="Log out to return to the authentication screen." class="card-desc support-desc" />
+                                            <ui:Button name="btn-logout" text="Log Out" class="btn-danger logout-btn" />
+                                        </ui:VisualElement>
                                     </ui:VisualElement>
                                 </ui:VisualElement>
                             </ui:VisualElement>
