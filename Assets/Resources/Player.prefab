@@ -47,7 +47,6 @@ GameObject:
   - component: {fileID: 511602715660759064}
   - component: {fileID: 5505660671824477274}
   - component: {fileID: 4477175242771393925}
-  - component: {fileID: 766313150229712290}
   - component: {fileID: 3167158185583491345}
   - component: {fileID: 3380312267054779457}
   - component: {fileID: 7479743998161978306}
@@ -229,7 +228,6 @@ MonoBehaviour:
   observableSearch: 0
   ObservedComponents:
   - {fileID: 4477175242771393925}
-  - {fileID: 766313150229712290}
   - {fileID: 2913546631745806053}
   sceneViewId: 0
   InstantiationId: 0
@@ -250,22 +248,6 @@ MonoBehaviour:
   m_SynchronizeAngularVelocity: 0
   m_TeleportEnabled: 1
   m_TeleportIfDistanceGreaterThan: 3
---- !u!114 &766313150229712290
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2079277038122972246}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PhotonUnityNetworking::Photon.Pun.PhotonTransformView
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 1
-  m_SynchronizeScale: 0
-  m_UseLocal: 1
 --- !u!114 &3167158185583491345
 MonoBehaviour:
   m_ObjectHideFlags: 0

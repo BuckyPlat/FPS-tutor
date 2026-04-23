@@ -24,8 +24,10 @@ public class MouseLook : MonoBehaviour
     [Header("First Person")]
     public GameObject characterBody;
 
+    private Rigidbody characterBodyRigidbody;
     private Vector2 targetDirection;
     private Vector2 targetCharacterDirection;
+    private Quaternion desiredBodyRotation = Quaternion.identity;
 
     private Vector2 _mouseAbsolute;
     private Vector2 _smoothMouse;
@@ -51,7 +53,11 @@ public class MouseLook : MonoBehaviour
 
         // Set target direction for the character body to its inital state.
         if (characterBody)
+        {
             targetCharacterDirection = characterBody.transform.localRotation.eulerAngles;
+            desiredBodyRotation = characterBody.transform.rotation;
+            characterBodyRigidbody = characterBody.GetComponent<Rigidbody>();
+        }
         
         if (lockCursor)
             LockCursor();
@@ -98,12 +104,24 @@ public class MouseLook : MonoBehaviour
         if (characterBody)
         {
             var yRotation = Quaternion.AngleAxis(_mouseAbsolute.x, Vector3.up);
-            characterBody.transform.localRotation = yRotation * targetCharacterOrientation;
+            desiredBodyRotation = yRotation * targetCharacterOrientation;
+
+            if (characterBodyRigidbody == null)
+                characterBody.transform.localRotation = desiredBodyRotation;
         }
         else
         {
             var yRotation = Quaternion.AngleAxis(_mouseAbsolute.x, transform.InverseTransformDirection(Vector3.up));
             transform.localRotation *= yRotation;
         }
+    }
+
+    void FixedUpdate()
+    {
+        if (characterBodyRigidbody == null)
+            return;
+
+        Quaternion bodyRotation = Quaternion.Euler(0f, desiredBodyRotation.eulerAngles.y, 0f);
+        characterBodyRigidbody.MoveRotation(bodyRotation);
     }
 }
