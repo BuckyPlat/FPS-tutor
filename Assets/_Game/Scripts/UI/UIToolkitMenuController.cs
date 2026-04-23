@@ -168,6 +168,7 @@ public class UIToolkitMenuController : MonoBehaviour
         MigratePlayerPrefs();
         ShowLogin();
         LoadSettingsIntoUI();
+        playFabLogin?.TryAutoLogin();
     }
 
     private void OnDisable()
@@ -1419,6 +1420,12 @@ public class UIToolkitMenuController : MonoBehaviour
     {
         PlayClick();
 
+        if (playFabLogin != null)
+        {
+            playFabLogin.LogoutToLoginScreen();
+            return;
+        }
+
         try
         {
             PlayFab.PlayFabClientAPI.ForgetAllCredentials();
@@ -1427,6 +1434,8 @@ public class UIToolkitMenuController : MonoBehaviour
         {
         }
 
+        PlayFabLogin.DisplayNameFromPlayFab = null;
+        PlayerPrefs.DeleteKey("USERNAME");
         PlayerPrefs.DeleteKey("PlayFabSessionTicket");
         PlayerPrefs.Save();
         ShowLogin();
