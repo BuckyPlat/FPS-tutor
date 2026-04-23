@@ -362,8 +362,17 @@
     border-color: var(--menu-border-soft);
 }
 
-.menu-root .sidebar-header {
-    margin-bottom: 24px;
+.menu-root .sidebar-top {
+    flex-grow: 1;
+}
+
+.menu-root .sidebar-section {
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.menu-root .sidebar-brand {
+    padding: 2px 14px 0 14px;
 }
 
 .menu-root .sidebar-logo-title {
@@ -375,14 +384,20 @@
     letter-spacing: 1px;
 }
 
-.menu-root .sidebar-player {
-    flex-direction: row;
-    align-items: center;
-    padding: 14px 16px;
+.menu-root .sidebar-module-stack {
     margin-bottom: 18px;
+}
+
+.menu-root .sidebar-module {
+    padding: 14px 14px;
     background-color: rgba(0, 0, 0, 0.18);
     border-width: 1px;
     border-color: rgba(255, 255, 255, 0.05);
+}
+
+.menu-root .sidebar-player {
+    flex-direction: row;
+    align-items: center;
 }
 
 .menu-root .player-avatar {
@@ -406,28 +421,45 @@
     letter-spacing: 1px;
 }
 
-.menu-root .currency-strip {
-    padding-top: 14px;
-    margin-bottom: 18px;
-    border-top-width: 1px;
-    border-top-color: rgba(255, 255, 255, 0.05);
+.menu-root .sidebar-nav-shell {
+    margin-bottom: 0;
 }
 
-.menu-root .currency-head {
+.menu-root .sidebar-nav {
+    width: 100%;
+}
+
+.menu-root .currency-strip {
+    margin-top: 10px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.menu-root .currency-row {
     flex-direction: row;
-    align-items: center;
-    margin-bottom: 6px;
+    align-items: flex-start;
 }
 
 .menu-root .currency-icon {
     width: 16px;
     height: 16px;
-    margin-right: 8px;
+    margin-right: 10px;
+    margin-top: 2px;
     -unity-background-image-tint-color: var(--color-accent);
+}
+
+.menu-root .currency-copy {
+    flex-direction: column;
+}
+
+.menu-root .currency-label {
+    font-size: 11px;
+    letter-spacing: 1px;
 }
 
 .menu-root .currency-amount {
     font-size: 22px;
+    margin-top: 4px;
 }
 
 .menu-root .nav-item {
@@ -474,8 +506,14 @@
 }
 
 .menu-root .sidebar-footer {
+    width: 100%;
+    padding-top: 14px;
     border-top-width: 1px;
     border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+.menu-root .sidebar-footer .version-text {
+    padding-left: 14px;
 }
 
 .menu-root .content-area {

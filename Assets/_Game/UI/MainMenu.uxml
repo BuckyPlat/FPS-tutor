@@ -130,55 +130,63 @@
     <ui:VisualElement name="main-shell" class="app-root menu-root shell-layer hidden">
         <ui:VisualElement class="main-layout">
             <ui:VisualElement class="sidebar">
-                <ui:VisualElement class="sidebar-header">
-                    <ui:Label text="FPS TUTOR" class="sidebar-logo-title" />
-                    <ui:Label text="MAIN MENU" class="sidebar-logo-sub" />
-                </ui:VisualElement>
-
-                <ui:VisualElement class="sidebar-player">
-                    <ui:VisualElement class="player-avatar">
-                        <ui:Label name="player-avatar-letter" text="O" class="player-avatar-letter" />
+                <ui:VisualElement class="sidebar-top">
+                    <ui:VisualElement class="sidebar-brand sidebar-section">
+                        <ui:Label text="FPS TUTOR" class="sidebar-logo-title" />
+                        <ui:Label text="MAIN MENU" class="sidebar-logo-sub" />
                     </ui:VisualElement>
-                    <ui:VisualElement class="player-meta">
-                        <ui:Label name="sidebar-player-name" text="OPERATOR" class="player-name" />
-                        <ui:Label text="ONLINE" class="player-status" />
-                    </ui:VisualElement>
-                </ui:VisualElement>
 
-                <ui:VisualElement class="currency-strip">
-                    <ui:VisualElement class="currency-head">
-                        <ui:VisualElement name="icon-currency" class="menu-icon currency-icon" />
-                        <ui:Label text="CREDITS" class="currency-label" />
-                    </ui:VisualElement>
-                    <ui:Label name="sidebar-coins" text="0" class="currency-amount" />
-                </ui:VisualElement>
+                    <ui:VisualElement class="sidebar-section sidebar-module-stack">
+                        <ui:VisualElement class="sidebar-module sidebar-player">
+                            <ui:VisualElement class="player-avatar">
+                                <ui:Label name="player-avatar-letter" text="O" class="player-avatar-letter" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="player-meta">
+                                <ui:Label name="sidebar-player-name" text="OPERATOR" class="player-name" />
+                                <ui:Label text="ONLINE" class="player-status" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
 
-                <ui:VisualElement class="sidebar-nav">
-                    <ui:Button name="nav-play" class="nav-item active">
-                        <ui:Label text="01" class="nav-index" />
-                        <ui:VisualElement name="icon-nav-play" class="menu-icon nav-icon" />
-                        <ui:Label text="Play" class="nav-item-label" />
-                    </ui:Button>
-                    <ui:Button name="nav-shop" class="nav-item">
-                        <ui:Label text="02" class="nav-index" />
-                        <ui:VisualElement name="icon-nav-shop" class="menu-icon nav-icon" />
-                        <ui:Label text="Store" class="nav-item-label" />
-                    </ui:Button>
-                    <ui:Button name="nav-inventory" class="nav-item">
-                        <ui:Label text="03" class="nav-index" />
-                        <ui:VisualElement name="icon-nav-inventory" class="menu-icon nav-icon" />
-                        <ui:Label text="Loadout" class="nav-item-label" />
-                    </ui:Button>
-                    <ui:Button name="nav-account" class="nav-item">
-                        <ui:Label text="04" class="nav-index" />
-                        <ui:VisualElement name="icon-nav-account" class="menu-icon nav-icon" />
-                        <ui:Label text="Profile" class="nav-item-label" />
-                    </ui:Button>
-                    <ui:Button name="nav-settings" class="nav-item">
-                        <ui:Label text="05" class="nav-index" />
-                        <ui:VisualElement name="icon-nav-settings" class="menu-icon nav-icon" />
-                        <ui:Label text="Settings" class="nav-item-label" />
-                    </ui:Button>
+                        <ui:VisualElement class="sidebar-module currency-strip">
+                            <ui:VisualElement class="currency-row">
+                                <ui:VisualElement name="icon-currency" class="menu-icon currency-icon" />
+                                <ui:VisualElement class="currency-copy">
+                                    <ui:Label text="CREDITS" class="currency-label" />
+                                    <ui:Label name="sidebar-coins" text="0" class="currency-amount" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="sidebar-section sidebar-nav-shell">
+                        <ui:VisualElement class="sidebar-nav">
+                            <ui:Button name="nav-play" class="nav-item active">
+                                <ui:Label text="01" class="nav-index" />
+                                <ui:VisualElement name="icon-nav-play" class="menu-icon nav-icon" />
+                                <ui:Label text="Play" class="nav-item-label" />
+                            </ui:Button>
+                            <ui:Button name="nav-shop" class="nav-item">
+                                <ui:Label text="02" class="nav-index" />
+                                <ui:VisualElement name="icon-nav-shop" class="menu-icon nav-icon" />
+                                <ui:Label text="Store" class="nav-item-label" />
+                            </ui:Button>
+                            <ui:Button name="nav-inventory" class="nav-item">
+                                <ui:Label text="03" class="nav-index" />
+                                <ui:VisualElement name="icon-nav-inventory" class="menu-icon nav-icon" />
+                                <ui:Label text="Loadout" class="nav-item-label" />
+                            </ui:Button>
+                            <ui:Button name="nav-account" class="nav-item">
+                                <ui:Label text="04" class="nav-index" />
+                                <ui:VisualElement name="icon-nav-account" class="menu-icon nav-icon" />
+                                <ui:Label text="Profile" class="nav-item-label" />
+                            </ui:Button>
+                            <ui:Button name="nav-settings" class="nav-item">
+                                <ui:Label text="05" class="nav-index" />
+                                <ui:VisualElement name="icon-nav-settings" class="menu-icon nav-icon" />
+                                <ui:Label text="Settings" class="nav-item-label" />
+                            </ui:Button>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
                 </ui:VisualElement>
 
                 <ui:VisualElement class="sidebar-footer">
