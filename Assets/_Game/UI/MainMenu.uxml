@@ -4,30 +4,45 @@
          noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
          editor-extension-mode="False">
     <ui:Style src="project://database/Assets/_Game/UI/MenuStyles.uss" />
+    <ui:Style src="project://database/Assets/_Game/UI/MainMenuStyles.uss" />
 
-    <!-- ========================================== -->
-    <!-- LOGIN SCREEN                               -->
-    <!-- ========================================== -->
-    <ui:VisualElement name="login-screen" class="app-root auth-root shell-layer">
-        <!-- Auth Container (Centered Box) -->
+    <ui:VisualElement name="login-screen" class="app-root auth-root menu-auth-shell shell-layer">
+        <ui:VisualElement class="menu-atmosphere" picking-mode="Ignore">
+            <ui:VisualElement class="menu-band menu-band-left" />
+            <ui:VisualElement class="menu-band menu-band-top" />
+            <ui:VisualElement class="menu-band menu-band-bottom" />
+            <ui:VisualElement class="menu-grid-shell" />
+        </ui:VisualElement>
+
         <ui:VisualElement class="auth-container">
-            <!-- Left Branding Column -->
             <ui:VisualElement class="brand-rail">
-                <ui:VisualElement>
+                <ui:VisualElement class="rail-copy-block">
                     <ui:Label text="FPS TUTOR" class="rail-eyebrow" />
                     <ui:Label text="LOGIN" class="brand-title" />
-                    <ui:Label text="Sign in to access your operator profile, manage loadouts, and deploy to the live range." class="auth-rail-body" />
+                    <ui:Label text="Authenticate the operator profile, sync your progression, and route into the command deck." class="auth-rail-body" />
                     <ui:VisualElement class="rail-rule" />
                 </ui:VisualElement>
+
+                <ui:VisualElement class="rail-detail-stack">
+                    <ui:VisualElement class="rail-detail-card">
+                        <ui:Label text="CHANNEL" class="rail-detail-label" />
+                        <ui:Label text="TACTICAL NET" class="rail-detail-value" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="rail-detail-card">
+                        <ui:Label text="STATUS" class="rail-detail-label" />
+                        <ui:Label text="SECURE LINK READY" class="rail-detail-value" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
                 <ui:Label name="lbl-version" text="v 1.0.0" class="version-text" />
             </ui:VisualElement>
 
-            <!-- Right Form Column -->
             <ui:VisualElement class="auth-stage">
                 <ui:VisualElement name="login-panel" class="auth-panel">
                     <ui:Label text="Operator Access" class="panel-kicker" />
                     <ui:Label text="Sign In" class="auth-title" />
-                    
+                    <ui:Label text="Continue to the tactical hub and bring your current account state online." class="auth-panel-copy" />
+
                     <ui:VisualElement class="form-container">
                         <ui:VisualElement class="field-group">
                             <ui:Label text="Username" class="field-label" />
@@ -54,18 +69,34 @@
         </ui:VisualElement>
     </ui:VisualElement>
 
-    <!-- ========================================== -->
-    <!-- REGISTER SCREEN                            -->
-    <!-- ========================================== -->
-    <ui:VisualElement name="register-screen" class="app-root auth-root shell-layer hidden">
+    <ui:VisualElement name="register-screen" class="app-root auth-root menu-auth-shell shell-layer hidden">
+        <ui:VisualElement class="menu-atmosphere" picking-mode="Ignore">
+            <ui:VisualElement class="menu-band menu-band-left" />
+            <ui:VisualElement class="menu-band menu-band-top" />
+            <ui:VisualElement class="menu-band menu-band-bottom" />
+            <ui:VisualElement class="menu-grid-shell" />
+        </ui:VisualElement>
+
         <ui:VisualElement class="auth-container">
             <ui:VisualElement class="brand-rail">
-                <ui:VisualElement>
+                <ui:VisualElement class="rail-copy-block">
                     <ui:Label text="FPS TUTOR" class="rail-eyebrow" />
                     <ui:Label text="REGISTER" class="brand-title" />
-                    <ui:Label text="Create a new operator profile to track progression and acquire new equipment." class="auth-rail-body" />
+                    <ui:Label text="Create a fresh operator profile, store new credentials, and provision a live identity for the range." class="auth-rail-body" />
                     <ui:VisualElement class="rail-rule" />
                 </ui:VisualElement>
+
+                <ui:VisualElement class="rail-detail-stack">
+                    <ui:VisualElement class="rail-detail-card">
+                        <ui:Label text="PROFILE" class="rail-detail-label" />
+                        <ui:Label text="NEW OPERATOR" class="rail-detail-value" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="rail-detail-card">
+                        <ui:Label text="SYNC" class="rail-detail-label" />
+                        <ui:Label text="ACCOUNT CREATION" class="rail-detail-value" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
                 <ui:Label text="v 1.0.0" class="version-text" />
             </ui:VisualElement>
 
@@ -73,6 +104,7 @@
                 <ui:VisualElement name="register-panel" class="auth-panel">
                     <ui:Label text="New Operator" class="panel-kicker" />
                     <ui:Label text="Create Account" class="auth-title" />
+                    <ui:Label text="Set a display identity first, then commit the account into the deployment network." class="auth-panel-copy" />
 
                     <ui:VisualElement class="form-container">
                         <ui:VisualElement class="field-group">
@@ -105,17 +137,19 @@
         </ui:VisualElement>
     </ui:VisualElement>
 
-    <!-- ========================================== -->
-    <!-- MAIN SHELL (IN-GAME MENU)                  -->
-    <!-- ========================================== -->
-    <ui:VisualElement name="main-shell" class="app-root shell-layer hidden">
+    <ui:VisualElement name="main-shell" class="app-root menu-root shell-layer hidden">
+        <ui:VisualElement class="menu-atmosphere" picking-mode="Ignore">
+            <ui:VisualElement class="menu-band menu-band-left" />
+            <ui:VisualElement class="menu-band menu-band-top" />
+            <ui:VisualElement class="menu-band menu-band-bottom" />
+            <ui:VisualElement class="menu-grid-shell" />
+        </ui:VisualElement>
+
         <ui:VisualElement class="main-layout">
-            
-            <!-- SIDEBAR (Fixed Width) -->
             <ui:VisualElement class="sidebar">
                 <ui:VisualElement class="sidebar-header">
                     <ui:Label text="FPS TUTOR" class="sidebar-logo-title" />
-                    <ui:Label text="MAIN MENU" class="sidebar-logo-sub" />
+                    <ui:Label text="COMMAND DECK" class="sidebar-logo-sub" />
                 </ui:VisualElement>
 
                 <ui:VisualElement class="sidebar-player">
@@ -124,7 +158,7 @@
                     </ui:VisualElement>
                     <ui:VisualElement class="player-meta">
                         <ui:Label name="sidebar-player-name" text="OPERATOR" class="player-name" />
-                        <ui:Label text="ONLINE" class="player-status" />
+                        <ui:Label text="TACTICAL LINK ACTIVE" class="player-status" />
                     </ui:VisualElement>
                 </ui:VisualElement>
 
@@ -133,11 +167,10 @@
                     <ui:Label name="sidebar-coins" text="0" class="currency-amount" />
                 </ui:VisualElement>
 
-                <!-- Navigation List -->
                 <ui:VisualElement class="sidebar-nav">
                     <ui:Button name="nav-play" class="nav-item active">
                         <ui:Label text="01" class="nav-index" />
-                        <ui:Label text="Play" class="nav-item-label" />
+                        <ui:Label text="Deploy" class="nav-item-label" />
                     </ui:Button>
                     <ui:Button name="nav-shop" class="nav-item">
                         <ui:Label text="02" class="nav-index" />
@@ -166,251 +199,270 @@
                 </ui:VisualElement>
             </ui:VisualElement>
 
-            <!-- CONTENT AREA (Flex Grow) -->
             <ui:VisualElement class="content-area">
-                
-                <!-- Top Bar -->
-                <ui:VisualElement name="top-overlay" class="top-bar">
-                    <ui:VisualElement class="top-bar-left">
-                        <ui:Label name="lbl-currency" text="CONNECTED" class="top-bar-status" />
-                        <ui:Label text="Server region: Auto" class="top-bar-desc" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="top-bar-right">
-                        <ui:Button name="btn-social-discord" text="Discord" class="btn-social" />
-                        <ui:Button name="btn-social-twitter" text="X" class="btn-social" />
-                        <ui:Button name="btn-social-web" text="Web" class="btn-social" />
-                    </ui:VisualElement>
-                </ui:VisualElement>
-
-                <!-- Screens Container -->
-                <ui:VisualElement class="screens-container">
-                    
-                    <!-- PLAY SCREEN -->
-                    <ui:VisualElement name="play-screen" class="screen screen-layer">
-                        <ui:VisualElement class="screen-header">
-                            <ui:VisualElement>
-                                <ui:Label text="Play" class="screen-title" />
-                                <ui:Label text="Select a game mode." class="screen-subtitle" />
-                            </ui:VisualElement>
-                            <ui:Label text="DEPLOY" class="screen-badge" />
+                <ui:VisualElement class="content-frame">
+                    <ui:VisualElement name="top-overlay" class="top-bar">
+                        <ui:VisualElement class="top-bar-left">
+                            <ui:Label name="lbl-currency" text="TACTICAL CHANNEL" class="top-bar-status" />
+                            <ui:Label text="Profile, store, and deployment systems are online." class="top-bar-desc" />
                         </ui:VisualElement>
-
-                        <ui:VisualElement class="screen-content-row">
-                            <ui:VisualElement class="card hero-card flex-grow">
-                                <ui:Label text="Featured Mode" class="kicker" />
-                                <ui:Label text="Quick Match" class="card-title-large" />
-                                <ui:Label text="Jump straight into action." class="card-desc" />
-                                
-                                <ui:VisualElement class="card-actions-bottom">
-                                    <ui:Button name="btn-mode-campaign" text="Find Match" class="btn-primary" />
-                                    <ui:Button name="btn-mode-survival" text="Practice Range" class="btn-secondary" />
-                                </ui:VisualElement>
-                            </ui:VisualElement>
-
-                            <ui:VisualElement class="card side-card">
-                                <ui:Label text="Combat Record" class="card-title" />
-                                <ui:VisualElement class="stat-row">
-                                    <ui:Label text="Win Rate" class="stat-label" />
-                                    <ui:Label text="55%" class="stat-value" />
-                                </ui:VisualElement>
-                                <ui:VisualElement class="stat-row">
-                                    <ui:Label text="K/D Ratio" class="stat-label" />
-                                    <ui:Label text="1.2" class="stat-value" />
-                                </ui:VisualElement>
-                            </ui:VisualElement>
+                        <ui:VisualElement class="top-bar-right">
+                            <ui:Button name="btn-social-discord" text="Discord" class="btn-social" />
+                            <ui:Button name="btn-social-twitter" text="X" class="btn-social" />
+                            <ui:Button name="btn-social-web" text="Web" class="btn-social" />
                         </ui:VisualElement>
                     </ui:VisualElement>
 
-                    <!-- SHOP SCREEN -->
-                    <ui:VisualElement name="shop-screen" class="screen screen-layer hidden">
-                        <ui:VisualElement class="screen-header">
-                            <ui:VisualElement>
-                                <ui:Label text="Store" class="screen-title" />
-                                <ui:Label name="lbl-shop-tooltip" text="Acquire new equipment." class="screen-subtitle" />
-                            </ui:VisualElement>
-                            <ui:Label name="lbl-shop-coins" text="0 CREDITS" class="screen-badge" />
-                        </ui:VisualElement>
-
-                        <ui:ScrollView class="scroll-container">
-                            <ui:VisualElement class="card banner-card">
-                                <ui:Label text="Featured" class="kicker" />
-                                <ui:Label text="Weapon Supply" class="card-title-large" />
-                                <ui:Label text="Expand your arsenal." class="card-desc" />
-                            </ui:VisualElement>
-
-                            <ui:VisualElement class="grid-layout">
-                                <ui:VisualElement name="shop-item-0" class="store-item tier-standard">
-                                    <ui:VisualElement class="item-icon-box"><ui:Label text="AR" class="item-icon-text" /></ui:VisualElement>
-                                    <ui:Label text="Standard" class="item-tier-label" />
-                                    <ui:Label name="shop-item-0-name" text="Assault Rifle" class="item-name" />
-                                    <ui:Label name="shop-item-0-price" text="50 CR" class="item-price" />
-                                    <ui:Button name="btn-buy-item-0" text="Purchase" class="btn-buy" />
+                    <ui:VisualElement class="screens-container">
+                        <ui:VisualElement name="play-screen" class="screen screen-layer">
+                            <ui:VisualElement class="screen-header">
+                                <ui:VisualElement>
+                                    <ui:Label text="Deploy" class="screen-title" />
+                                    <ui:Label text="Route through the lobby, verify readiness, and move into the live range." class="screen-subtitle" />
                                 </ui:VisualElement>
-
-                                <ui:VisualElement name="shop-item-1" class="store-item tier-rare">
-                                    <ui:VisualElement class="item-icon-box"><ui:Label text="SMG" class="item-icon-text" /></ui:VisualElement>
-                                    <ui:Label text="Rare" class="item-tier-label" />
-                                    <ui:Label name="shop-item-1-name" text="Submachine Gun" class="item-name" />
-                                    <ui:Label name="shop-item-1-price" text="100 CR" class="item-price" />
-                                    <ui:Button name="btn-buy-item-1" text="Purchase" class="btn-buy" />
-                                </ui:VisualElement>
-
-                                <ui:VisualElement name="shop-item-2" class="store-item tier-epic">
-                                    <ui:VisualElement class="item-icon-box"><ui:Label text="SR" class="item-icon-text" /></ui:VisualElement>
-                                    <ui:Label text="Epic" class="item-tier-label" />
-                                    <ui:Label name="shop-item-2-name" text="Sniper Rifle" class="item-name" />
-                                    <ui:Label name="shop-item-2-price" text="200 CR" class="item-price" />
-                                    <ui:Button name="btn-buy-item-2" text="Purchase" class="btn-buy" />
-                                </ui:VisualElement>
-                            </ui:VisualElement>
-                        </ui:ScrollView>
-                    </ui:VisualElement>
-
-                    <!-- INVENTORY SCREEN -->
-                    <ui:VisualElement name="inventory-screen" class="screen screen-layer hidden">
-                        <ui:VisualElement class="screen-header">
-                            <ui:VisualElement>
-                                <ui:Label text="Loadout" class="screen-title" />
-                                <ui:Label name="lbl-inventory-tooltip" text="Manage equipped gear." class="screen-subtitle" />
-                            </ui:VisualElement>
-                            <ui:Label text="EQUIPPED" class="screen-badge" />
-                        </ui:VisualElement>
-
-                        <ui:ScrollView class="scroll-container">
-                            <ui:VisualElement name="inventory-grid" class="card loadout-container">
-                                <ui:Label text="Active Loadout" class="card-title" />
-                                <ui:Label name="lbl-inventory-empty" text="No items equipped" class="empty-message" />
-                            </ui:VisualElement>
-                        </ui:ScrollView>
-                    </ui:VisualElement>
-
-                    <!-- ACCOUNT SCREEN -->
-                    <ui:VisualElement name="account-screen" class="screen screen-layer hidden">
-                        <ui:VisualElement class="screen-header">
-                            <ui:VisualElement>
-                                <ui:Label text="Profile" class="screen-title" />
-                                <ui:Label text="Operator Identity." class="screen-subtitle" />
-                            </ui:VisualElement>
-                            <ui:Label text="IDENTITY" class="screen-badge" />
-                        </ui:VisualElement>
-
-                        <ui:VisualElement class="screen-content-row">
-                            <ui:VisualElement class="card profile-card">
-                                <ui:VisualElement class="avatar-large">
-                                    <ui:Label name="account-avatar-letter" text="O" class="avatar-letter-large" />
-                                </ui:VisualElement>
-                                <ui:Label name="lbl-account-name" text="USERNAME" class="profile-username" />
-                                <ui:Label name="lbl-account-id" text="STATUS: READY" class="profile-status" />
-                                <ui:Button name="btn-logout" text="Log Out" class="btn-danger logout-btn" />
-                            </ui:VisualElement>
-                        </ui:VisualElement>
-                    </ui:VisualElement>
-
-                    <!-- SETTINGS SCREEN -->
-                    <ui:VisualElement name="settings-screen" class="screen screen-layer hidden">
-                        <ui:VisualElement class="screen-header">
-                            <ui:VisualElement>
-                                <ui:Label text="Settings" class="screen-title" />
-                                <ui:Label text="Configure client." class="screen-subtitle" />
-                            </ui:VisualElement>
-                            <ui:Label text="CONFIG" class="screen-badge" />
-                        </ui:VisualElement>
-
-                        <ui:VisualElement class="settings-layout">
-                            <!-- Settings Tabs -->
-                            <ui:VisualElement class="settings-nav">
-                                <ui:Button name="tab-game" text="Game" class="tab-btn active" />
-                                <ui:Button name="tab-video" text="Video" class="tab-btn" />
-                                <ui:Button name="tab-controls" text="Controls" class="tab-btn" />
-                                <ui:Button name="tab-keybindings" text="Keybinds" class="tab-btn" />
+                                <ui:Label text="LIVE CHANNEL" class="screen-badge" />
                             </ui:VisualElement>
 
-                            <!-- Settings Content -->
-                            <ui:VisualElement class="settings-panels-container">
-                                
-                                <!-- Game Panel -->
-                                <ui:VisualElement name="panel-game" class="tab-panel">
-                                    <ui:VisualElement class="card">
-                                        <ui:Label text="Gameplay" class="card-title" />
-                                        <ui:VisualElement class="setting-row">
-                                            <ui:Toggle name="toggle-hud" label="Show HUD" class="toggle-field" />
+                            <ui:VisualElement class="play-layout">
+                                <ui:VisualElement class="card hero-card play-hero-card">
+                                    <ui:VisualElement>
+                                        <ui:Label text="Primary Operation" class="kicker" />
+                                        <ui:Label text="Open Lobby" class="card-title-large play-hero-title" />
+                                        <ui:Label text="Review active rooms, form a squad, and commit to deployment with your current loadout." class="card-desc play-hero-desc" />
+                                    </ui:VisualElement>
+
+                                    <ui:VisualElement class="play-chip-row">
+                                        <ui:Label text="MATCHMAKING" class="play-chip" />
+                                        <ui:Label text="ROOM BROWSER" class="play-chip" />
+                                        <ui:Label text="SQUAD READY" class="play-chip" />
+                                    </ui:VisualElement>
+
+                                    <ui:VisualElement class="play-metric-row">
+                                        <ui:VisualElement class="play-metric">
+                                            <ui:Label text="Access" class="stat-label" />
+                                            <ui:Label text="OPEN" class="stat-value" />
                                         </ui:VisualElement>
-                                        <ui:VisualElement class="setting-row">
-                                            <ui:Toggle name="toggle-tooltips" label="Show Tooltips" class="toggle-field" />
+                                        <ui:VisualElement class="play-metric">
+                                            <ui:Label text="Store Sync" class="stat-label" />
+                                            <ui:Label text="LIVE" class="stat-value" />
+                                        </ui:VisualElement>
+                                        <ui:VisualElement class="play-metric">
+                                            <ui:Label text="Profile" class="stat-label" />
+                                            <ui:Label text="READY" class="stat-value" />
                                         </ui:VisualElement>
                                     </ui:VisualElement>
-                                    <ui:VisualElement class="card">
-                                        <ui:Label text="Audio" class="card-title" />
-                                        <ui:VisualElement class="setting-row">
-                                            <ui:Label text="Master Volume" class="setting-label" />
-                                            <ui:Slider name="slider-music" low-value="0" high-value="1" value="0.7" fill="true" class="slider-field" />
-                                        </ui:VisualElement>
+
+                                    <ui:VisualElement class="card-actions-bottom">
+                                        <ui:Button name="btn-mode-campaign" text="Open Lobby" class="btn-primary" />
+                                        <ui:Button name="btn-mode-survival" text="Practice Range" class="btn-secondary" />
                                     </ui:VisualElement>
                                 </ui:VisualElement>
 
-                                <!-- Video Panel -->
-                                <ui:VisualElement name="panel-video" class="tab-panel hidden">
-                                    <ui:VisualElement class="card">
-                                        <ui:Label text="Display" class="card-title" />
-                                        <ui:VisualElement class="setting-row">
-                                            <ui:Toggle name="toggle-fullscreen" label="Full Screen" class="toggle-field" />
+                                <ui:VisualElement class="play-side-stack">
+                                    <ui:VisualElement class="card side-card play-brief-card">
+                                        <ui:Label text="Command Brief" class="card-title" />
+                                        <ui:Label text="Use the lobby to choose a room, confirm the map, and deploy only when your squad is lined up." class="card-desc" />
+                                        <ui:VisualElement class="stat-row">
+                                            <ui:Label text="Route" class="stat-label" />
+                                            <ui:Label text="Menu → Lobby" class="stat-value" />
                                         </ui:VisualElement>
-                                        <ui:VisualElement class="setting-row">
-                                            <ui:Toggle name="toggle-vsync" label="VSync" class="toggle-field" />
+                                        <ui:VisualElement class="stat-row">
+                                            <ui:Label text="Primary Mode" class="stat-label" />
+                                            <ui:Label text="Match Rooms" class="stat-value" />
                                         </ui:VisualElement>
-                                    </ui:VisualElement>
-                                </ui:VisualElement>
-
-                                <!-- Controls Panel -->
-                                <ui:VisualElement name="panel-controls" class="tab-panel hidden">
-                                    <ui:VisualElement class="card">
-                                        <ui:Label text="Mouse Input" class="card-title" />
-                                        <ui:VisualElement class="setting-row">
-                                            <ui:Toggle name="toggle-invert" label="Invert Y Axis" class="toggle-field" />
-                                        </ui:VisualElement>
-                                        <ui:VisualElement class="setting-row">
-                                            <ui:Label text="Sensitivity X" class="setting-label" />
-                                            <ui:Slider name="slider-sens-x" low-value="0.1" high-value="10" value="3" fill="true" class="slider-field" />
-                                        </ui:VisualElement>
-                                        <ui:VisualElement class="setting-row">
-                                            <ui:Label text="Sensitivity Y" class="setting-label" />
-                                            <ui:Slider name="slider-sens-y" low-value="0.1" high-value="10" value="3" fill="true" class="slider-field" />
+                                        <ui:VisualElement class="stat-row">
+                                            <ui:Label text="Support Mode" class="stat-label" />
+                                            <ui:Label text="Practice" class="stat-value" />
                                         </ui:VisualElement>
                                     </ui:VisualElement>
+
+                                    <ui:VisualElement class="card play-note-card">
+                                        <ui:Label text="Quick Route" class="card-title" />
+                                        <ui:Label text="Store, loadout, profile, and settings remain one move away from the rail without crowding the stage." class="card-desc" />
+                                    </ui:VisualElement>
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+
+                        <ui:VisualElement name="shop-screen" class="screen screen-layer hidden">
+                            <ui:VisualElement class="screen-header">
+                                <ui:VisualElement>
+                                    <ui:Label text="Store" class="screen-title" />
+                                    <ui:Label name="lbl-shop-tooltip" text="Acquire new equipment and refresh the active kit." class="screen-subtitle" />
+                                </ui:VisualElement>
+                                <ui:Label name="lbl-shop-coins" text="0 CREDITS" class="screen-badge" />
+                            </ui:VisualElement>
+
+                            <ui:ScrollView class="scroll-container">
+                                <ui:VisualElement class="card banner-card">
+                                    <ui:Label text="Featured Supply" class="kicker" />
+                                    <ui:Label text="Weapon Cache" class="card-title-large" />
+                                    <ui:Label text="Pick a skin set and apply a sharper field presence before deployment." class="card-desc" />
                                 </ui:VisualElement>
 
-                                <!-- Keybinds Panel -->
-                                <ui:VisualElement name="panel-keybindings" class="tab-panel hidden">
-                                    <ui:VisualElement class="card">
-                                        <ui:VisualElement class="sub-nav">
-                                            <ui:Button name="tab-kb-movement" text="Movement" class="sub-tab-btn active" />
-                                            <ui:Button name="tab-kb-combat" text="Combat" class="sub-tab-btn" />
-                                            <ui:Button name="tab-kb-general" text="General" class="sub-tab-btn" />
-                                        </ui:VisualElement>
+                                <ui:VisualElement class="grid-layout">
+                                    <ui:VisualElement name="shop-item-0" class="store-item tier-standard">
+                                        <ui:VisualElement class="item-icon-box"><ui:Label text="AR" class="item-icon-text" /></ui:VisualElement>
+                                        <ui:Label text="Standard" class="item-tier-label" />
+                                        <ui:Label name="shop-item-0-name" text="Assault Rifle" class="item-name" />
+                                        <ui:Label name="shop-item-0-price" text="50 CR" class="item-price" />
+                                        <ui:Button name="btn-buy-item-0" text="Purchase" class="btn-buy" />
+                                    </ui:VisualElement>
 
-                                        <ui:VisualElement class="kb-container">
-                                            <ui:VisualElement name="panel-kb-movement" class="kb-panel">
-                                                <ui:VisualElement class="kb-row"><ui:Label text="Forward" class="kb-action" /><ui:Label text="W" class="kb-key" /></ui:VisualElement>
-                                                <ui:VisualElement class="kb-row"><ui:Label text="Backward" class="kb-action" /><ui:Label text="S" class="kb-key" /></ui:VisualElement>
-                                                <ui:VisualElement class="kb-row"><ui:Label text="Left" class="kb-action" /><ui:Label text="A" class="kb-key" /></ui:VisualElement>
-                                                <ui:VisualElement class="kb-row"><ui:Label text="Right" class="kb-action" /><ui:Label text="D" class="kb-key" /></ui:VisualElement>
-                                                <ui:VisualElement class="kb-row"><ui:Label text="Jump" class="kb-action" /><ui:Label text="SPACE" class="kb-key" /></ui:VisualElement>
+                                    <ui:VisualElement name="shop-item-1" class="store-item tier-rare">
+                                        <ui:VisualElement class="item-icon-box"><ui:Label text="SMG" class="item-icon-text" /></ui:VisualElement>
+                                        <ui:Label text="Rare" class="item-tier-label" />
+                                        <ui:Label name="shop-item-1-name" text="Submachine Gun" class="item-name" />
+                                        <ui:Label name="shop-item-1-price" text="100 CR" class="item-price" />
+                                        <ui:Button name="btn-buy-item-1" text="Purchase" class="btn-buy" />
+                                    </ui:VisualElement>
+
+                                    <ui:VisualElement name="shop-item-2" class="store-item tier-epic">
+                                        <ui:VisualElement class="item-icon-box"><ui:Label text="SR" class="item-icon-text" /></ui:VisualElement>
+                                        <ui:Label text="Epic" class="item-tier-label" />
+                                        <ui:Label name="shop-item-2-name" text="Sniper Rifle" class="item-name" />
+                                        <ui:Label name="shop-item-2-price" text="200 CR" class="item-price" />
+                                        <ui:Button name="btn-buy-item-2" text="Purchase" class="btn-buy" />
+                                    </ui:VisualElement>
+                                </ui:VisualElement>
+                            </ui:ScrollView>
+                        </ui:VisualElement>
+
+                        <ui:VisualElement name="inventory-screen" class="screen screen-layer hidden">
+                            <ui:VisualElement class="screen-header">
+                                <ui:VisualElement>
+                                    <ui:Label text="Loadout" class="screen-title" />
+                                    <ui:Label name="lbl-inventory-tooltip" text="Manage the gear currently staged for deployment." class="screen-subtitle" />
+                                </ui:VisualElement>
+                                <ui:Label text="EQUIPPED" class="screen-badge" />
+                            </ui:VisualElement>
+
+                            <ui:ScrollView class="scroll-container">
+                                <ui:VisualElement name="inventory-grid" class="card loadout-container">
+                                    <ui:Label text="Active Loadout" class="card-title" />
+                                    <ui:Label name="lbl-inventory-empty" text="No items equipped yet." class="empty-message" />
+                                </ui:VisualElement>
+                            </ui:ScrollView>
+                        </ui:VisualElement>
+
+                        <ui:VisualElement name="account-screen" class="screen screen-layer hidden">
+                            <ui:VisualElement class="screen-header">
+                                <ui:VisualElement>
+                                    <ui:Label text="Profile" class="screen-title" />
+                                    <ui:Label text="Review the active operator identity before deployment." class="screen-subtitle" />
+                                </ui:VisualElement>
+                                <ui:Label text="IDENTITY" class="screen-badge" />
+                            </ui:VisualElement>
+
+                            <ui:VisualElement class="screen-content-row account-layout">
+                                <ui:VisualElement class="card profile-card">
+                                    <ui:VisualElement class="avatar-large">
+                                        <ui:Label name="account-avatar-letter" text="O" class="avatar-letter-large" />
+                                    </ui:VisualElement>
+                                    <ui:Label name="lbl-account-name" text="USERNAME" class="profile-username" />
+                                    <ui:Label name="lbl-account-id" text="STATUS: READY" class="profile-status" />
+                                    <ui:Button name="btn-logout" text="Log Out" class="btn-danger logout-btn" />
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+
+                        <ui:VisualElement name="settings-screen" class="screen screen-layer hidden">
+                            <ui:VisualElement class="screen-header">
+                                <ui:VisualElement>
+                                    <ui:Label text="Settings" class="screen-title" />
+                                    <ui:Label text="Tune the client, input, and render setup for your station." class="screen-subtitle" />
+                                </ui:VisualElement>
+                                <ui:Label text="CONFIG" class="screen-badge" />
+                            </ui:VisualElement>
+
+                            <ui:VisualElement class="settings-layout">
+                                <ui:VisualElement class="settings-nav">
+                                    <ui:Button name="tab-game" text="Game" class="tab-btn active" />
+                                    <ui:Button name="tab-video" text="Video" class="tab-btn" />
+                                    <ui:Button name="tab-controls" text="Controls" class="tab-btn" />
+                                    <ui:Button name="tab-keybindings" text="Keybinds" class="tab-btn" />
+                                </ui:VisualElement>
+
+                                <ui:VisualElement class="settings-panels-container">
+                                    <ui:VisualElement name="panel-game" class="tab-panel">
+                                        <ui:VisualElement class="card">
+                                            <ui:Label text="Gameplay" class="card-title" />
+                                            <ui:VisualElement class="setting-row">
+                                                <ui:Toggle name="toggle-hud" label="Show HUD" class="toggle-field" />
                                             </ui:VisualElement>
-
-                                            <ui:VisualElement name="panel-kb-combat" class="kb-panel hidden">
-                                                <ui:VisualElement class="kb-row"><ui:Label text="Fire" class="kb-action" /><ui:Label text="LMB" class="kb-key" /></ui:VisualElement>
-                                                <ui:VisualElement class="kb-row"><ui:Label text="Aim" class="kb-action" /><ui:Label text="RMB" class="kb-key" /></ui:VisualElement>
-                                                <ui:VisualElement class="kb-row"><ui:Label text="Reload" class="kb-action" /><ui:Label text="R" class="kb-key" /></ui:VisualElement>
+                                            <ui:VisualElement class="setting-row">
+                                                <ui:Toggle name="toggle-tooltips" label="Show Tooltips" class="toggle-field" />
                                             </ui:VisualElement>
-
-                                            <ui:VisualElement name="panel-kb-general" class="kb-panel hidden">
-                                                <ui:VisualElement class="kb-row"><ui:Label text="Scoreboard" class="kb-action" /><ui:Label text="TAB" class="kb-key" /></ui:VisualElement>
-                                                <ui:VisualElement class="kb-row"><ui:Label text="Pause" class="kb-action" /><ui:Label text="ESC" class="kb-key" /></ui:VisualElement>
+                                        </ui:VisualElement>
+                                        <ui:VisualElement class="card">
+                                            <ui:Label text="Audio" class="card-title" />
+                                            <ui:VisualElement class="setting-row">
+                                                <ui:Label text="Master Volume" class="setting-label" />
+                                                <ui:Slider name="slider-music" low-value="0" high-value="1" value="0.7" fill="true" class="slider-field" />
                                             </ui:VisualElement>
                                         </ui:VisualElement>
                                     </ui:VisualElement>
-                                </ui:VisualElement>
 
+                                    <ui:VisualElement name="panel-video" class="tab-panel hidden">
+                                        <ui:VisualElement class="card">
+                                            <ui:Label text="Display" class="card-title" />
+                                            <ui:VisualElement class="setting-row">
+                                                <ui:Toggle name="toggle-fullscreen" label="Full Screen" class="toggle-field" />
+                                            </ui:VisualElement>
+                                            <ui:VisualElement class="setting-row">
+                                                <ui:Toggle name="toggle-vsync" label="VSync" class="toggle-field" />
+                                            </ui:VisualElement>
+                                        </ui:VisualElement>
+                                    </ui:VisualElement>
+
+                                    <ui:VisualElement name="panel-controls" class="tab-panel hidden">
+                                        <ui:VisualElement class="card">
+                                            <ui:Label text="Mouse Input" class="card-title" />
+                                            <ui:VisualElement class="setting-row">
+                                                <ui:Toggle name="toggle-invert" label="Invert Y Axis" class="toggle-field" />
+                                            </ui:VisualElement>
+                                            <ui:VisualElement class="setting-row">
+                                                <ui:Label text="Sensitivity X" class="setting-label" />
+                                                <ui:Slider name="slider-sens-x" low-value="0.1" high-value="10" value="3" fill="true" class="slider-field" />
+                                            </ui:VisualElement>
+                                            <ui:VisualElement class="setting-row">
+                                                <ui:Label text="Sensitivity Y" class="setting-label" />
+                                                <ui:Slider name="slider-sens-y" low-value="0.1" high-value="10" value="3" fill="true" class="slider-field" />
+                                            </ui:VisualElement>
+                                        </ui:VisualElement>
+                                    </ui:VisualElement>
+
+                                    <ui:VisualElement name="panel-keybindings" class="tab-panel hidden">
+                                        <ui:VisualElement class="card">
+                                            <ui:VisualElement class="sub-nav">
+                                                <ui:Button name="tab-kb-movement" text="Movement" class="sub-tab-btn active" />
+                                                <ui:Button name="tab-kb-combat" text="Combat" class="sub-tab-btn" />
+                                                <ui:Button name="tab-kb-general" text="General" class="sub-tab-btn" />
+                                            </ui:VisualElement>
+
+                                            <ui:VisualElement class="kb-container">
+                                                <ui:VisualElement name="panel-kb-movement" class="kb-panel">
+                                                    <ui:VisualElement class="kb-row"><ui:Label text="Forward" class="kb-action" /><ui:Label text="W" class="kb-key" /></ui:VisualElement>
+                                                    <ui:VisualElement class="kb-row"><ui:Label text="Backward" class="kb-action" /><ui:Label text="S" class="kb-key" /></ui:VisualElement>
+                                                    <ui:VisualElement class="kb-row"><ui:Label text="Left" class="kb-action" /><ui:Label text="A" class="kb-key" /></ui:VisualElement>
+                                                    <ui:VisualElement class="kb-row"><ui:Label text="Right" class="kb-action" /><ui:Label text="D" class="kb-key" /></ui:VisualElement>
+                                                    <ui:VisualElement class="kb-row"><ui:Label text="Jump" class="kb-action" /><ui:Label text="SPACE" class="kb-key" /></ui:VisualElement>
+                                                </ui:VisualElement>
+
+                                                <ui:VisualElement name="panel-kb-combat" class="kb-panel hidden">
+                                                    <ui:VisualElement class="kb-row"><ui:Label text="Fire" class="kb-action" /><ui:Label text="LMB" class="kb-key" /></ui:VisualElement>
+                                                    <ui:VisualElement class="kb-row"><ui:Label text="Aim" class="kb-action" /><ui:Label text="RMB" class="kb-key" /></ui:VisualElement>
+                                                    <ui:VisualElement class="kb-row"><ui:Label text="Reload" class="kb-action" /><ui:Label text="R" class="kb-key" /></ui:VisualElement>
+                                                </ui:VisualElement>
+
+                                                <ui:VisualElement name="panel-kb-general" class="kb-panel hidden">
+                                                    <ui:VisualElement class="kb-row"><ui:Label text="Scoreboard" class="kb-action" /><ui:Label text="TAB" class="kb-key" /></ui:VisualElement>
+                                                    <ui:VisualElement class="kb-row"><ui:Label text="Pause" class="kb-action" /><ui:Label text="ESC" class="kb-key" /></ui:VisualElement>
+                                                </ui:VisualElement>
+                                            </ui:VisualElement>
+                                        </ui:VisualElement>
+                                    </ui:VisualElement>
+                                </ui:VisualElement>
                             </ui:VisualElement>
                         </ui:VisualElement>
                     </ui:VisualElement>
@@ -418,15 +470,10 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- ========================================== -->
-        <!-- OVERLAYS (Absolute positioned on top)      -->
-        <!-- ========================================== -->
-        
-        <!-- EXIT MODAL -->
         <ui:VisualElement name="exit-screen" class="overlay-root hidden">
             <ui:VisualElement class="modal-card">
-                <ui:Label text="Quit Game?" class="modal-title" />
-                <ui:Label text="Are you sure you want to exit?" class="modal-desc" />
+                <ui:Label text="End Session?" class="modal-title" />
+                <ui:Label text="Terminate the command deck and close the client?" class="modal-desc" />
                 <ui:VisualElement class="modal-actions">
                     <ui:Button name="btn-exit-yes" text="Quit" class="btn-danger flex-grow" />
                     <ui:Button name="btn-exit-no" text="Cancel" class="btn-secondary flex-grow margin-left" />
@@ -434,14 +481,12 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- LOADING OVERLAY -->
         <ui:VisualElement name="loading-screen" class="overlay-root hidden">
-            <ui:VisualElement class="modal-card loading-card">
-                <ui:Label text="Loading" class="modal-title" />
+            <ui:VisualElement class="modal-card loading-card loading-panel">
+                <ui:Label text="Routing" class="modal-title" />
                 <ui:ProgressBar name="loading-progress" low-value="0" high-value="1" class="loading-bar" />
                 <ui:Label name="loading-prompt" text="Please wait..." class="loading-desc" />
             </ui:VisualElement>
         </ui:VisualElement>
-
     </ui:VisualElement>
 </ui:UXML>

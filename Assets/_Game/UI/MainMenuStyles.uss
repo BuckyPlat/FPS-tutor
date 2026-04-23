@@ -1,0 +1,733 @@
+:root {
+    --menu-panel-soft: rgba(16, 16, 16, 0.78);
+    --menu-panel-strong: rgba(10, 10, 10, 0.9);
+    --menu-border-soft: rgba(255, 255, 255, 0.08);
+    --menu-border-accent: rgba(242, 184, 36, 0.35);
+    --menu-accent-faint: rgba(242, 184, 36, 0.08);
+    --menu-fog-dark: rgba(0, 0, 0, 0.32);
+}
+
+.menu-auth-shell,
+.menu-root {
+    overflow: hidden;
+}
+
+.menu-atmosphere {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.menu-band {
+    position: absolute;
+    border-width: 1px;
+    border-color: var(--menu-border-soft);
+}
+
+.menu-band-left {
+    left: -80px;
+    top: 0;
+    bottom: 16%;
+    width: 28%;
+    background-color: rgba(242, 184, 36, 0.05);
+}
+
+.menu-band-top {
+    top: 0;
+    right: 12%;
+    width: 32%;
+    height: 34%;
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.menu-band-bottom {
+    right: 0;
+    bottom: -40px;
+    width: 58%;
+    height: 28%;
+    background-color: var(--menu-fog-dark);
+}
+
+.menu-grid-shell {
+    position: absolute;
+    top: 22px;
+    right: 22px;
+    bottom: 22px;
+    left: 22px;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.04);
+}
+
+.menu-auth-shell {
+    padding: 28px;
+}
+
+.menu-auth-shell .auth-container {
+    width: 1160px;
+    max-width: 100%;
+    min-height: 620px;
+    background-color: rgba(12, 12, 12, 0.84);
+    border-width: 1px;
+    border-color: var(--menu-border-soft);
+}
+
+.menu-auth-shell .brand-rail {
+    width: 38%;
+    background-color: rgba(22, 22, 22, 0.9);
+    padding: 44px 38px 36px 38px;
+    border-right-width: 1px;
+    border-right-color: rgba(255, 255, 255, 0.06);
+}
+
+.rail-copy-block {
+    max-width: 320px;
+}
+
+.menu-auth-shell .rail-eyebrow {
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+.menu-auth-shell .brand-title {
+    font-size: 72px;
+    margin-bottom: 20px;
+}
+
+.menu-auth-shell .auth-rail-body {
+    font-size: 18px;
+    line-height: 1.35;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.menu-auth-shell .rail-rule {
+    width: 72px;
+    height: 3px;
+    margin-top: 24px;
+}
+
+.rail-detail-stack {
+    margin-top: auto;
+}
+
+.rail-detail-card {
+    padding: 14px 16px;
+    margin-top: 10px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.rail-detail-label {
+    color: var(--color-text-dim);
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.rail-detail-value {
+    margin-top: 4px;
+    font-size: 14px;
+    color: var(--color-text-main);
+    -unity-font-definition: var(--font-bold);
+}
+
+.menu-auth-shell .auth-stage {
+    flex-grow: 1;
+    padding: 44px 54px;
+    justify-content: center;
+}
+
+.menu-auth-shell .auth-panel {
+    width: 100%;
+    max-width: 500px;
+    align-self: center;
+    background-color: rgba(11, 11, 11, 0.82);
+    border-width: 1px;
+    border-color: var(--menu-border-soft);
+    padding: 34px 36px 38px 36px;
+    justify-content: flex-start;
+}
+
+.auth-panel-copy {
+    color: rgba(255, 255, 255, 0.62);
+    margin-top: -10px;
+    margin-bottom: 24px;
+    white-space: normal;
+}
+
+.menu-auth-shell .auth-title {
+    font-size: 42px;
+    margin-bottom: 18px;
+}
+
+.menu-auth-shell .form-container {
+    width: 100%;
+    max-width: none;
+}
+
+.menu-auth-shell .field-group {
+    margin-bottom: 18px;
+}
+
+.menu-auth-shell .text-input .unity-base-text-field__input,
+.menu-auth-shell .text-input .unity-text-field__input {
+    height: 52px;
+    background-color: rgba(0, 0, 0, 0.46);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.12);
+    padding: 0 16px;
+}
+
+.menu-auth-shell .text-input:focus .unity-base-text-field__input,
+.menu-auth-shell .text-input:focus .unity-text-field__input {
+    background-color: rgba(0, 0, 0, 0.64);
+    border-color: var(--color-accent);
+}
+
+.menu-auth-shell .button-group {
+    margin-top: 26px;
+}
+
+.menu-auth-shell .btn-wide {
+    width: 100%;
+}
+
+.menu-auth-shell .auth-secondary-btn {
+    margin-top: 10px;
+}
+
+.menu-auth-shell .version-text {
+    margin-top: 20px;
+}
+
+.menu-root {
+    padding: 28px 28px 24px 28px;
+}
+
+.menu-root .main-layout {
+    width: 100%;
+    height: 100%;
+    flex-direction: row;
+}
+
+.menu-root .sidebar {
+    width: 196px;
+    padding: 24px 18px 20px 18px;
+    background-color: rgba(14, 14, 14, 0.84);
+    border-width: 1px;
+    border-color: var(--menu-border-soft);
+}
+
+.menu-root .sidebar-header {
+    margin-bottom: 24px;
+}
+
+.menu-root .sidebar-logo-title {
+    font-size: 28px;
+}
+
+.menu-root .sidebar-logo-sub {
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.menu-root .sidebar-player {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+    margin-bottom: 22px;
+    background-color: rgba(0, 0, 0, 0.18);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.menu-root .player-avatar {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 10px;
+    background-color: var(--color-accent);
+}
+
+.menu-root .player-meta {
+    margin-left: 0;
+}
+
+.menu-root .player-name {
+    font-size: 15px;
+}
+
+.menu-root .player-status {
+    font-size: 10px;
+    color: var(--color-accent);
+    letter-spacing: 1px;
+}
+
+.menu-root .currency-strip {
+    padding-top: 14px;
+    margin-bottom: 22px;
+    border-top-width: 1px;
+    border-top-color: rgba(255, 255, 255, 0.05);
+}
+
+.menu-root .currency-amount {
+    font-size: 24px;
+}
+
+.menu-root .nav-item {
+    padding: 14px 14px;
+    margin-bottom: 6px;
+    background-color: transparent;
+    border-width: 1px;
+    border-color: transparent;
+    border-left-width: 2px;
+}
+
+.menu-root .nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.menu-root .nav-item.active {
+    background-color: rgba(242, 184, 36, 0.08);
+    border-color: var(--menu-border-accent);
+    border-left-color: var(--color-accent);
+}
+
+.menu-root .nav-item-label {
+    font-size: 15px;
+}
+
+.menu-root .sidebar-footer {
+    border-top-width: 1px;
+    border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+.menu-root .content-area {
+    flex-grow: 1;
+    padding: 0 0 0 18px;
+}
+
+.content-frame {
+    flex-grow: 1;
+    padding: 18px 24px 24px 24px;
+    background-color: rgba(10, 10, 10, 0.74);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.menu-root .top-bar {
+    height: auto;
+    min-height: 60px;
+    margin-bottom: 22px;
+    padding: 12px 16px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.menu-root .top-bar-left,
+.menu-root .top-bar-right {
+    flex-direction: row;
+    align-items: center;
+}
+
+.menu-root .top-bar-status {
+    color: var(--color-accent);
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin-right: 12px;
+}
+
+.menu-root .top-bar-desc {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.menu-root .btn-social {
+    height: 34px;
+    min-width: 76px;
+    margin-left: 10px;
+    background-color: rgba(0, 0, 0, 0.22);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.84);
+}
+
+.menu-root .btn-social:hover {
+    background-color: rgba(242, 184, 36, 0.08);
+    border-color: var(--menu-border-accent);
+    color: var(--color-text-main);
+}
+
+.menu-root .screens-container {
+    position: relative;
+    flex-grow: 1;
+    min-height: 0;
+}
+
+.menu-root .screen {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    flex-direction: column;
+}
+
+.menu-root .screen-header {
+    margin-bottom: 24px;
+}
+
+.menu-root .screen-title {
+    font-size: 56px;
+}
+
+.menu-root .screen-subtitle {
+    margin-top: 10px;
+    max-width: 620px;
+    color: rgba(255, 255, 255, 0.64);
+    white-space: normal;
+}
+
+.menu-root .screen-badge {
+    padding: 7px 12px;
+    background-color: var(--menu-accent-faint);
+    border-width: 1px;
+    border-color: var(--menu-border-accent);
+}
+
+.menu-root .card {
+    background-color: rgba(18, 18, 18, 0.76);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.06);
+    padding: 24px;
+}
+
+.menu-root .card-title {
+    color: var(--color-text-main);
+    font-size: 22px;
+    margin-bottom: 14px;
+}
+
+.menu-root .card-title-large {
+    font-size: 58px;
+    margin-top: 10px;
+    margin-bottom: 14px;
+}
+
+.menu-root .kicker {
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+.menu-root .card-desc {
+    color: rgba(255, 255, 255, 0.66);
+    font-size: 15px;
+}
+
+.menu-root .play-layout {
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+.menu-root .play-hero-card {
+    flex-grow: 1;
+    margin-right: 18px;
+    justify-content: space-between;
+    border-top-width: 2px;
+    border-top-color: var(--color-accent);
+    background-color: rgba(14, 14, 14, 0.82);
+}
+
+.play-hero-title {
+    max-width: 600px;
+}
+
+.play-hero-desc {
+    max-width: 640px;
+}
+
+.play-chip-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 22px;
+}
+
+.play-chip {
+    margin-right: 8px;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 11px;
+    letter-spacing: 1px;
+    -unity-font-definition: var(--font-bold);
+}
+
+.play-metric-row {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 26px;
+}
+
+.play-metric {
+    width: 31%;
+    padding-top: 12px;
+    border-top-width: 1px;
+    border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.menu-root .play-metric .stat-label {
+    font-size: 12px;
+}
+
+.menu-root .play-metric .stat-value {
+    margin-top: 6px;
+    font-size: 18px;
+}
+
+.menu-root .card-actions-bottom {
+    margin-top: 30px;
+    flex-direction: row;
+}
+
+.menu-root .card-actions-bottom .unity-button {
+    width: 220px;
+    margin-right: 12px;
+}
+
+.play-side-stack {
+    width: 340px;
+    flex-shrink: 0;
+    flex-direction: column;
+}
+
+.menu-root .play-brief-card {
+    margin-bottom: 18px;
+}
+
+.play-note-card {
+    flex-grow: 1;
+}
+
+.menu-root .stat-row {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.menu-root .stat-label {
+    color: rgba(255, 255, 255, 0.52);
+}
+
+.menu-root .stat-value {
+    color: var(--color-text-main);
+}
+
+.menu-root .banner-card,
+.menu-root .loadout-container,
+.menu-root .profile-card {
+    border-top-width: 2px;
+    border-top-color: var(--color-accent);
+}
+
+.menu-root .banner-card {
+    min-height: 190px;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.menu-root .grid-layout {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.menu-root .store-item {
+    width: 280px;
+    margin-right: 18px;
+    margin-bottom: 18px;
+    background-color: rgba(18, 18, 18, 0.78);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.06);
+    border-top-width: 2px;
+}
+
+.menu-root .item-icon-box {
+    height: 156px;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.menu-root .btn-buy {
+    height: 42px;
+    background-color: rgba(0, 0, 0, 0.24);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.menu-root .btn-buy:hover {
+    background-color: var(--color-accent);
+    color: #000;
+    border-color: var(--color-accent);
+}
+
+.menu-root .loadout-container {
+    min-height: 360px;
+    justify-content: center;
+}
+
+.empty-message {
+    color: rgba(255, 255, 255, 0.46);
+    font-size: 16px;
+}
+
+.account-layout {
+    flex-grow: 1;
+    align-items: flex-start;
+}
+
+.menu-root .profile-card {
+    width: 460px;
+    padding: 40px;
+    align-items: flex-start;
+    -unity-text-align: upper-left;
+}
+
+.menu-root .avatar-large {
+    margin-bottom: 20px;
+}
+
+.menu-root .profile-username {
+    font-size: 34px;
+}
+
+.menu-root .profile-status {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.menu-root .logout-btn {
+    margin-top: 18px;
+    width: 100%;
+}
+
+.menu-root .settings-layout {
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+.menu-root .settings-nav {
+    width: 220px;
+    margin-right: 18px;
+}
+
+.menu-root .tab-btn {
+    height: 46px;
+    padding-left: 14px;
+    margin-bottom: 6px;
+    background-color: rgba(255, 255, 255, 0.02);
+    border-width: 1px;
+    border-color: transparent;
+    border-left-width: 2px;
+}
+
+.menu-root .tab-btn:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.menu-root .tab-btn.active {
+    background-color: rgba(242, 184, 36, 0.07);
+    border-color: var(--menu-border-accent);
+    border-left-color: var(--color-accent);
+}
+
+.menu-root .setting-row {
+    padding: 16px 0;
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.menu-root .sub-nav {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.menu-root .sub-tab-btn {
+    padding: 12px 18px;
+}
+
+.menu-root .kb-row {
+    margin-bottom: 4px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-bottom-width: 0;
+}
+
+.menu-root .kb-key {
+    background-color: rgba(0, 0, 0, 0.26);
+}
+
+.menu-root .btn-primary,
+.menu-root .btn-secondary,
+.menu-auth-shell .btn-primary,
+.menu-auth-shell .btn-secondary,
+.menu-root .btn-danger {
+    height: 50px;
+}
+
+.menu-root .btn-primary,
+.menu-auth-shell .btn-primary {
+    background-color: var(--color-accent);
+    color: #000;
+}
+
+.menu-root .btn-primary:hover,
+.menu-auth-shell .btn-primary:hover {
+    background-color: #ffe29d;
+}
+
+.menu-root .btn-secondary,
+.menu-auth-shell .btn-secondary {
+    background-color: rgba(0, 0, 0, 0.26);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.menu-root .btn-secondary:hover,
+.menu-auth-shell .btn-secondary:hover {
+    border-color: rgba(255, 255, 255, 0.24);
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.menu-root .overlay-root {
+    background-color: rgba(0, 0, 0, 0.82);
+}
+
+.menu-root .modal-card {
+    width: 460px;
+    background-color: rgba(12, 12, 12, 0.92);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.08);
+    border-top-width: 2px;
+    border-top-color: var(--color-accent);
+    padding: 30px;
+}
+
+.menu-root .modal-title {
+    font-size: 34px;
+    -unity-font-definition: var(--font-bold);
+}
+
+.menu-root .modal-desc {
+    color: rgba(255, 255, 255, 0.68);
+}
+
+.menu-root .loading-card {
+    align-items: flex-start;
+    -unity-text-align: upper-left;
+}
+
+.menu-root .loading-bar {
+    margin: 28px 0 16px 0;
+}
+
+.menu-root .loading-desc {
+    letter-spacing: 1px;
+}
