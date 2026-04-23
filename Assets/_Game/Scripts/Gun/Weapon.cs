@@ -8,6 +8,9 @@ using UnityEngine.UI;
 
 public class Weapon : MonoBehaviourPun
 {
+    private const float MaxHitscanDistance = 100f;
+    private const int MaxHitscanResults = 16;
+
     public Image ammoCircle;
 
     public int damage;
@@ -64,6 +67,7 @@ public class Weapon : MonoBehaviourPun
     public bool recovering;
 
     private IObjectPool<GameObject> vfxPool;
+    private readonly RaycastHit[] hitscanResults = new RaycastHit[MaxHitscanResults];
 
     void Awake()
     {
@@ -182,7 +186,7 @@ public class Weapon : MonoBehaviourPun
                 + camera.transform.right * circle.x
                 + camera.transform.up * circle.y;
 
-            if (Physics.Raycast(camera.transform.position, spreadDirection.normalized, out RaycastHit hit, 100f))
+            if (TryGetFirstValidHitscanHit(camera.transform.position, spreadDirection.normalized, out RaycastHit hit))
             {
                 // VFX
                 GameObject vfx = vfxPool.Get();
@@ -195,10 +199,13 @@ public class Weapon : MonoBehaviourPun
                     vfxPool.Release(vfx);
 
                 // Xử lý damage
-                if (hit.transform.TryGetComponent<Health>(out var health))
+                if (TryGetDamageTarget(hit, out var health, out var targetPhotonView))
                 {
+                    if (IsSelfHitscanTarget(targetPhotonView.transform))
+                        continue;
+
                     // Gửi damage cho enemy
-                    hit.transform.GetComponent<PhotonView>().RPC("TakeDamage", RpcTarget.All, damage, photonView.ViewID);
+                    targetPhotonView.RPC("TakeDamage", RpcTarget.All, damage, photonView.ViewID);
 
                     // KIỂM TRA CÓ GIẾT ĐƯỢC KHÔNG
                     if (damage >= health.health && !hasKilled)
@@ -234,6 +241,93 @@ public class Weapon : MonoBehaviourPun
         {
             recoiling = false;
             recovering = false;
+        }
+    }
+
+    private bool TryGetFirstValidHitscanHit(Vector3 origin, Vector3 direction, out RaycastHit validHit)
+    {
+        int hitCount = Physics.RaycastNonAlloc(
+            origin,
+            direction,
+            hitscanResults,
+            MaxHitscanDistance,
+            Physics.DefaultRaycastLayers,
+            QueryTriggerInteraction.Ignore);
+
+        if (hitCount <= 0)
+        {
+            validHit = default;
+            return false;
+        }
+
+        SortHitsByDistance(hitCount);
+
+        for (int i = 0; i < hitCount; i++)
+        {
+            RaycastHit hit = hitscanResults[i];
+            if (IsIgnoredHitscanHit(hit.collider))
+                continue;
+
+            validHit = hit;
+            return true;
+        }
+
+        validHit = default;
+        return false;
+    }
+
+    private bool TryGetDamageTarget(RaycastHit hit, out Health health, out PhotonView targetPhotonView)
+    {
+        health = hit.collider != null ? hit.collider.GetComponentInParent<Health>() : null;
+        targetPhotonView = hit.collider != null ? hit.collider.GetComponentInParent<PhotonView>() : null;
+        return health != null && targetPhotonView != null;
+    }
+
+    private bool IsIgnoredHitscanHit(Collider collider)
+    {
+        if (collider == null || collider.isTrigger)
+            return true;
+
+        Transform shooterRoot = GetShooterRoot();
+        if (collider.transform.root == shooterRoot)
+            return true;
+
+        PhotonView hitPhotonView = collider.GetComponentInParent<PhotonView>();
+        return hitPhotonView != null && photonView != null && hitPhotonView.ViewID == photonView.ViewID;
+    }
+
+    private bool IsSelfHitscanTarget(Transform targetRoot)
+    {
+        return targetRoot != null && targetRoot == GetShooterRoot();
+    }
+
+    private Transform GetShooterRoot()
+    {
+        return photonView != null ? photonView.transform.root : transform.root;
+    }
+
+    private void SortHitsByDistance(int hitCount)
+    {
+        for (int i = 0; i < hitCount - 1; i++)
+        {
+            int nearestIndex = i;
+            float nearestDistance = hitscanResults[i].distance;
+
+            for (int j = i + 1; j < hitCount; j++)
+            {
+                if (hitscanResults[j].distance < nearestDistance)
+                {
+                    nearestIndex = j;
+                    nearestDistance = hitscanResults[j].distance;
+                }
+            }
+
+            if (nearestIndex == i)
+                continue;
+
+            RaycastHit swap = hitscanResults[i];
+            hitscanResults[i] = hitscanResults[nearestIndex];
+            hitscanResults[nearestIndex] = swap;
         }
     }
 
