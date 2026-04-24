@@ -23,6 +23,9 @@ public class GameChat : MonoBehaviourPunCallbacks
 
     void Update()
     {
+        if (UIToolkitGameplayUIController.IsGameplayInputBlocked)
+            return;
+
         if (Input.GetKeyDown(KeyCode.Y) && !IsChatting)
         {
             OpenChat();
@@ -59,6 +62,14 @@ public class GameChat : MonoBehaviourPunCallbacks
     {
         IsChatting = false;
         UIToolkitGameplayUIController.Instance?.CloseChat(true);
+    }
+
+    public void ForceCloseChat()
+    {
+        if (!IsChatting)
+            return;
+
+        CloseChat();
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)

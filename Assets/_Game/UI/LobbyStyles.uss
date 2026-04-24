@@ -40,6 +40,10 @@
     width: 180px;
 }
 
+.lobby-back-button {
+    margin-right: var(--spacing-sm);
+}
+
 .lobby-main {
     flex-grow: 1;
     min-height: 0;

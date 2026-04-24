@@ -57,7 +57,7 @@ public class Movement : MonoBehaviour
         if (PhotonNetwork.IsConnected && pv != null && !pv.IsMine)
             return;
 
-        if (GameChat.IsPlayerChatting())
+        if (GameChat.IsPlayerChatting() || UIToolkitGameplayUIController.IsGameplayInputBlocked)
             return;
 
         input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
@@ -76,7 +76,7 @@ public class Movement : MonoBehaviour
         if (PhotonNetwork.IsConnected && pv != null && !pv.IsMine)
             return;
 
-        if (GameChat.IsPlayerChatting())
+        if (GameChat.IsPlayerChatting() || UIToolkitGameplayUIController.IsGameplayInputBlocked)
             return;
 
         bool groundedThisTick = EvaluateGrounded();

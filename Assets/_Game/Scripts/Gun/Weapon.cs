@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using Photon.Pun;
-using Photon.Pun.UtilityScripts;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -101,7 +100,10 @@ public class Weapon : MonoBehaviourPun
 
     void Update()
     {
-        if (GameChat.IsPlayerChatting() || !gameObject.activeInHierarchy)
+        if (GameChat.IsPlayerChatting() || UIToolkitGameplayUIController.IsGameplayInputBlocked || !gameObject.activeInHierarchy)
+            return;
+
+        if (RoomManager.instance != null && !RoomManager.instance.IsMatchLive)
             return;
 
         if (nextFire > 0)
@@ -156,6 +158,9 @@ public class Weapon : MonoBehaviourPun
 
     void Reload()
     {
+        if (RoomManager.instance != null && !RoomManager.instance.IsMatchLive)
+            return;
+
         animation.Play(reload.name);
         playerPhotonSoundManager.PlayReloadSFX(reloadSFXindex);
 
@@ -175,8 +180,6 @@ public class Weapon : MonoBehaviourPun
         recoiling = true;
         recovering = false;
         playerPhotonSoundManager.PlayShootSFX(shootSFXindex);
-
-        bool hasKilled = false;        // ← Biến mới để kiểm tra có giết được ai không
 
         for (int i = 0; i < pelletsCount; i++)
         {
@@ -204,18 +207,7 @@ public class Weapon : MonoBehaviourPun
                     if (IsSelfHitscanTarget(targetPhotonView.transform))
                         continue;
 
-                    // Gửi damage cho enemy
                     targetPhotonView.RPC("TakeDamage", RpcTarget.All, damage, photonView.ViewID);
-
-                    // KIỂM TRA CÓ GIẾT ĐƯỢC KHÔNG
-                    if (damage >= health.health && !hasKilled)
-                    {
-                        hasKilled = true;                    // Chỉ tính 1 lần kill dù bắn trúng nhiều pellet
-                        RoomManager.instance.AddKill(1);     // Chỉ cộng kill khi thật sự giết
-                        PhotonNetwork.LocalPlayer.AddScore(100);
-
-                        Debug.Log("KILL CONFIRMED! +1 Kill");
-                    }
                 }
             }
         }
@@ -336,5 +328,11 @@ public class Weapon : MonoBehaviourPun
         yield return new WaitForSeconds(delay);
         if (obj != null)
             vfxPool.Release(obj);
+    }
+
+    public void RefillCurrentMagazine()
+    {
+        ammo = magAmmo;
+        UpdateAmmoUI();
     }
 }

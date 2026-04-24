@@ -16,6 +16,7 @@
 
                 <ui:Label name="lbl-connection-status" text="CONNECTING" class="screen-badge lobby-status-badge" />
                 <ui:Label name="lbl-room-count-badge" text="0 ROOMS" class="screen-badge lobby-count-badge" />
+                <ui:Button name="btn-back-menu" text="Back To Menu" class="btn-secondary lobby-header-button lobby-back-button" />
                 <ui:Button name="btn-open-drawer" text="Create Room" class="btn-primary lobby-header-button" />
             </ui:VisualElement>
 

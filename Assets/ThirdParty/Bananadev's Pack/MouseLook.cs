@@ -44,13 +44,7 @@ public class MouseLook : MonoBehaviour
     void Start()
     {
         instance = this;
-
-        // === LOAD SETTINGS TỪ MENU ===
-        sensitivity.x = PlayerPrefs.GetFloat(SENS_X_KEY, 2f);
-        sensitivity.y = PlayerPrefs.GetFloat(SENS_Y_KEY, 2f);
-        smoothing.x = PlayerPrefs.GetFloat(SMOOTH_KEY, 3f);
-        smoothing.y = smoothing.x;                    // giữ ngang nhau
-        invertMouse = PlayerPrefs.GetInt(INVERT_KEY, 0) == 1;
+        ApplyRuntimeSettingsFromPrefs();
 
         // Set target direction to the camera's initial orientation.
         targetDirection = transform.localRotation.eulerAngles;
@@ -77,12 +71,19 @@ public class MouseLook : MonoBehaviour
 
     void Update()
     {
+        if (UIToolkitGameplayUIController.IsGameplayInputBlocked)
+            return;
+
         // Allow the script to clamp based on a desired target value.
         var targetOrientation = Quaternion.Euler(targetDirection);
         var targetCharacterOrientation = Quaternion.Euler(targetCharacterDirection);
 
         // Get raw mouse input for a cleaner reading on more sensitive mice.
-        mouseDelta = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
+        float mouseY = Input.GetAxisRaw("Mouse Y");
+        if (invertMouse)
+            mouseY *= -1f;
+
+        mouseDelta = new Vector2(Input.GetAxisRaw("Mouse X"), mouseY);
 
         // Scale input against the sensitivity setting and multiply that against the smoothing value.
         mouseDelta = Vector2.Scale(mouseDelta, new Vector2(sensitivity.x * smoothing.x, sensitivity.y * smoothing.y));
@@ -122,10 +123,28 @@ public class MouseLook : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (characterBodyRigidbody == null)
+        if (characterBodyRigidbody == null || UIToolkitGameplayUIController.IsGameplayInputBlocked)
             return;
 
         Quaternion bodyRotation = Quaternion.Euler(0f, desiredBodyRotation.eulerAngles.y, 0f);
         characterBodyRigidbody.MoveRotation(bodyRotation);
+    }
+
+    public void ApplyRuntimeSettings(float sensX, float sensY, float smoothAmount, bool invert)
+    {
+        sensitivity.x = sensX;
+        sensitivity.y = sensY;
+        smoothing.x = Mathf.Max(0.01f, smoothAmount);
+        smoothing.y = smoothing.x;
+        invertMouse = invert;
+    }
+
+    public void ApplyRuntimeSettingsFromPrefs()
+    {
+        ApplyRuntimeSettings(
+            PlayerPrefs.GetFloat(SENS_X_KEY, 2f),
+            PlayerPrefs.GetFloat(SENS_Y_KEY, 2f),
+            PlayerPrefs.GetFloat(SMOOTH_KEY, 3f),
+            PlayerPrefs.GetInt(INVERT_KEY, 0) == 1);
     }
 }

@@ -6,6 +6,8 @@ using UnityEngine.UIElements;
 
 public class UIToolkitMenuController : MonoBehaviour
 {
+    private const string GameplaySettingsInitializedKey = "UITKGameplaySettingsInitialized";
+
     [Header("UI Document")]
     public UIDocument uiDocument;
 
@@ -1444,8 +1446,10 @@ public class UIToolkitMenuController : MonoBehaviour
 
     private void LoadSettingsIntoUI()
     {
-        SetToggle("toggle-hud", PlayerPrefs.GetInt("ShowHUD") == 1);
-        SetToggle("toggle-tooltips", PlayerPrefs.GetInt("ToolTips") == 1);
+        EnsureGameplaySettingsDefaults();
+
+        SetToggle("toggle-hud", PlayerPrefs.GetInt("ShowHUD", 1) == 1);
+        SetToggle("toggle-tooltips", PlayerPrefs.GetInt("ToolTips", 1) == 1);
         SetSlider("slider-music", PlayerPrefs.GetFloat("MusicVolume", 1f));
 
         SetToggle("toggle-fullscreen", Screen.fullScreen);
@@ -1466,6 +1470,36 @@ public class UIToolkitMenuController : MonoBehaviour
                 ? "Controller"
                 : "Keyboard & Mouse");
         }
+    }
+
+    private static void EnsureGameplaySettingsDefaults()
+    {
+        if (PlayerPrefs.GetInt(GameplaySettingsInitializedKey, 0) == 1)
+        {
+            bool dirty = false;
+
+            if (!PlayerPrefs.HasKey("ShowHUD"))
+            {
+                PlayerPrefs.SetInt("ShowHUD", 1);
+                dirty = true;
+            }
+
+            if (!PlayerPrefs.HasKey("ToolTips"))
+            {
+                PlayerPrefs.SetInt("ToolTips", 1);
+                dirty = true;
+            }
+
+            if (dirty)
+                PlayerPrefs.Save();
+
+            return;
+        }
+
+        PlayerPrefs.SetInt("ShowHUD", 1);
+        PlayerPrefs.SetInt("ToolTips", 1);
+        PlayerPrefs.SetInt(GameplaySettingsInitializedKey, 1);
+        PlayerPrefs.Save();
     }
 
     private void SetToggle(string name, bool value)

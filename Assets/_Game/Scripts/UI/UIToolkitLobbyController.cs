@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
@@ -8,6 +9,7 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(UIDocument))]
 public class UIToolkitLobbyController : MonoBehaviour
 {
+    private const int MenuBuildIndex = 0;
     private const int SceneTemplateBuildIndex = 2;
     private const int SecondMapBuildIndex = 3;
 
@@ -31,6 +33,7 @@ public class UIToolkitLobbyController : MonoBehaviour
     private Label mapTwoDescriptionLabel;
 
     private Button openDrawerButton;
+    private Button backToMenuButton;
     private Button closeDrawerButton;
     private Button cancelCreateButton;
     private Button createRoomButton;
@@ -104,6 +107,7 @@ public class UIToolkitLobbyController : MonoBehaviour
         mapTwoDescriptionLabel = root.Q<Label>("lbl-map-2-desc");
 
         openDrawerButton = root.Q<Button>("btn-open-drawer");
+        backToMenuButton = root.Q<Button>("btn-back-menu");
         closeDrawerButton = root.Q<Button>("btn-close-drawer");
         cancelCreateButton = root.Q<Button>("btn-cancel-create");
         createRoomButton = root.Q<Button>("btn-create-room");
@@ -220,6 +224,7 @@ public class UIToolkitLobbyController : MonoBehaviour
         }
 
         openDrawerButton.clicked += OnOpenDrawerClicked;
+        backToMenuButton.clicked += OnBackToMenuClicked;
         closeDrawerButton.clicked += OnCloseDrawerClicked;
         cancelCreateButton.clicked += OnCloseDrawerClicked;
         createRoomButton.clicked += OnCreateRoomClicked;
@@ -244,6 +249,7 @@ public class UIToolkitLobbyController : MonoBehaviour
         }
 
         openDrawerButton.clicked -= OnOpenDrawerClicked;
+        backToMenuButton.clicked -= OnBackToMenuClicked;
         closeDrawerButton.clicked -= OnCloseDrawerClicked;
         cancelCreateButton.clicked -= OnCloseDrawerClicked;
         createRoomButton.clicked -= OnCreateRoomClicked;
@@ -263,6 +269,11 @@ public class UIToolkitLobbyController : MonoBehaviour
     private void OnOpenDrawerClicked()
     {
         OpenDrawer();
+    }
+
+    private void OnBackToMenuClicked()
+    {
+        StartCoroutine(ReturnToMenuFlow());
     }
 
     private void OnCloseDrawerClicked()
@@ -334,6 +345,23 @@ public class UIToolkitLobbyController : MonoBehaviour
     private bool IsDrawerOpen()
     {
         return createDrawer != null && !createDrawer.ClassListContains("hidden");
+    }
+
+    private System.Collections.IEnumerator ReturnToMenuFlow()
+    {
+        CloseDrawer();
+        HandleConnectionStatusChanged("Returning to menu...");
+
+        if (PhotonNetwork.InRoom)
+            PhotonNetwork.LeaveRoom();
+
+        if (PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.Disconnect();
+            yield return new WaitUntil(() => !PhotonNetwork.IsConnected);
+        }
+
+        SceneManager.LoadScene(MenuBuildIndex);
     }
 
     private void TryCreateRoom()

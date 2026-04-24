@@ -1,153 +1,134 @@
-﻿using Photon.Pun;
-using System.Collections;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Rendering.PostProcessing;
+using Photon.Pun;
 using UnityEngine.UI;
+using UnityEngine.Rendering.PostProcessing;
+using Photon.Realtime;
 
-public class Health : MonoBehaviourPun
+public class Health : MonoBehaviourPunCallbacks, IPunObservable
 {
-    public Image HealthImage;
-    public int maxHealth = 100;     
-    public int health;              
+    [Header("Health Settings")]
+    public int maxHealth = 100;
+    public int health;
 
-    public bool isLocalPlayer;
-
-    [Header("Overhead Health Bar")]
-    public OverheadHealth overheadHealthBar;
-
-    [Header("UI")]
-    public TextMeshProUGUI healthText;
+    [Header("UI References")]
+    public Image healthBar;
+    public Text healthText;
 
     [Header("Vignette Effect")]
     public PostProcessVolume volume;
-    private Vignette vignette;
-
     public float maxVignette = 1f;
     public float vignetteSmooth = 5f;
-    private float targetVignette = 0f;
-    [Header("Drops")]
 
+    [Header("Drops")]
     public GameObject healthDropPrefab;
 
-    [HideInInspector]
-    public bool hasDied;
+    [HideInInspector] public bool hasDied;
+
+    private Vignette vignette;
+    private float targetVignette;
 
     private void Start()
     {
-        if (!photonView.IsMine && volume != null)
-        {
-            volume.gameObject.SetActive(false);
-        }
-        // Initial setup
         health = maxHealth;
         UpdateUI();
-        if (volume != null && volume.profile.TryGetSettings(out vignette))
-        {
-            vignette.intensity.value = 0f;
-        }
+
+        if (volume != null)
+            volume.profile.TryGetSettings(out vignette);
     }
+
     private void Update()
     {
-        if (!photonView.IsMine) return;
-        if (vignette == null) return;
-
-        vignette.intensity.value = Mathf.Lerp(
-            vignette.intensity.value,
-            targetVignette,
-            Time.deltaTime * vignetteSmooth
-        );
-
-        // auto fade to 0
-        targetVignette = Mathf.Lerp(targetVignette, 0f, Time.deltaTime);
+        if (photonView.IsMine && vignette != null)
+        {
+            vignette.intensity.value = Mathf.Lerp(vignette.intensity.value, targetVignette, Time.deltaTime * vignetteSmooth);
+            targetVignette = Mathf.Lerp(targetVignette, 0, Time.deltaTime * (vignetteSmooth / 2f));
+        }
     }
 
     [PunRPC]
-    public void TakeDamage(int _damage, int killerViewID)
+    public void TakeDamage(int damage, int killerViewID)
     {
         if (hasDied) return;
 
-        health -= _damage;
-        if (health < 0) health = 0;
-
+        health -= damage;
         UpdateUI();
 
         if (photonView.IsMine && vignette != null)
-        {
             targetVignette = maxVignette;
-        }
 
-        if (health <= 0 && !hasDied)
+        if (health <= 0)
         {
-            hasDied = true;
-
-            // Spawn health drop
-            if (PhotonNetwork.IsMasterClient && healthDropPrefab != null)
-            {
-                PhotonNetwork.Instantiate(
-                    healthDropPrefab.name,
-                    transform.position,
-                    Quaternion.identity
-                );
-            }
-
-            // === NGĂN KNOCKBACK KHI CHẾT ===
-            DisableMovementAndPhysics();
-
-            if (!photonView.IsMine) return;
-
-            // Lấy thông tin killer
-            PhotonView killerPV = PhotonView.Find(killerViewID);
-            Transform killerTransform = killerPV != null ? killerPV.transform : null;
-
-            // Hiển thị thông báo kill
-            string killerName = "Unknown";
-            if (killerPV != null)
-            {
-                PlayerSetup ps = killerPV.GetComponent<PlayerSetup>();
-                if (ps != null && !string.IsNullOrEmpty(ps.nickname))
-                    killerName = ps.nickname;
-                else if (killerPV.Owner != null)
-                    killerName = killerPV.Owner.NickName;
-            }
-
-            PlayerSetup victimPS = GetComponent<PlayerSetup>();
-            string victimName = victimPS != null && !string.IsNullOrEmpty(victimPS.nickname)
-                                ? victimPS.nickname : "Unknown";
-
-            string msg = $"<color=yellow>[KILL]</color> " +
-                         $"<color=red>{killerName}</color> killed <color=blue>{victimName}</color>";
-
-            if (GameChat.Instance != null)
-                GameChat.Instance.photonView.RPC("SendSystemMessage", RpcTarget.All, msg);
-
-            // === GỌI SPECTATOR VỚI KILLER ===
-            if (Spectator.Instance != null)
-                Spectator.Instance.Activate(killerTransform);
-
-            PhotonNetwork.Destroy(gameObject);
-            RoomManager.instance.StartRespawn(3f);
+            HandleDeath(killerViewID, false);
         }
     }
 
-    // Hàm mới: Tắt movement và physics để không bị knockback khi chết
+    public void RestoreHealth(int amount)
+    {
+        if (amount <= 0 || hasDied)
+            return;
+
+        health = Mathf.Clamp(health + amount, 0, maxHealth);
+        UpdateUI();
+    }
+
+    private void FixedUpdate()
+    {
+        if (!photonView.IsMine || hasDied)
+            return;
+
+        if (RoomManager.instance != null && !RoomManager.instance.IsMatchLive)
+            return;
+
+        if (transform.position.y < -5f)
+            HandleDeath(-1, true);
+    }
+
+    private void HandleDeath(int killerViewID, bool isEnvironmentKill)
+    {
+        if (hasDied)
+            return;
+
+        hasDied = true;
+
+        // Spawn health drop
+        if (PhotonNetwork.IsMasterClient && healthDropPrefab != null)
+        {
+            PhotonNetwork.Instantiate(
+                healthDropPrefab.name,
+                transform.position,
+                Quaternion.identity
+            );
+        }
+
+        DisableMovementAndPhysics();
+
+        if (!photonView.IsMine)
+            return;
+
+        PhotonView killerView = !isEnvironmentKill && killerViewID >= 0 ? PhotonView.Find(killerViewID) : null;
+        Transform killerTransform = killerView != null ? killerView.transform : null;
+
+        RoomManager.instance?.NotifyLocalPlayerDeath(killerViewID, killerTransform, isEnvironmentKill);
+
+        if (PhotonNetwork.InRoom)
+            PhotonNetwork.Destroy(gameObject);
+        else
+            Destroy(gameObject);
+    }
+
     private void DisableMovementAndPhysics()
     {
-        // Tắt script di chuyển
         Movement movement = GetComponent<Movement>();
         if (movement != null)
             movement.enabled = false;
 
-        // Tắt Rigidbody để không nhận lực nữa (knockback từ đạn/explosion)
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-            rb.isKinematic = true;        // Quan trọng: Không bị physics đẩy
+            rb.velocity = Vector3.zero;
+            rb.isKinematic = true;
         }
 
-        // Tắt collider nếu cần (tùy game của bạn)
         Collider col = GetComponent<Collider>();
         if (col != null)
             col.enabled = false;
@@ -155,33 +136,23 @@ public class Health : MonoBehaviourPun
 
     private void UpdateUI()
     {
+        if (healthBar != null)
+            healthBar.fillAmount = (float)health / maxHealth;
+
         if (healthText != null)
             healthText.text = health.ToString();
-
-        if (HealthImage != null)
-            HealthImage.fillAmount = (float)health / maxHealth;
-
-        if (photonView.IsMine || isLocalPlayer)
-            UIToolkitGameplayUIController.Instance?.SetLocalHealth(health, maxHealth);
-
-        // Update overhead health bar (if any)
-        if (overheadHealthBar != null)
-            overheadHealthBar.UpdateHealthBar();
     }
 
-    void FixedUpdate()
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        if (transform.position.y < -5)
+        if (stream.IsWriting)
         {
-            if (isLocalPlayer)
-            {
-                RoomManager.instance.SpawnPlayer();
-                RoomManager.instance.Deaths++;
-            }
-                
-            Destroy(gameObject);
+            stream.SendNext(health);
+        }
+        else
+        {
+            health = (int)stream.ReceiveNext();
+            UpdateUI();
         }
     }
-
-
 }

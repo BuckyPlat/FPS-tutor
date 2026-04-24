@@ -68,6 +68,10 @@ public class RoomList : MonoBehaviourPunCallbacks
             PhotonNetwork.LeaveRoom();
             PhotonNetwork.Disconnect();
         }
+        else if (PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.Disconnect();
+        }
 
         yield return new WaitUntil(() => !PhotonNetwork.IsConnected);
 

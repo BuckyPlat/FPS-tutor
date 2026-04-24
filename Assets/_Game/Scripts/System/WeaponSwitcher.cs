@@ -24,7 +24,8 @@ public class WeaponSwitcher : MonoBehaviour
 
     void Update()
     {
-        if (GameChat.IsPlayerChatting()) return;
+        if (GameChat.IsPlayerChatting() || UIToolkitGameplayUIController.IsGameplayInputBlocked)
+            return;
 
         int previousSelectedWeapon = selectedWeapon;
 

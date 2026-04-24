@@ -17,41 +17,22 @@ public class Leaderboard : MonoBehaviour
     public void Refresh()
     {
         var controller = UIToolkitGameplayUIController.Instance;
-        if (controller == null)
+        if (controller == null || RoomManager.instance == null)
         {
             return;
         }
 
-        var sortedPlayerList =
-            (from player in PhotonNetwork.PlayerList orderby player.GetScore() descending select player).ToList();
-
-        var entries = new List<UIToolkitGameplayUIController.LeaderboardEntryData>(sortedPlayerList.Count);
-
-        for (int i = 0; i < sortedPlayerList.Count; i++)
-        {
-            var player = sortedPlayerList[i];
-            string playerName = string.IsNullOrWhiteSpace(player.NickName) ? "Unnamed" : player.NickName;
-            string kd = "0/0";
-
-            if (player.CustomProperties["Kills"] != null)
-            {
-                kd = player.CustomProperties["Kills"] + "/" + player.CustomProperties["Deaths"];
-            }
-
-            entries.Add(new UIToolkitGameplayUIController.LeaderboardEntryData
-            {
-                Rank = i + 1,
-                Name = playerName,
-                Score = player.GetScore(),
-                Kd = kd
-            });
-        }
-
-        controller.SetLeaderboardEntries(entries);
+        controller.SetLeaderboardEntries(RoomManager.instance.BuildLeaderboardEntries());
     }
 
     private void Update()
     {
+        if (UIToolkitGameplayUIController.IsGameplayInputBlocked)
+        {
+            UIToolkitGameplayUIController.Instance?.SetLeaderboardVisible(false);
+            return;
+        }
+
         UIToolkitGameplayUIController.Instance?.SetLeaderboardVisible(Input.GetKey(KeyCode.Tab));
     }
 }
