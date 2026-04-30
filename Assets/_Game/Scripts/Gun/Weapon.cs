@@ -3,6 +3,7 @@ using Photon.Pun;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Pool;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class Weapon : MonoBehaviourPun
@@ -17,7 +18,8 @@ public class Weapon : MonoBehaviourPun
     public int pelletsCount = 1;
     public float sprayMultiplier = 0f;
 
-    public Camera camera;
+    [FormerlySerializedAs("camera")]
+    public Camera fireCamera;
 
     public float fireRate;
 
@@ -46,7 +48,8 @@ public class Weapon : MonoBehaviourPun
     public PlayerPhotonSoundManager playerPhotonSoundManager;
 
     [Header("Animation")]
-    public Animation animation;
+    [FormerlySerializedAs("animation")]
+    public Animation weaponAnimation;
     public AnimationClip reload;
 
     [Header("Recoil Setting")]
@@ -109,7 +112,7 @@ public class Weapon : MonoBehaviourPun
         if (nextFire > 0)
             nextFire -= Time.deltaTime;
 
-        if (Input.GetButton("Fire1") && nextFire <= 0 && ammo > 0 && !animation.isPlaying)
+        if (Input.GetButton("Fire1") && nextFire <= 0 && ammo > 0 && !weaponAnimation.isPlaying)
         {
             nextFire = 1 / fireRate;
             ammo--;
@@ -161,7 +164,7 @@ public class Weapon : MonoBehaviourPun
         if (RoomManager.instance != null && !RoomManager.instance.IsMatchLive)
             return;
 
-        animation.Play(reload.name);
+        weaponAnimation.Play(reload.name);
         playerPhotonSoundManager.PlayReloadSFX(reloadSFXindex);
 
         if (mag > 0)
@@ -185,11 +188,11 @@ public class Weapon : MonoBehaviourPun
         {
             Vector2 circle = Random.insideUnitCircle * sprayMultiplier;
 
-            Vector3 spreadDirection = camera.transform.forward
-                + camera.transform.right * circle.x
-                + camera.transform.up * circle.y;
+            Vector3 spreadDirection = fireCamera.transform.forward
+                + fireCamera.transform.right * circle.x
+                + fireCamera.transform.up * circle.y;
 
-            if (TryGetFirstValidHitscanHit(camera.transform.position, spreadDirection.normalized, out RaycastHit hit))
+            if (TryGetFirstValidHitscanHit(fireCamera.transform.position, spreadDirection.normalized, out RaycastHit hit))
             {
                 // VFX
                 GameObject vfx = vfxPool.Get();

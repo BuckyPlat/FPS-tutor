@@ -2,6 +2,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class PlayerSetup : MonoBehaviourPunCallbacks
@@ -9,7 +10,8 @@ public class PlayerSetup : MonoBehaviourPunCallbacks
     public const string SelectedWeaponPropertyKey = "SelectedWeapon";
 
     public Movement movement;
-    public GameObject camera;
+    [FormerlySerializedAs("camera")]
+    public GameObject localCamera;
     public string nickname;
     public TextMeshPro nicknameText;
     public Transform TPweaponHolder;
@@ -23,7 +25,7 @@ public class PlayerSetup : MonoBehaviourPunCallbacks
     {
         TPweaponHolder.gameObject.SetActive(false);
         movement.enabled = true;
-        camera.SetActive(true);
+        localCamera.SetActive(true);
     }
 
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)

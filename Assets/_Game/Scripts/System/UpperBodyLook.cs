@@ -55,9 +55,9 @@ public class UpperBodyLook : MonoBehaviourPun
             return;
 
         PlayerSetup playerSetup = GetComponentInParent<PlayerSetup>();
-        if (playerSetup != null && playerSetup.camera != null)
+        if (playerSetup != null && playerSetup.GetComponent<Camera>() != null)
         {
-            localLookSource = playerSetup.camera.transform;
+            localLookSource = playerSetup.GetComponent<Camera>().transform;
             return;
         }
 

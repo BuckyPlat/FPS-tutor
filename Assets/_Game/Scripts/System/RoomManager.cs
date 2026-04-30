@@ -278,7 +278,6 @@ public class RoomManager : MonoBehaviourPunCallbacks, IOnEventCallback
         Transform spawnPoint = spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Length)];
         GameObject spawnedPlayer = PhotonNetwork.Instantiate(player.name, spawnPoint.position, Quaternion.identity);
         spawnedPlayer.GetComponent<PlayerSetup>().IsLocalPlayer();
-        spawnedPlayer.GetComponent<Health>().isLocalPlayer = true;
 
         WeaponSwitcher weaponSwitcher = spawnedPlayer.GetComponentInChildren<WeaponSwitcher>(true);
         if (weaponSwitcher != null)

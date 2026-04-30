@@ -12,9 +12,7 @@ public class HealthDrop : MonoBehaviour
 
         if (!playerHealth.photonView.IsMine) return;
 
-        playerHealth.health += healAmount;
-        playerHealth.health = Mathf.Min(playerHealth.health, playerHealth.maxHealth);
-        playerHealth.SendMessage("UpdateUI");
+        playerHealth.RestoreHealth(healAmount);
 
         if (PhotonNetwork.IsMasterClient)
         {

@@ -74,9 +74,9 @@ public class PlayerAnimationNetworkSync : MonoBehaviourPun, IPunObservable
         if (upperBodyLook != null)
             return upperBodyLook.CurrentPitch;
 
-        if (playerSetup != null && playerSetup.camera != null)
+        if (playerSetup != null && playerSetup.GetComponent<Camera>() != null)
         {
-            Vector3 forward = playerSetup.camera.transform.forward;
+            Vector3 forward = playerSetup.GetComponent<Camera>().transform.forward;
             float clampedY = Mathf.Clamp(forward.y, -1f, 1f);
             return Mathf.Asin(clampedY) * Mathf.Rad2Deg;
         }

@@ -125,7 +125,7 @@ public class Health : MonoBehaviourPunCallbacks, IPunObservable
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.velocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
             rb.isKinematic = true;
         }
 
@@ -136,8 +136,10 @@ public class Health : MonoBehaviourPunCallbacks, IPunObservable
 
     private void UpdateUI()
     {
+        float normalizedHealth = maxHealth <= 0 ? 0f : Mathf.Clamp01((float)health / maxHealth);
+
         if (healthBar != null)
-            healthBar.fillAmount = (float)health / maxHealth;
+            healthBar.fillAmount = normalizedHealth;
 
         if (healthText != null)
             healthText.text = health.ToString();
